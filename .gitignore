@@ -51,6 +51,8 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+build/
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
