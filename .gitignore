@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 build/
-assets/
+assets/test/
 
 CMakeLists.txt.user
 CMakeCache.txt
