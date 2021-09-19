@@ -4,6 +4,8 @@
 #include "mesh.h"
 #include "meshloader.h"
 #include "staticrenderer.h"
+#include "material.h"
+#include "scene.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -89,7 +91,6 @@ int main () {
         ASSET_DIR "test/TestScene/TestScene2.gltf"
     };
 
-    struct StaticPrimitives *sp = LoadModels(modelPaths, 1);
 
     //GLFW
     glfwInit();
@@ -119,21 +120,19 @@ int main () {
             return -1;
         }    
     struct CallbackContext cbc;
-    struct CameraData *cd = CameraInit();
     cbc.resize = false;
     cbc.width = 1800;
     cbc.height = 1000;
     cbc.lastX = 900;
     cbc.lastY = 500;
     cbc.firstMouse = true;
-    cbc.cd = cd;
     glfwSetWindowUserPointer(window, &cbc);
 
     glfwSetCursorPosCallback(window, mouse_callback);
     
     //Shaders
     unsigned int shaderProgram = LoadAndCompileShaders(ASSET_DIR "shader.vert", ASSET_DIR "shader.frag");
-    unsigned int lightShader = LoadAndCompileShaders(ASSET_DIR "light.vert", ASSET_DIR "light.frag");
+    unsigned int testShader = LoadAndCompileShaders(ASSET_DIR "default.vert", ASSET_DIR "default.frag");
     unsigned int screenShader = LoadAndCompileShaders(ASSET_DIR "screen.vert", ASSET_DIR "screen.frag");
     unsigned int cubeMapShader = LoadAndCompileShaders(ASSET_DIR "cubeMap.vert", ASSET_DIR "cubeMap.frag");
     unsigned int shadowMapShader = LoadAndCompileShaders(ASSET_DIR "shadowMap.vert", 
@@ -143,7 +142,10 @@ int main () {
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
 
-    struct RenderContext *rc = InitStaticRender(sp);
+    struct Scene *sc = InitScene(100);
+    cbc.cd = sc->cd;
+    LoadModels(sc, modelPaths, 1);
+    InitStaticRender(sc);
 
     float screenVertices[] = {
         -1.0f, -1.0f,   0.0f,  0.0f,
@@ -205,12 +207,28 @@ int main () {
     unsigned int depthMap;
     unsigned int depthMapFBO = CreatDepthMapFrameBuffer(&depthMap);
 
-    glUseProgram(shaderProgram);
-    glUniform1i(glGetUniformLocation(shaderProgram, "material.diffuse"), 0);
-    glUniform1i(glGetUniformLocation(shaderProgram, "material.roughness"), 1);
-    glUniform1i(glGetUniformLocation(shaderProgram, "material.normal"), 2);
-    glUniform1i(glGetUniformLocation(shaderProgram, "cubeMap"), 3);
-    glUniform1i(glGetUniformLocation(shaderProgram, "shadowMap"), 4);
+    SetShaderByName(sc->rc->mat, "Material.002", shaderProgram);
+
+    SetTextureByName(sc->rc->mat, "Material.002", texture1, "material.diffuse");
+    SetTextureByName(sc->rc->mat, "Material.002", texture2, "material.roughness");
+    SetTextureByName(sc->rc->mat, "Material.002", normalMap, "material.normal");
+    SetValueByNameF(sc->rc->mat, "Material.002", 0.01f, "material.specular");
+    SetValueByNameF(sc->rc->mat, "Material.002", 0.0f, "material.metallic");
+    SetTextureByName(sc->rc->mat, "Material.002", depthMap, "shadowMap");
+
+    SetShaderByName(sc->rc->mat, "Material.001", shaderProgram);
+
+    SetTextureByName(sc->rc->mat, "Material.001", texture1, "material.diffuse");
+    SetTextureByName(sc->rc->mat, "Material.001", texture2, "material.roughness");
+    SetTextureByName(sc->rc->mat, "Material.001", normalMap, "material.normal");
+    SetValueByNameF(sc->rc->mat, "Material.001", 0.1f, "material.specular");
+    SetValueByNameF(sc->rc->mat, "Material.001", 0.0f, "material.metallic");
+    SetTextureByName(sc->rc->mat, "Material.001", depthMap, "shadowMap");
+    //glUseProgram(shaderProgram);
+    //glUniform1i(glGetUniformLocation(shaderProgram, "material.diffuse"), 0);
+    //glUniform1i(glGetUniformLocation(shaderProgram, "material.roughness"), 1);
+    //glUniform1i(glGetUniformLocation(shaderProgram, "material.normal"), 2);
+    //glUniform1i(glGetUniformLocation(shaderProgram, "shadowMap"), 3);
 
     glUseProgram(cubeMapShader);
     glUniform1i(glGetUniformLocation(cubeMapShader, "skybox"), 0);
@@ -227,79 +245,80 @@ int main () {
         processInput(window);
         glEnable(GL_DEPTH_TEST);
 
-        mat4 model = GLM_MAT4_IDENTITY_INIT;
+        //mat4 model = GLM_MAT4_IDENTITY_INIT;
 
-        mat4 lightProjection;
-        glm_ortho(-10.0, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f, lightProjection);
+        //Shadow Map
+        //mat4 lightProjection;
+        //glm_ortho(-10.0, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f, lightProjection);
 
-        mat4 lightView = GLM_MAT4_ZERO_INIT;
-        glm_lookat((vec3){-1.6f, 4.0f, 1.6f}, (vec3){0.0f, 0.0f, 0.0f},
-               (vec3){0.0f, 1.0f, 0.0f}, lightView);
+        //mat4 lightView = GLM_MAT4_ZERO_INIT;
+        //glm_lookat((vec3){-1.6f, 4.0f, 1.6f}, (vec3){0.0f, 0.0f, 0.0f},
+        //       (vec3){0.0f, 1.0f, 0.0f}, lightView);
 
-        mat4 lightSpaceMatrix;
-        glm_mat4_mul(lightProjection, lightView, lightSpaceMatrix);
+        //mat4 lightSpaceMatrix;
+        //glm_mat4_mul(lightProjection, lightView, lightSpaceMatrix);
 
-        glUseProgram(shadowMapShader);
-        UniformMat4v(shadowMapShader, "lightSpaceMatrix", lightSpaceMatrix[0]);
-        //UniformMat4v(shadowMapShader, "model", model[0]);
-        glViewport(0, 0, 4096, 4096);
+        //glUseProgram(shadowMapShader);
+        //UniformMat4v(shadowMapShader, "lightSpaceMatrix", lightSpaceMatrix[0]);
+        ////UniformMat4v(shadowMapShader, "model", model[0]);
+        //glViewport(0, 0, 4096, 4096);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-        glClear(GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_DEPTH_BUFFER_BIT);
 
         //glCullFace(GL_FRONT);
         //glBindVertexArray(VAO);
         //glDrawElements(GL_TRIANGLES, dataIndCount, GL_UNSIGNED_INT, 0);
-        RenderStatic(rc, shadowMapShader);
+        RenderStaticShadows(sc, shadowMapShader);
         //glCullFace(GL_BACK);
 
+        //Scene
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        glViewport(0, 0, cbc.width, cbc.height);
+        //glViewport(0, 0, cbc.width, cbc.height);
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, normalMap);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        
-        //MVP Matrix
-
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, texture1);
+        //glActiveTexture(GL_TEXTURE1);
+        //glBindTexture(GL_TEXTURE_2D, texture2);
+        //glActiveTexture(GL_TEXTURE2);
+        //glBindTexture(GL_TEXTURE_2D, normalMap);
+        //glActiveTexture(GL_TEXTURE3);
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
+        //glActiveTexture(GL_TEXTURE4);
+        //glBindTexture(GL_TEXTURE_2D, depthMap);
+        //
         mat4 view = GLM_MAT4_IDENTITY_INIT;
-        mat4 viewCubeMap = GLM_MAT4_IDENTITY_INIT;
-        mat3 view3 = GLM_MAT3_IDENTITY_INIT;
-        CameraGetViewMat(cd, view);
-        glm_mat4_pick3(view, view3);
-        glm_mat4_ins3(view3, viewCubeMap);
-            
+        CameraGetViewMat(sc->cd, view);
+        //    
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         mat4 projection;
         glm_perspective(GLM_PI / 2.5f, (float)width / (float)height, 0.1f, 1000.0f, projection);
 
-        vec3 lightPos = {1.2f, 4.0f, 2.0f};
-        glUseProgram(shaderProgram);
-        UniformVec3v(shaderProgram, "viewPos", cd->cameraPos);
-        UniformVec3(shaderProgram, "light.direction", 0.4, -1.0, -0.4);
-        UniformVec3(shaderProgram, "light.color", 3.0f, 3.0f, 3.0f);
-        glUniform1f(glGetUniformLocation(shaderProgram, "material.metallic"), 0.0f);
-        glUniform1f(glGetUniformLocation(shaderProgram, "material.specular"), 0.1f);
+        //glUseProgram(shaderProgram);
+        //UniformVec3v(shaderProgram, "viewPos", cd->cameraPos);
+        //UniformVec3(shaderProgram, "light.direction", 0.4, -1.0, -0.4);
+        //UniformVec3(shaderProgram, "light.color", 3.0f, 3.0f, 3.0f);
+        //glUniform1f(glGetUniformLocation(shaderProgram, "material.metallic"), 0.0f);
+        //glUniform1f(glGetUniformLocation(shaderProgram, "material.specular"), 0.1f);
     
-        //CubeMVPuniforms
-        UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix[0]);
-        //UniformMat4v(shaderProgram, "model", model[0]);
-        UniformMat4v(shaderProgram, "view", view[0]);
-        UniformMat4v(shaderProgram, "projection", projection[0]);
+        ////CubeMVPuniforms
+        //UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix[0]);
+        ////UniformMat4v(shaderProgram, "model", model[0]);
+        //UniformMat4v(shaderProgram, "view", view[0]);
+        //UniformMat4v(shaderProgram, "projection", projection[0]);
 
         //glBindVertexArray(VAO);
         //glDrawElements(GL_TRIANGLES, dataIndCount, GL_UNSIGNED_INT, 0);
-        RenderStatic(rc, shaderProgram);
+        RenderStatic(sc, cbc.width, cbc.height);
+
+        //Cube Map
+        mat4 viewCubeMap = GLM_MAT4_IDENTITY_INIT;
+        mat3 view3 = GLM_MAT3_IDENTITY_INIT;
+        glm_mat4_pick3(view, view3);
+        glm_mat4_ins3(view3, viewCubeMap);
 
         glUseProgram(cubeMapShader);
 
@@ -337,11 +356,11 @@ int main () {
         glfwPollEvents();
     }
 
-    DeleteStaticRender(rc, sp);
+    DeleteStaticRender(sc->rc, sc->sp);
 
     glDeleteProgram(shaderProgram);
     
-    free(cd);
+    free(sc->cd);
 
     glfwTerminate();
     return 0;

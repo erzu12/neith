@@ -1,5 +1,6 @@
 #pragma once
 
+#include "material.h"
 #include "cglm/cglm.h"
 
 #include <stdlib.h>
@@ -27,7 +28,8 @@ int AddStaticPrimitive(struct StaticPrimitives *sp,
                        int vertOffset,
                        int vertCount,
                        int indOffset,
-                       int indCount)
+                       int indCount,
+                       int material)
 {
     int primitive = sp->primitivesCount;
     sp->primitivesCount = primitive + 1;
@@ -37,6 +39,7 @@ int AddStaticPrimitive(struct StaticPrimitives *sp,
     sp->indOffsets[primitive] = indOffset;
     sp->vertCounts[primitive] = vertCount;
     sp->indCounts[primitive] = indCount;
+    sp->materials[primitive] = material;
 
     return primitive;
 }
@@ -47,6 +50,7 @@ int AddStaticMesh(struct StaticPrimitives *primitives,
                   int vertCounts[],
                   int indOffsets[],
                   int indCounts[],
+                  int materials[],
                   int primitivesCount)
 {
     int mesh = primitives->meshCount;
@@ -56,7 +60,8 @@ int AddStaticMesh(struct StaticPrimitives *primitives,
     primitives->meshes[mesh * 2 + 1] = primitives->primitivesCount + primitivesCount;
 
     for(int i = 0; i < primitivesCount; i++) {
-        AddStaticPrimitive(primitives, modelMat, vertOffsets[i], vertCounts[i], indOffsets[i], indCounts[i]);
+        AddStaticPrimitive(primitives, modelMat, vertOffsets[i], vertCounts[i], indOffsets[i],
+                           indCounts[i], materials[i]);
     }
     return mesh;
 }

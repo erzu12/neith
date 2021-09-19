@@ -5,8 +5,8 @@ struct Material {
     sampler2D diffuse;
     sampler2D roughness;
     sampler2D normal;
-    float specular;
-    float metallic;
+    sampler2D specular;
+    sampler2D metallic;
 };
 
 struct Light {
@@ -29,7 +29,7 @@ uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
 uniform sampler2D shadowMap;
-uniform samplerCube cubeMap;
+//uniform samplerCube cubeMap;
 
 const float PI = 3.14159265359;
 
@@ -96,6 +96,9 @@ void main()
     vec3 diffuse = texture(material.diffuse, fs_in.TexCoord).rgb;
     float roughness = texture(material.roughness, fs_in.TexCoord).r;
     vec3 N = texture(material.normal, fs_in.TexCoord).rgb;
+    float specular = texture(material.specular, fs_in.TexCoord).r;
+    float metallic = texture(material.metallic, fs_in.TexCoord).r;
+
     N = normalize(N * 2.0 - 1.0);
     N.z += 3.0;
     N = normalize(N);
@@ -108,8 +111,8 @@ void main()
     vec3 H = normalize(V + L);
     vec3 radiance = light.color;
 
-    vec3 FO = vec3(material.specular * 0.08);
-    FO = mix(FO, diffuse, material.metallic);
+    vec3 FO = vec3(specular * 0.08);
+    FO = mix(FO, diffuse, metallic);
     vec3 F = fresnelSchlick(max(dot(H, V), 0.0), FO);
 
     float NDF = DistributionGGX(N, H, roughness);
@@ -122,7 +125,7 @@ void main()
     vec3 kS = F;
     vec3 kD = vec3(1.0) - kS;
 
-    kD *= 1.0 - material.metallic;
+    kD *= 1.0 - metallic;
 
     float NdotL = max(dot(N, L), 0.0);
     Lo += (kD * diffuse / PI + spec) * radiance * NdotL;

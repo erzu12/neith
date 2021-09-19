@@ -1,45 +1,28 @@
 #pragma once
 
+#include "dataStructures.h"
 #include "mesh.h"
+#include "scene.h"
 #include "cgltf.h"
 #include <stdio.h>
 #include <string.h>
 
-void** Alloc2DArr(int x, int y, int typeSize) {
-    void **arr = malloc(x * sizeof(void*));
-    char* arr2 = malloc((size_t)(y * x * typeSize));
-    if (arr == NULL || arr2 == NULL) {
-        printf("2Darray alloc error");
-        exit(EXIT_FAILURE);
+int ReadMaterial(struct Materials *mat, char *materialName){
+    int matCount = mat->materialCount;
+    for(int i = 0; i < matCount; i++) {
+        if(strcmp(materialName, mat->names[i]) == 0) {
+            return i;
+        }
     }
-    for (int i = 0; i < x; i++) {
-        arr[i] = arr2 + (i * y) * typeSize;
-    }
-    return arr;
+    strncpy(mat->names[matCount], materialName, 128);
+    mat->materialCount++;
+    return matCount;
 }
 
-void Del2DArr(void **arr) {
-    free(arr[0]);
-    free(arr);
-}
-
-mat4 *GetTransforms(int meshCount, cgltf_data *gltfData) {
-    mat4 *modelMats = malloc(meshCount * sizeof(mat4));
-    if (modelMats == NULL) {
-        printf("modelMats alloc error");
-        exit(EXIT_FAILURE);
-    }
-    for(int i = 0; i < meshCount; i++) {
-        
-    }
-    return modelMats; 
-}
-
-
-struct StaticPrimitives* LoadModels(const char* paths[], int modelCount) {
+void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
     const int VERT_SIZE = 12;
+    struct StaticPrimitives *sp = sc->sp;
 
-    struct StaticPrimitives* sp = InitStaticPrimitives(modelCount * 100);
     char **binPaths = (char**)Alloc2DArr(modelCount, 100, sizeof(char));
     int **vertDataOffsets = (int**)Alloc2DArr(modelCount, 100, sizeof(int));
     int **indDataOffsets = (int**)Alloc2DArr(modelCount, 100, sizeof(int));
@@ -79,13 +62,20 @@ struct StaticPrimitives* LoadModels(const char* paths[], int modelCount) {
             if(gltfData->nodes[j].mesh == NULL)
                 continue;
 
-            int primitivesCount = gltfData->meshes[j].primitives_count;
+            int primitivesCount = gltfData->meshes[mesh].primitives_count;
 
             mat4 modelMat = GLM_MAT4_IDENTITY_INIT;
             if(gltfData->nodes[j].has_translation)
                 glm_translate(modelMat, gltfData->nodes[j].translation);
-            if(gltfData->nodes[j].has_rotation)
-                //glm_quat_rotate(modelMat, gltfData->nodes[j].rotation, modelMat);
+
+            if(gltfData->nodes[j].has_rotation) {
+                versor rotation = GLM_QUAT_IDENTITY_INIT;
+                glm_quat_init(rotation, gltfData->nodes[j].rotation[0],
+                                        gltfData->nodes[j].rotation[1],
+                                        gltfData->nodes[j].rotation[2],
+                                        gltfData->nodes[j].rotation[3]);
+                glm_quat_rotate(modelMat, rotation, modelMat);
+            }
             if(gltfData->nodes[j].has_scale)
                 glm_scale(modelMat, gltfData->nodes[j].scale);
 
@@ -93,6 +83,7 @@ struct StaticPrimitives* LoadModels(const char* paths[], int modelCount) {
             int indOffsets[100];
             int indCounts[100];
             int vertCounts[100];
+            int materials[100];
 
             for(int k = 0; k < primitivesCount; k++) {
                 if(strcmp(gltfData->meshes[mesh].primitives[k].attributes[0].name, "POSITION") != 0)
@@ -127,9 +118,15 @@ struct StaticPrimitives* LoadModels(const char* paths[], int modelCount) {
                 }
                 currentVertOffset += vertDataSizes[i][curretPrimitive];
                 currentIndOffset += indDataSizes[i][curretPrimitive] * 2;
+                if(gltfData->meshes[mesh].primitives[k].material != NULL) {
+                    materials[k] = ReadMaterial(sc->mat, gltfData->meshes[mesh].primitives[k].material->name);
+                } else {
+                    materials[k] = 0;
+                }
                 curretPrimitive++;
             }
-            AddStaticMesh(sp, modelMat, vertOffsets, vertCounts, indOffsets, indCounts, primitivesCount);
+            AddStaticMesh(sp, modelMat, vertOffsets, vertCounts, indOffsets, indCounts,
+                          materials, primitivesCount);
             mesh++;
         }
         dataSizes[i] = gltfData->buffers->size;
@@ -209,6 +206,6 @@ struct StaticPrimitives* LoadModels(const char* paths[], int modelCount) {
     Del2DArr((void**)indDataSizes);
     free(primitivesCounts);
     
-    return sp;
+    sc->sp = sp;
 }
 

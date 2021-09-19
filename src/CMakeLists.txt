@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16.2)
 
 add_executable("${PROJECT_NAME}"
 	"main.c"
+    "scene.h"
     "staticrenderer.h"
 	"camera.h"
 	"shaders.h"
@@ -10,6 +11,8 @@ add_executable("${PROJECT_NAME}"
     "mesh.h"
     "meshloader.h"
 	"time.h"
+    "material.h"
+    "dataStructures.h"
 	"stb_image.h"
 	"cgltf.h"
 )

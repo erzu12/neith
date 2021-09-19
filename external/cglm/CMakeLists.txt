@@ -33,7 +33,7 @@ if(MSVC)
     string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag_var} "${${flag_var}}")
   endforeach(flag_var)
 else()
-  add_compile_options(-Wall -Werror -O3)
+#    add_compile_options(-Wall -Werror -O3)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
