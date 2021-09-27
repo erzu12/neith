@@ -14,7 +14,12 @@ struct RenderContext {
     mat4 lightSpaceMatrix;
     unsigned int *VAOs;
     int *indCounts;
-    int *indOffsets;
+    int **indices;
+};
+
+void DeleteStaticRender(struct RenderContext *rc) {
+    free(rc->VAOs);
+    free(rc);
 };
 
 struct Scene {
@@ -32,4 +37,11 @@ struct Scene *InitScene(int maxPrimitives) {
     scene->mat = InitMaterials(maxPrimitives);
     scene->cd = CameraInit();
     return scene;
+}
+
+void DeleteScene(struct Scene *sc) {
+    DeleteMaterials(sc->mat);
+    DeleteStaticRender(sc->rc);
+    DeleteStaticPrimitives(sc->sp);
+    free(sc->cd); 
 }

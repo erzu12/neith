@@ -88,7 +88,7 @@ int main () {
     };  
     
     const char *modelPaths[] = {
-        ASSET_DIR "test/TestScene/TestScene2.gltf"
+        ASSET_DIR "test/testScene.gltf"
     };
 
 
@@ -356,11 +356,9 @@ int main () {
         glfwPollEvents();
     }
 
-    DeleteStaticRender(sc->rc, sc->sp);
-
     glDeleteProgram(shaderProgram);
     
-    free(sc->cd);
+    DeleteScene(sc);
 
     glfwTerminate();
     return 0;
