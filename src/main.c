@@ -19,8 +19,8 @@
 #include <cglm/mat4.h>
 #include <cglm/affine.h>
 
-#define ASSET_DIR "/media/ssd2/dev/neith/assets/"
-//#define ASSET_DIR "E:/dev/neith/assets/"
+//#define ASSET_DIR "/media/ssd2/dev/neith/assets/"
+#define ASSET_DIR "E:/dev/neith/assets/"
 
 unsigned int CreatDepthMapFrameBuffer(unsigned int *depthMap);
 unsigned int CreatIntermediateFrameBuffer(int width, int height, unsigned int *screenTexture);
