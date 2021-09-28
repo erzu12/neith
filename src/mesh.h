@@ -13,11 +13,9 @@ struct StaticPrimitives {
     mat4 *modelMats;
     int vertSize;
     int indSize;
-    float *vertData;
-    int *indData;
+    float **vertices;
+    int **indices;
     int *meshes;
-    int *vertOffsets;
-    int *indOffsets;
     int *vertCounts;
     int *indCounts;
     int *materials;
@@ -25,18 +23,21 @@ struct StaticPrimitives {
 
 int AddStaticPrimitive(struct StaticPrimitives *sp,
                        mat4 modelMat,
-                       int vertOffset,
+                       float *vertices,
                        int vertCount,
-                       int indOffset,
+                       int *indices,
                        int indCount,
                        int material)
 {
+    //int primitive = sp->meshes[mesh * 3] + sp->meshes[mesh * 3 + 1];
+    //if(primitive >= sp->meshes[mesh * 3 + 2]) 
+    //    return 0;
     int primitive = sp->primitivesCount;
-    sp->primitivesCount = primitive + 1;
+    sp->primitivesCount++;
 
     glm_mat4_copy(modelMat, sp->modelMats[primitive]);
-    sp->vertOffsets[primitive] = vertOffset;
-    sp->indOffsets[primitive] = indOffset;
+    sp->vertices[primitive] = vertices;
+    sp->indices[primitive] = indices;
     sp->vertCounts[primitive] = vertCount;
     sp->indCounts[primitive] = indCount;
     sp->materials[primitive] = material;
@@ -44,37 +45,29 @@ int AddStaticPrimitive(struct StaticPrimitives *sp,
     return primitive;
 }
 
-int AddStaticMesh(struct StaticPrimitives *primitives,
-                  mat4 modelMat,
-                  int vertOffsets[],
-                  int vertCounts[],
-                  int indOffsets[],
-                  int indCounts[],
-                  int materials[],
-                  int primitivesCount)
-{
-    int mesh = primitives->meshCount;
-    primitives->meshCount++;
+int AddStaticMesh(struct StaticPrimitives *sp, int primitivesCount) {
+    int mesh = sp->meshCount;
+    sp->meshCount++;
 
-    primitives->meshes[mesh * 2] = primitives->primitivesCount;
-    primitives->meshes[mesh * 2 + 1] = primitives->primitivesCount + primitivesCount;
+    int primitive = sp->primitivesCount;
+    sp->primitivesCount = primitive + primitivesCount;
 
-    for(int i = 0; i < primitivesCount; i++) {
-        AddStaticPrimitive(primitives, modelMat, vertOffsets[i], vertCounts[i], indOffsets[i],
-                           indCounts[i], materials[i]);
-    }
+    sp->meshes[mesh * 3] = sp->primitivesCount;
+    sp->meshes[mesh * 3 + 1] = 0;
+    sp->meshes[mesh * 3 + 2] = sp->primitivesCount + primitivesCount;
+
     return mesh;
 }
 
 struct StaticPrimitives *InitStaticPrimitives(int maxPrimitives) {
     struct StaticPrimitives *sp = (struct StaticPrimitives*)malloc(sizeof(struct StaticPrimitives));
     sp->modelMats = malloc(sizeof(mat4) * maxPrimitives);
-    sp->meshes = (int *)malloc(sizeof(int) * maxPrimitives * 2);
-    sp->vertOffsets = (int *)malloc(sizeof(int) * maxPrimitives);
-    sp->indOffsets = (int *)malloc(sizeof(int) * maxPrimitives);
-    sp->vertCounts = (int *)malloc(sizeof(int) * maxPrimitives);
-    sp->indCounts = (int *)malloc(sizeof(int) * maxPrimitives);
-    sp->materials = (int *)malloc(sizeof(int) * maxPrimitives);
+    sp->meshes = malloc(sizeof(int) * maxPrimitives * 3);
+    sp->vertices = calloc(sizeof(float *), maxPrimitives);
+    sp->indices= calloc(sizeof(int *), maxPrimitives);
+    sp->vertCounts = malloc(sizeof(int) * maxPrimitives);
+    sp->indCounts = malloc(sizeof(int) * maxPrimitives);
+    sp->materials = malloc(sizeof(int) * maxPrimitives);
 
     sp->primitivesCount = 0;
     sp->meshCount = 0;
@@ -87,8 +80,8 @@ struct StaticPrimitives *InitStaticPrimitives(int maxPrimitives) {
 void DeleteStaticPrimitives(struct StaticPrimitives *sp) {
     free(sp->modelMats);
     free(sp->meshes);
-    free(sp->vertOffsets);
-    free(sp->indOffsets);
+    free(sp->vertices);
+    free(sp->indices);
     free(sp->vertCounts);
     free(sp->indCounts);
     free(sp->materials);

@@ -146,7 +146,7 @@ elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
         CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
 
-    target_compile_options(glfw PRIVATE "-Wall")
+    #    target_compile_options(glfw PRIVATE "-Wall")
 endif()
 
 if (_GLFW_WIN32)
