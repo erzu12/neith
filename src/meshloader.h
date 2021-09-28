@@ -340,8 +340,10 @@ char *LoadBinFile(int dataLength, char *binPath) {
         
         pFile = fopen(binPath, "rb");
 
-        if(!pFile)
+        if(!pFile) {
             printf("faild to Load binary file: %s\n", binPath);
+            exit(EXIT_FAILURE);
+        }
         
         char *sceneData = malloc(dataLength);
         if(sceneData == NULL) {
@@ -367,7 +369,7 @@ float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount) {
     int posOffset = primitive.attributes[0].data->buffer_view->offset;
     int normalOffset = primitive.attributes[1].data->buffer_view->offset;
     int tangentOffset = primitive.attributes[2].data->buffer_view->offset;
-    int texCoordOffset = primitive.attributes[2].data->buffer_view->offset;
+    int texCoordOffset = primitive.attributes[3].data->buffer_view->offset;
 
     for(int i = 0; i < vertCount; i++) {
         vertices[i * 12] = vertData[posOffset / sizeof(float) + i * 3];

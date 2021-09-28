@@ -88,7 +88,7 @@ int main () {
     };  
     
     const char *modelPaths[] = {
-        ASSET_DIR "test/testScene.gltf"
+        ASSET_DIR "models/Intergalactic1.gltf"
     };
 
 
