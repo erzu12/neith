@@ -142,7 +142,7 @@ int main () {
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
 
-    struct Scene *sc = InitScene(100);
+    struct Scene *sc = InitScene(1000);
     cbc.cd = sc->cd;
     LoadModels(sc, modelPaths, 1);
     InitStaticRender(sc);
