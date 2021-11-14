@@ -3,7 +3,7 @@
 #include "dataStructures.h"
 #include "mesh.h"
 #include "scene.h"
-#include "cgltf.h"
+#include <cgltf.h>
 #include <stdio.h>
 #include <string.h>
 

@@ -51,13 +51,18 @@ int SetTextureByName(struct Materials *mat, char *materialName, int texture, cha
     return 0;
 }
 
-void SetValueByNameF(struct Materials *mat, char *materialName, float value, char *bindingName) {
+void SetValueByNameF(struct Materials *mat, char *materialName, char *bindingName, float value) {
     unsigned int texture = CreatValueTextureF(value);
     SetTextureByName(mat, materialName, texture, bindingName);
 }
 
-void SetValueByNameV3v(struct Materials *mat, char *materialName, float *value, char *bindingName) {
+void SetValueByNameV3(struct Materials *mat, char *materialName, char *bindingName, float *value) {
     unsigned int texture = CreatValueTextureV3(value);
+    SetTextureByName(mat, materialName, texture, bindingName);
+}
+
+void SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z) {
+    unsigned int texture = CreatValueTextureV3v(x, y, z);
     SetTextureByName(mat, materialName, texture, bindingName);
 }
 

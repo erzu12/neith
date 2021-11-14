@@ -4,84 +4,114 @@
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <cglm/cglm.h>
+#include "vecmath.h"
 
 struct CameraData {
 	float yaw, pitch;
-	vec3 camerFront;
-	vec3 cameraPos;
-	vec3 moveVec;
+	Float3 camerFront;
+	Float3 cameraPos;
+	Float3 moveVec;
 };
 
-struct CameraData *CameraInit() {
+
+struct CameraData *CameraInit() { 
 	struct CameraData *cd = (struct CameraData *)malloc(sizeof(struct CameraData));
 
-	cd->pitch = 0.0f;
-	cd->yaw = -90.0f;
+    cd->pitch = 0.0f;
+    cd->yaw = -PI * 0.5f;
 
-	glm_vec3_zero(cd->camerFront);
-	cd->camerFront[2] = -1.0f;
-	glm_vec3_zero(cd->cameraPos);
-	cd->cameraPos[2] = 3.0f;
-	glm_vec3_zero(cd->moveVec);
+    cd->camerFront = F3Zero();
+
+	cd->camerFront.z = -1.0f;
+	cd->cameraPos = F3Zero();
+	cd->cameraPos.z = 3.0f;
+    cd->moveVec = F3Zero();
 
 	return cd;
 }
 
 void CameraGetViewMat(struct CameraData *cd, vec4 *dest) {
-	vec3 cameraUp = {0.0f, 1.0f, 0.0f};
+
+    //TODO: make seperat function for pos update
+    Float3 cameraUp = {0.0f, 1.0f, 0.0f};
 
 	const float speed = 2.5f * DeltaTime();
-	vec3 moveForward = GLM_VEC3_ZERO_INIT;
-	glm_vec3_scale(cd->camerFront, cd->moveVec[2] * speed, moveForward);
-	glm_vec3_add(cd->cameraPos, moveForward, cd->cameraPos);
 
-	vec3 moveRight = GLM_VEC3_ZERO_INIT;
-	vec3 cameraRight = GLM_VEC3_ZERO_INIT;
-	glm_vec3_cross(cd->camerFront, cameraUp, cameraRight);
-	glm_normalize(cameraRight);
-	glm_vec3_scale(cameraRight, cd->moveVec[0] * speed, moveRight);
-	glm_vec3_add(cd->cameraPos, moveRight, cd->cameraPos);
+    cd->cameraPos = F3Add(cd->cameraPos, F3Scale(cd->camerFront, cd->moveVec.z * speed));
+    Float3 cameraRight = F3Noramlize(F3Cross(cd->camerFront, cameraUp));
+    cd->cameraPos = F3Add(cd->cameraPos, F3Scale(cameraRight, cd->moveVec.x * speed));
+    
+    cd->cameraPos = F3Add(cd->cameraPos, F3Init(0.0f, cd->moveVec.y * speed, 0.0f));
+    F3Print(cd->cameraPos);
+    F3Print(cd->camerFront);
+    F3Print(cameraUp);
+    
+    printf("\n{");
+    for(int i = 0; i < 4; i++) {
+        printf("%f, %f, %f, %f\n", dest[i][0], dest[i][1], dest[i][2], dest[i][3]);
+    }
+    printf("}\n");
+       
+    Look(cd->cameraPos, cd->camerFront, cameraUp, dest); 
+    
+    //vec3 cameraUp = {0.0f, 1.0f, 0.0f};
 
-	glm_vec3_add(cd->cameraPos, (vec3){0, cd->moveVec[1] * speed, 0} , cd->cameraPos);
-	glm_look(cd->cameraPos, cd->camerFront, cameraUp, dest);
+    //const float speed = 2.5f * DeltaTime();
+    //vec3 moveForward = GLM_VEC3_ZERO_INIT;
+    //glm_vec3_scale(cd->camerFront, cd->moveVec[2] * speed, moveForward);
+    //glm_vec3_add(cd->cameraPos, moveForward, cd->cameraPos);
+
+    //vec3 moveRight = GLM_VEC3_ZERO_INIT;
+    //vec3 cameraRight = GLM_VEC3_ZERO_INIT;
+    //glm_vec3_cross(cd->camerFront, cameraUp, cameraRight);
+    //glm_normalize(cameraRight);
+    //glm_vec3_scale(cameraRight, cd->moveVec[0] * speed, moveRight);
+    //glm_vec3_add(cd->cameraPos, moveRight, cd->cameraPos);
+
+    //glm_vec3_add(cd->cameraPos, (vec3){0, cd->moveVec[1] * speed, 0} , cd->cameraPos);
+    //vec3 cameraPos;
+    //F3ToArr(cd->cameraPos, cameraPos);
+    //vec3 camerFront;
+    //F3ToArr(cd->camerFront, camerFront);
+    //glm_look(cameraPos, camerFront, (vec3){0.0f, 1.0f, 0.0f}, dest);
+    
 }
 
 void CameraMouseInput(struct CameraData *cd ,float offestX, float offestY) {
-	const float sens = 0.06f;
+	const float sens = 0.001f;
 	offestX *= sens;
 	offestY *= sens;
 
 	cd->yaw += offestX;
 	cd->pitch -= offestY;
 
-	if(cd->pitch > 89.0f)
-		cd->pitch = 89.0f;
-	if(cd->pitch < -89.0f)
-		cd->pitch = -89.0f;
+	if(cd->pitch > PI * 0.4f)
+		cd->pitch = PI * 0.4f;
+	if(cd->pitch < -PI * 0.4f)
+		cd->pitch = -PI * 0.4f;
 	
-	vec3 dir = GLM_VEC3_ZERO_INIT;
-	dir[0] = cos(glm_rad(cd->yaw)) * cos(glm_rad(cd->pitch));
-	dir[1] = sin(glm_rad(cd->pitch));
-	dir[2] = sin(glm_rad(cd->yaw)) * cos(glm_rad(cd->pitch));
-	glm_normalize(dir);
-	glm_vec3_copy(dir, cd->camerFront);
-
+	Float3 dir = F3Zero();
+	dir.x = cos(cd->yaw) * cos(cd->pitch);
+	dir.y = sin(cd->pitch);
+	dir.z = sin(cd->yaw) * cos(cd->pitch);
+	dir = F3Noramlize(dir);
+    cd->camerFront = dir;
 }
 
 void CameraKeyInput(struct CameraData *cd, GLFWwindow *window) {
-	glm_vec3_zero(cd->moveVec);
+    cd->moveVec = F3Zero();
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cd->moveVec[2] += 1.0f;
+		cd->moveVec.z += 1.0f;
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cd->moveVec[2] += -1.0f;
+		cd->moveVec.z += -1.0f;
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cd->moveVec[0] += 1.0f;
+		cd->moveVec.x += 1.0f;
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cd->moveVec[0] += -1.0f;
+		cd->moveVec.x += -1.0f;
 	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		cd->moveVec[1] += 1.0f;
+		cd->moveVec.y += 1.0f;
 	if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		cd->moveVec[1] += -1.0f;
-	glm_vec3_norm(cd->moveVec);
+		cd->moveVec.y += -1.0f;
+	cd->moveVec = F3Noramlize(cd->moveVec);
 }
 
