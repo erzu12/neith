@@ -41,7 +41,7 @@ unsigned int CreatValueTextureV3(float* value) {
 }
 
 unsigned int CreatValueTextureV3v(float red, float green, float blue) {
-    float *value;
+    float value[3];
     value[0] = red;
     value[1] = green;
     value[2] = blue;

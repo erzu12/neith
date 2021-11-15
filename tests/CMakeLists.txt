@@ -1,15 +1,10 @@
 cmake_minimum_required(VERSION 3.16.2)
 
-project(neith)
+project(neithTest)
 
 
 add_subdirectory(src)
-add_subdirectory(tests)
-
-add_subdirectory(external/glfw)
-add_subdirectory(external/glad)
-add_subdirectory(external/cglm)
-add_subdirectory(external/cgltf)
+add_subdirectory(cu)
 
 set_property(TARGET "${PROJECT_NAME}" PROPERTY C_STANDARD 11)
 

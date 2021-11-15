@@ -6,14 +6,14 @@
 #include "staticrenderer.h"
 #include "material.h"
 #include "scene.h"
+#include "collision.h"
+#include "vecmath.h"
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#define CGLTF_IMPLEMENTATION
-#include "cgltf.h"
 
 #include <cglm/cglm.h>
 #include <cglm/mat4.h>
@@ -40,6 +40,10 @@ struct CallbackContext {
 };
 
 int main () {
+    Float3 vec;
+    //SphereTriangleIntersction(vec, vec, vec, vec, 2.0f);
+    F3Print(vec);
+    //Float4x4 mat;
 
     //Mesh Data
     float skyboxVertices[] = {
@@ -88,7 +92,7 @@ int main () {
     };  
     
     const char *modelPaths[] = {
-        ASSET_DIR "models/Intergalactic1.gltf"
+        ASSET_DIR "test/shadowTest2.gltf"
     };
 
 
@@ -142,7 +146,7 @@ int main () {
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
 
-    struct Scene *sc = InitScene(100);
+    struct Scene *sc = InitScene(1000);
     cbc.cd = sc->cd;
     LoadModels(sc, modelPaths, 1);
     InitStaticRender(sc);
@@ -207,28 +211,14 @@ int main () {
     unsigned int depthMap;
     unsigned int depthMapFBO = CreatDepthMapFrameBuffer(&depthMap);
 
-    SetShaderByName(sc->rc->mat, "Material.002", shaderProgram);
+    SetShaderByName(sc->rc->mat, "Material", shaderProgram);
 
-    SetTextureByName(sc->rc->mat, "Material.002", texture1, "material.diffuse");
-    SetTextureByName(sc->rc->mat, "Material.002", texture2, "material.roughness");
-    SetTextureByName(sc->rc->mat, "Material.002", normalMap, "material.normal");
-    SetValueByNameF(sc->rc->mat, "Material.002", 0.01f, "material.specular");
-    SetValueByNameF(sc->rc->mat, "Material.002", 0.0f, "material.metallic");
-    SetTextureByName(sc->rc->mat, "Material.002", depthMap, "shadowMap");
-
-    SetShaderByName(sc->rc->mat, "Material.001", shaderProgram);
-
-    SetTextureByName(sc->rc->mat, "Material.001", texture1, "material.diffuse");
-    SetTextureByName(sc->rc->mat, "Material.001", texture2, "material.roughness");
-    SetTextureByName(sc->rc->mat, "Material.001", normalMap, "material.normal");
-    SetValueByNameF(sc->rc->mat, "Material.001", 0.1f, "material.specular");
-    SetValueByNameF(sc->rc->mat, "Material.001", 0.0f, "material.metallic");
-    SetTextureByName(sc->rc->mat, "Material.001", depthMap, "shadowMap");
-    //glUseProgram(shaderProgram);
-    //glUniform1i(glGetUniformLocation(shaderProgram, "material.diffuse"), 0);
-    //glUniform1i(glGetUniformLocation(shaderProgram, "material.roughness"), 1);
-    //glUniform1i(glGetUniformLocation(shaderProgram, "material.normal"), 2);
-    //glUniform1i(glGetUniformLocation(shaderProgram, "shadowMap"), 3);
+    SetValueByNameV3v(sc->rc->mat, "Material", "material.diffuse", 1.0f, 1.0f, 1.0f);
+    SetValueByNameF(sc->rc->mat, "Material", "material.roughness", 1.0f);
+    SetValueByNameV3v(sc->rc->mat, "Material", "material.normal", 0.5f, 0.5f, 0.0f);
+    SetValueByNameF(sc->rc->mat, "Material", "material.specular", 0.01f);
+    SetValueByNameF(sc->rc->mat, "Material", "material.metallic", 0.0f);
+    SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
 
     glUseProgram(cubeMapShader);
     glUniform1i(glGetUniformLocation(cubeMapShader, "skybox"), 0);
@@ -245,73 +235,23 @@ int main () {
         processInput(window);
         glEnable(GL_DEPTH_TEST);
 
-        //mat4 model = GLM_MAT4_IDENTITY_INIT;
-
-        //Shadow Map
-        //mat4 lightProjection;
-        //glm_ortho(-10.0, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f, lightProjection);
-
-        //mat4 lightView = GLM_MAT4_ZERO_INIT;
-        //glm_lookat((vec3){-1.6f, 4.0f, 1.6f}, (vec3){0.0f, 0.0f, 0.0f},
-        //       (vec3){0.0f, 1.0f, 0.0f}, lightView);
-
-        //mat4 lightSpaceMatrix;
-        //glm_mat4_mul(lightProjection, lightView, lightSpaceMatrix);
-
-        //glUseProgram(shadowMapShader);
-        //UniformMat4v(shadowMapShader, "lightSpaceMatrix", lightSpaceMatrix[0]);
-        ////UniformMat4v(shadowMapShader, "model", model[0]);
-        //glViewport(0, 0, 4096, 4096);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         //glClear(GL_DEPTH_BUFFER_BIT);
 
         //glCullFace(GL_FRONT);
-        //glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, dataIndCount, GL_UNSIGNED_INT, 0);
         RenderStaticShadows(sc, shadowMapShader);
         //glCullFace(GL_BACK);
 
         //Scene
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        //glViewport(0, 0, cbc.width, cbc.height);
-
-        //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, texture1);
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D, texture2);
-        //glActiveTexture(GL_TEXTURE2);
-        //glBindTexture(GL_TEXTURE_2D, normalMap);
-        //glActiveTexture(GL_TEXTURE3);
-        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-        //glActiveTexture(GL_TEXTURE4);
-        //glBindTexture(GL_TEXTURE_2D, depthMap);
-        //
         mat4 view = GLM_MAT4_IDENTITY_INIT;
         CameraGetViewMat(sc->cd, view);
-        //    
+
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         mat4 projection;
         glm_perspective(GLM_PI / 2.5f, (float)width / (float)height, 0.1f, 1000.0f, projection);
 
-        //glUseProgram(shaderProgram);
-        //UniformVec3v(shaderProgram, "viewPos", cd->cameraPos);
-        //UniformVec3(shaderProgram, "light.direction", 0.4, -1.0, -0.4);
-        //UniformVec3(shaderProgram, "light.color", 3.0f, 3.0f, 3.0f);
-        //glUniform1f(glGetUniformLocation(shaderProgram, "material.metallic"), 0.0f);
-        //glUniform1f(glGetUniformLocation(shaderProgram, "material.specular"), 0.1f);
-    
-        ////CubeMVPuniforms
-        //UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix[0]);
-        ////UniformMat4v(shaderProgram, "model", model[0]);
-        //UniformMat4v(shaderProgram, "view", view[0]);
-        //UniformMat4v(shaderProgram, "projection", projection[0]);
-
-        //glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, dataIndCount, GL_UNSIGNED_INT, 0);
         RenderStatic(sc, cbc.width, cbc.height);
 
         //Cube Map

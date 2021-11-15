@@ -136,46 +136,4 @@ void main()
     vec3 color = ambient + Lo * shadow;
     
     FragColor = vec4(color, 1.0);
-
-
-    //vec4 texColor = texture(material.diffuse, fs_in.TexCoord);
-    //if(texColor.a < 0.1)
-    //  discard;
-    //
-    ////float distance = length(light.position - fs_in.FragPos);
-    ////float attenuation = 1.0 / (1.0 + 0.09 * distance + 0.032 * distance * distance);
-    //
-    //float ambientStrength = 0.05;
-    //vec3 ambient = texColor.rgb * ambientStrength * light.color;
-    //
-    ////vec3 norm = normalize(fs_in.Normal);
-    //vec3 norm = texture(material.normal, fs_in.TexCoord).rgb;
-    //norm = normalize(norm * 2.0 - 1.0);
-    //norm.z += 5.0;
-    //norm = normalize(norm);
-    ////vec3 lightDir = normalize(light.position - fs_in.FragPos);
-    //vec3 lightDir = normalize(-fs_in.TangentLightDir);
-    //float diff = max(dot(norm, lightDir), 0.0);
-    //vec3 diffuse = diff * light.color * texColor.rgb;
-    //
-    //float specularStrength = 0.5;
-    //vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-    //vec3 reflectDir = reflect(-lightDir, norm);
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    //vec3 specular = spec * (-texture(material.specular, fs_in.TexCoord).r + 1) * light.color;
-    //
-    ////diffuse *= attenuation;
-    ////specular *= attenuation;
-    //
-    //float shadow = ShadowCalculation(fs_in.FragPosLightSpace, norm, lightDir);
-    //vec3 result = ambient + (diffuse + specular) * (1.0 - shadow);
-    ////FragColor = vec4(result, 1.0);
-    //
-    ////vec3 I = normalize(fs_in.FragPos - viewPos);
-    ////vec3 R = reflect(I, norm);
-    //
-    //FragColor = vec4(result, 1.0);
-    //
-    ////FragColor = mix(texture(texture1, fs_in.TexCoord), texture(texture2, fs_in.TexCoord),
-    ////clamp(texture(texture1, fs_in.TexCoord).x * -5 + 2, 0.0, 1.0));
 }

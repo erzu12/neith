@@ -1,11 +1,11 @@
 #pragma once
 
+#include <glad/glad.h>
 #include "material.h"
 #include "cglm/cglm.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <glad/glad.h>
 
 struct StaticPrimitives {
     int primitivesCount;

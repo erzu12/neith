@@ -66,7 +66,13 @@ void RenderStatic(struct Scene *sc, int width, int height) {
     
     mat4 view = GLM_MAT4_IDENTITY_INIT;
     CameraGetViewMat(cd, view);
-        
+    /*
+    printf("\n{");
+    for(int i = 0; i < 4; i++) {
+        printf("%f, %f, %f, %f\n", view[i][0], view[i][1], view[i][2], view[i][3]);
+    }
+    printf("}\n");
+    */   
     mat4 projection;
     glm_perspective(GLM_PI / 2.5f, (float)width / (float)height, 0.1f, 1000.0f, projection);
 
@@ -74,7 +80,9 @@ void RenderStatic(struct Scene *sc, int width, int height) {
     for(int i = 0; i < rc->primitivesCount; i++) {
         int material = rc->materials[i];
         glUseProgram(rc->mat->shaders[material]);
-        UniformVec3v(rc->mat->shaders[material], "viewPos", cd->cameraPos);
+        float cameraPos[3];
+        F3ToArr(cd->cameraPos, cameraPos);
+        UniformVec3v(rc->mat->shaders[material], "viewPos", cameraPos);
         UniformVec3(rc->mat->shaders[material], "light.direction", 0.4, -1.0, -0.4);
         UniformVec3(rc->mat->shaders[material], "light.color", 3.0f, 3.0f, 3.0f);
 
