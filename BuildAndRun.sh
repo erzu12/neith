@@ -7,5 +7,5 @@ make -C build
 
 printf "\n\n=============================================================================\n\n"
 
-mangohud --dlsym build/src/neith
-#./build/src/neith
+#mangohud --dlsym build/src/neith
+./build/testapp/src/testapp
