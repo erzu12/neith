@@ -3,11 +3,13 @@
 #include "mesh.h"
 #include "material.h"
 #include "camera.h"
+#include "window/window.h"
 
 #include <cglm/cglm.h>
 
 struct RenderContext {
     struct Materials *mat;
+    struct Window *window;
     int *materials;
     int primitivesCount;
     mat4 *modelMats;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shaders.h"
+#include "render/shaders.h"
 #include "dataStructures.h"
 #include "textures.h"
 #include <glad/glad.h>
