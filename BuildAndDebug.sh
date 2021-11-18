@@ -6,6 +6,5 @@ compdb -p build/ list > compile_commands.json
 make -C build
 
 printf "\n\n=============================================================================\n\n"
-
-gdb build/src/neith
+gdb build/testapp/src/testapp
 

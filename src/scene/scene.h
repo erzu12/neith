@@ -1,27 +1,28 @@
 #pragma once
 
-#include "mesh.h"
-#include "material.h"
-#include "camera.h"
-#include "window/window.h"
-
 #include <cglm/cglm.h>
 
 struct RenderContext {
     struct Materials *mat;
-    struct Window *window;
+    struct Window *win;
     int *materials;
     int primitivesCount;
     mat4 *modelMats;
     mat4 lightSpaceMatrix;
     unsigned int *VAOs;
+    unsigned int FBO;
+    unsigned int texColorBuffer;
+    unsigned int intermediateFBO;
+    unsigned int screenTexture;
+    unsigned int screenVAO;
+    unsigned int screenShader;
+    unsigned int depthMapFBO;
+    unsigned int shadowMapShader;
+    unsigned int cubeMap;
+    unsigned int cubeMapVAO;
+    unsigned int cubeMapShader;
     int *indCounts;
     int **indices;
-};
-
-void DeleteStaticRender(struct RenderContext *rc) {
-    free(rc->VAOs);
-    free(rc);
 };
 
 struct Scene {
@@ -33,17 +34,10 @@ struct Scene {
     vec3 lightDir;
 };
 
-struct Scene *InitScene(int maxPrimitives) {
-    struct Scene *scene = malloc(sizeof(struct Scene));
-    scene->sp = InitStaticPrimitives(maxPrimitives);
-    scene->mat = InitMaterials(maxPrimitives);
-    scene->cd = CameraInit();
-    return scene;
-}
+void DeleteStaticRender(struct RenderContext *rc);
 
-void DeleteScene(struct Scene *sc) {
-    DeleteMaterials(sc->mat);
-    DeleteStaticRender(sc->rc);
-    DeleteStaticPrimitives(sc->sp);
-    free(sc->cd); 
-}
+struct Scene;
+
+struct Scene *InitScene(int maxPrimitives);
+
+void DeleteScene(struct Scene *sc);

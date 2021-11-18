@@ -1,6 +1,8 @@
 #include "input.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "window.h"
+#include "scene/camera.h"
 
 void processInput(GLFWwindow *window) {
     struct CallbackContext *callbackContext = (struct CallbackContext *)glfwGetWindowUserPointer(window);
@@ -14,7 +16,7 @@ void processInput(GLFWwindow *window) {
 
 void mouse_callback(GLFWwindow *window, double posX, double posY){
     struct CallbackContext *cbc = (struct CallbackContext *)glfwGetWindowUserPointer(window);
-    
+
     if(cbc->firstMouse) {
         cbc->lastX = posX;
         cbc->lastY = posY;

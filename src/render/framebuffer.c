@@ -1,3 +1,5 @@
+#include "framebuffer.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdbool.h>
@@ -5,9 +7,9 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     struct CallbackContext *cbc = (struct CallbackContext *)glfwGetWindowUserPointer(window);
-    cbc->window->resize = true;
-    cbc->window->width = width;
-    cbc->window->height = height;
+    cbc->win->resize = true;
+    cbc->win->width = width;
+    cbc->win->height = height;
 
 }
 

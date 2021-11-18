@@ -3,10 +3,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
+#include "scene/scene.h"
 #include "vecmath.h"
 #include "input.h"
+#include "render/framebuffer.h"
 
 
 struct Window *CreateWindow() {
@@ -22,7 +24,7 @@ struct Window *CreateWindow() {
     if(window == NULL) {
         printf("faild to crate window\n");
         glfwTerminate();
-        exit( -1);
+        exit(-1);
     }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0);
@@ -35,25 +37,32 @@ struct Window *CreateWindow() {
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            return -1;
+            exit(-1);
         }    
-    struct Window win;
-    win.resize = false;
-    win.width = 1800;
-    win.height = 900; 
-    struct CallbackContext cbc;
-    cbc.lastX = 900;
-    cbc.lastY = 500;
-    cbc.firstMouse = true;
-    cbc.window = win;
+    struct Window *win = malloc(sizeof(struct Window));
+    win->resize = false;
+    win->width = 1800;
+    win->height = 900; 
+    win->window = window;
+    struct CallbackContext *cbc = malloc(sizeof(struct CallbackContext));
+    cbc->lastX = 900;
+    cbc->lastY = 500;
+    cbc->firstMouse = true;
+    cbc->win = win;
     glfwSetWindowUserPointer(window, &cbc);
 
     glfwSetCursorPosCallback(window, mouse_callback);
+
+    return win;
 }
 
-void UpdateWindow(GLFWwindow* window) {
-    
-    glfwSwapBuffers(window);
+void AttachSceneToWindow(struct Scene *sc, struct Window *win) {
+    struct CallbackContext *cbc = (struct CallbackContext *)glfwGetWindowUserPointer(win->window);
+    cbc->cd = sc->cd;
+}
+
+void UpdateWindow(struct Window *win) {
+    glfwSwapBuffers(win->window);
     glfwPollEvents();
 }
 
