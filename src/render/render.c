@@ -9,9 +9,10 @@
 #include "shaders.h"
 #include "textures.h"
 
-#define ASSET_DIR "/media/home/dev/neith/assets/"
+#define ASSET_DIR "/media/ssd2/dev/neith/assets/"
 
 void InitRender(struct Scene *sc, struct Window *window) {
+    InitStaticRender(sc, window);
 
     sc->rc->cubeMapShader = LoadAndCompileShaders(ASSET_DIR "cubeMap.vert", ASSET_DIR "cubeMap.frag");
     sc->rc->screenShader = LoadAndCompileShaders(ASSET_DIR "screen.vert", ASSET_DIR "screen.frag");
@@ -21,7 +22,6 @@ void InitRender(struct Scene *sc, struct Window *window) {
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
 
-    InitStaticRender(sc, window);
     sc->rc->win = window;
 
     float screenVertices[] = {
@@ -88,6 +88,7 @@ void UpdateRender(struct Scene *sc) {
         sc->rc->FBO= CreatFrameBuffer(sc->rc->win->width, sc->rc->win->height, &sc->rc->texColorBuffer);
         sc->rc->intermediateFBO = CreatIntermediateFrameBuffer(sc->rc->win->width, sc->rc->win->height, &sc->rc->screenTexture);
     }
+    glEnable(GL_DEPTH_TEST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, sc->rc->depthMapFBO);
     RenderStaticShadows(sc, sc->rc->shadowMapShader);
@@ -143,7 +144,6 @@ void UpdateRender(struct Scene *sc) {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glfwSwapBuffers(sc->rc->win->window);
-    glfwPollEvents();
 }
 
 

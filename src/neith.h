@@ -11,6 +11,8 @@
 
 struct Window* nth_CreateWindow();
 
+void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win);
+
 void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount);
 
 void nth_InitRender(struct Scene *sc, struct Window *win);

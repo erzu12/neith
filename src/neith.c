@@ -11,6 +11,10 @@ struct Window* nth_CreateWindow() {
     return CreateWindow();
 }
 
+void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win) {
+    AttachSceneToWindow(sc, win);
+}
+
 void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
     LoadModels(sc, paths, modelCount);
 }
