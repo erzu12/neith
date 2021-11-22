@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <glad/glad.h>
 
+#include "time.h"
 #include "scene/scene.h"
 #include "vecmath.h"
 #include "input.h"
@@ -49,7 +50,7 @@ struct Window *CreateWindow() {
     cbc->lastY = 500;
     cbc->firstMouse = true;
     cbc->win = win;
-    glfwSetWindowUserPointer(window, &cbc);
+    glfwSetWindowUserPointer(window, cbc);
 
     glfwSetCursorPosCallback(window, mouse_callback);
 
@@ -62,7 +63,8 @@ void AttachSceneToWindow(struct Scene *sc, struct Window *win) {
 }
 
 void UpdateWindow(struct Window *win) {
-    glfwSwapBuffers(win->window);
+    FrameTime();
+    processInput(win->window);
     glfwPollEvents();
 }
 

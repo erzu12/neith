@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <stdbool.h>
 #include <vecmath.h>
+#include "scene/scene.h"
 
 struct Window {
     bool resize;
@@ -18,4 +19,5 @@ struct CallbackContext {
     struct Window *win;
 };
 struct Window* CreateWindow();
+void AttachSceneToWindow(struct Scene *sc, struct Window *win);
 void UpdateWindow(struct Window* win);

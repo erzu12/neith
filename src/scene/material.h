@@ -1,6 +1,6 @@
 #pragma once
 
-#define ASSET_DIR "/media/home/dev/neith/assets/"
+#define ASSET_DIR "/media/ssd2/dev/neith/assets/"
 
 struct Materials {
     int materialCount;
