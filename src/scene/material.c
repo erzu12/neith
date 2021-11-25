@@ -1,12 +1,14 @@
 #include "material.h"
 
-#include "render/shaders.h"
-#include "dataStructures.h"
-#include "render/textures.h"
 #include <glad/glad.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "render/shaders.h"
+#include "dataStructures.h"
+#include "render/textures.h"
+#include "defaults.h"
 
 void SetShader(struct Materials *mat, int material, int shader) {
     mat->shaders[material] = shader;
@@ -65,7 +67,7 @@ struct Materials *InitMaterials(int materialCount) {
     mat->textures = (int**)Alloc2DArr(materialCount, 16, sizeof(int));
     mat->names = (char**)Alloc2DArr(materialCount, 128, sizeof(char));
 
-    unsigned int defaultShader = LoadAndCompileShaders(ASSET_DIR "default.vert", ASSET_DIR "default.frag");
+    unsigned int defaultShader = LoadAndCompileShaders(NTH_ASSET_DIR "default.vert", NTH_ASSET_DIR "default.frag");
     SetShader(mat, 0, defaultShader);
     for(int i = 0; i < materialCount; i++) {
         mat->shaders[i] = defaultShader;

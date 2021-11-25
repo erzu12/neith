@@ -19,7 +19,7 @@ unsigned int LoadCubeMap(const char *path[6]) {
 			stbi_image_free(data);
 		}
 		else {
-			printf("CubeMap: %s faild to load", path[i]);
+			printf("error: faild to load cubeMap file: %s\n", path[i]);
 			stbi_image_free(data);
 		}
 	}

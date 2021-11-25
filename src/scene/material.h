@@ -1,7 +1,5 @@
 #pragma once
 
-#define ASSET_DIR "/media/ssd2/dev/neith/assets/"
-
 struct Materials {
     int materialCount;
     int *shaders;

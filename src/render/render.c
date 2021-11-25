@@ -5,19 +5,19 @@
 #include "scene/skybox.h"
 #include "scene/scene.h"
 #include "scene/camera.h"
+#include "scene/material.h"
 #include "window/window.h"
 #include "shaders.h"
 #include "textures.h"
-
-#define ASSET_DIR "/media/ssd2/dev/neith/assets/"
+#include "defaults.h"
 
 void InitRender(struct Scene *sc, struct Window *window) {
     InitStaticRender(sc, window);
 
-    sc->rc->cubeMapShader = LoadAndCompileShaders(ASSET_DIR "cubeMap.vert", ASSET_DIR "cubeMap.frag");
-    sc->rc->screenShader = LoadAndCompileShaders(ASSET_DIR "screen.vert", ASSET_DIR "screen.frag");
-    sc->rc->shadowMapShader = LoadAndCompileShaders(ASSET_DIR "shadowMap.vert", 
-                                                         ASSET_DIR "shadowMap.frag"); 
+    sc->rc->cubeMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
+    sc->rc->screenShader = LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
+    sc->rc->shadowMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", 
+                                                         NTH_ASSET_DIR "shadowMap.frag"); 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
@@ -62,12 +62,12 @@ void InitRender(struct Scene *sc, struct Window *window) {
 
     //Textures
     const char *cubeMapPaths[] = {
-        ASSET_DIR "test/skybox/right.jpg",
-        ASSET_DIR "test/skybox/left.jpg",
-        ASSET_DIR "test/skybox/top.jpg",
-        ASSET_DIR "test/skybox/bottom.jpg",
-        ASSET_DIR "test/skybox/front.jpg",
-        ASSET_DIR "test/skybox/back.jpg",
+        NTH_ASSET_DIR "test/skybox/right.jpg",
+        NTH_ASSET_DIR "test/skybox/left.jpg",
+        NTH_ASSET_DIR "test/skybox/top.jpg",
+        NTH_ASSET_DIR "test/skybox/bottom.jpg",
+        NTH_ASSET_DIR "test/skybox/front.jpg",
+        NTH_ASSET_DIR "test/skybox/back.jpg",
     };
     sc->rc->cubeMap = LoadCubeMap(cubeMapPaths);
 
@@ -80,6 +80,8 @@ void InitRender(struct Scene *sc, struct Window *window) {
 
     glUseProgram(sc->rc->cubeMapShader);
     glUniform1i(glGetUniformLocation(sc->rc->cubeMapShader, "skybox"), 0);
+
+    //SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
 }
 
 void UpdateRender(struct Scene *sc) {

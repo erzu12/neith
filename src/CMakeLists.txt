@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16.2)
 add_library("${PROJECT_NAME}"
     "neith.h"
     "neith.c"
+    "defaults.h"
     "physics/collision.h"
     "physics/collision.c"
     "render/framebuffer.h"
