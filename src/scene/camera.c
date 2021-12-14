@@ -1,18 +1,11 @@
-#pragma once
+#include "camera.h"
+
 #include "time.h"
 
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <cglm/cglm.h>
 #include "vecmath.h"
-
-struct CameraData {
-	float yaw, pitch;
-	Float3 camerFront;
-	Float3 cameraPos;
-	Float3 moveVec;
-};
-
 
 struct CameraData *CameraInit() { 
 	struct CameraData *cd = (struct CameraData *)malloc(sizeof(struct CameraData));
@@ -25,6 +18,7 @@ struct CameraData *CameraInit() {
 	cd->camerFront.z = -1.0f;
 	cd->cameraPos = F3Zero();
 	cd->cameraPos.z = 3.0f;
+	cd->cameraPos.y = 3.0f;
     cd->moveVec = F3Zero();
 
 	return cd;
@@ -42,15 +36,15 @@ void CameraGetViewMat(struct CameraData *cd, vec4 *dest) {
     cd->cameraPos = F3Add(cd->cameraPos, F3Scale(cameraRight, cd->moveVec.x * speed));
     
     cd->cameraPos = F3Add(cd->cameraPos, F3Init(0.0f, cd->moveVec.y * speed, 0.0f));
-    F3Print(cd->cameraPos);
-    F3Print(cd->camerFront);
-    F3Print(cameraUp);
+    /*F3Print(cd->cameraPos);*/
+    /*F3Print(cd->camerFront);*/
+    /*F3Print(cameraUp);*/
     
-    printf("\n{");
-    for(int i = 0; i < 4; i++) {
-        printf("%f, %f, %f, %f\n", dest[i][0], dest[i][1], dest[i][2], dest[i][3]);
-    }
-    printf("}\n");
+    /*printf("\n{");*/
+    /*for(int i = 0; i < 4; i++) {*/
+        /*printf("%f, %f, %f, %f\n", dest[i][0], dest[i][1], dest[i][2], dest[i][3]);*/
+    /*}*/
+    /*printf("}\n");*/
        
     Look(cd->cameraPos, cd->camerFront, cameraUp, dest); 
     

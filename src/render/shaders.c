@@ -1,4 +1,4 @@
-#pragma once
+#include "shaders.h"
 
 #include <glad/glad.h>
 

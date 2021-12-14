@@ -1,4 +1,4 @@
-#pragma once
+#include "mesh.h"
 
 #include <glad/glad.h>
 #include "material.h"
@@ -6,20 +6,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
-struct StaticPrimitives {
-    int primitivesCount;
-    int meshCount;
-    mat4 *modelMats;
-    int vertSize;
-    int indSize;
-    float **vertices;
-    int **indices;
-    int *meshes;
-    int *vertCounts;
-    int *indCounts;
-    int *materials;
-};
 
 int AddStaticPrimitive(struct StaticPrimitives *sp,
                        mat4 modelMat,

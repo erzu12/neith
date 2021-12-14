@@ -1,34 +1,15 @@
-#pragma once
+#include "scene.h"
 
+#include <cglm/cglm.h>
 #include "mesh.h"
 #include "material.h"
 #include "camera.h"
+#include "window/window.h"
 
-#include <cglm/cglm.h>
-
-struct RenderContext {
-    struct Materials *mat;
-    int *materials;
-    int primitivesCount;
-    mat4 *modelMats;
-    mat4 lightSpaceMatrix;
-    unsigned int *VAOs;
-    int *indCounts;
-    int **indices;
-};
 
 void DeleteStaticRender(struct RenderContext *rc) {
     free(rc->VAOs);
     free(rc);
-};
-
-struct Scene {
-    struct StaticPrimitives *sp;
-    struct Materials *mat;
-    struct RenderContext *rc;
-    struct CameraData *cd;
-
-    vec3 lightDir;
 };
 
 struct Scene *InitScene(int maxPrimitives) {
