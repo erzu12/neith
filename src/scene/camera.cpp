@@ -2,40 +2,35 @@
 
 #include "time.h"
 
-#include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <cglm/cglm.h>
 #include "vecmath.h"
 
-struct CameraData *CameraInit() { 
-	struct CameraData *cd = (struct CameraData *)malloc(sizeof(struct CameraData));
+Camera::Camera() { 
+    pitch = 0.0f;
+    yaw = -PI * 0.5f;
 
-    cd->pitch = 0.0f;
-    cd->yaw = -PI * 0.5f;
+    camerFront = F3Zero();
 
-    cd->camerFront = F3Zero();
-
-	cd->camerFront.z = -1.0f;
-	cd->cameraPos = F3Zero();
-	cd->cameraPos.z = 3.0f;
-	cd->cameraPos.y = 3.0f;
-    cd->moveVec = F3Zero();
-
-	return cd;
+	camerFront.z = -1.0f;
+	cameraPos = F3Zero();
+	cameraPos.z = 3.0f;
+	cameraPos.y = 3.0f;
+    moveVec = F3Zero();
 }
 
-void CameraGetViewMat(struct CameraData *cd, vec4 *dest) {
+void Camera::CameraGetViewMat(vec4 *dest) {
 
     //TODO: make seperat function for pos update
     Float3 cameraUp = {0.0f, 1.0f, 0.0f};
 
-	const float speed = 2.5f * DeltaTime();
+	const float speed = 2.5f * Time::DeltaTime();
 
-    cd->cameraPos = F3Add(cd->cameraPos, F3Scale(cd->camerFront, cd->moveVec.z * speed));
-    Float3 cameraRight = F3Noramlize(F3Cross(cd->camerFront, cameraUp));
-    cd->cameraPos = F3Add(cd->cameraPos, F3Scale(cameraRight, cd->moveVec.x * speed));
+    cameraPos = F3Add(cameraPos, F3Scale(camerFront, moveVec.z * speed));
+    Float3 cameraRight = F3Noramlize(F3Cross(camerFront, cameraUp));
+    cameraPos = F3Add(cameraPos, F3Scale(cameraRight, moveVec.x * speed));
     
-    cd->cameraPos = F3Add(cd->cameraPos, F3Init(0.0f, cd->moveVec.y * speed, 0.0f));
+    cameraPos = F3Add(cameraPos, F3Init(0.0f, moveVec.y * speed, 0.0f));
     /*F3Print(cd->cameraPos);*/
     /*F3Print(cd->camerFront);*/
     /*F3Print(cameraUp);*/
@@ -46,7 +41,7 @@ void CameraGetViewMat(struct CameraData *cd, vec4 *dest) {
     /*}*/
     /*printf("}\n");*/
        
-    Look(cd->cameraPos, cd->camerFront, cameraUp, dest); 
+    Look(cameraPos, camerFront, cameraUp, dest); 
     
     //vec3 cameraUp = {0.0f, 1.0f, 0.0f};
 
@@ -71,41 +66,41 @@ void CameraGetViewMat(struct CameraData *cd, vec4 *dest) {
     
 }
 
-void CameraMouseInput(struct CameraData *cd ,float offestX, float offestY) {
+void Camera::CameraMouseInput(float offestX, float offestY) {
 	const float sens = 0.001f;
 	offestX *= sens;
 	offestY *= sens;
 
-	cd->yaw += offestX;
-	cd->pitch -= offestY;
+	yaw += offestX;
+	pitch -= offestY;
 
-	if(cd->pitch > PI * 0.4f)
-		cd->pitch = PI * 0.4f;
-	if(cd->pitch < -PI * 0.4f)
-		cd->pitch = -PI * 0.4f;
+	if(pitch > PI * 0.4f)
+		pitch = PI * 0.4f;
+	if(pitch < -PI * 0.4f)
+		pitch = -PI * 0.4f;
 	
 	Float3 dir = F3Zero();
-	dir.x = cos(cd->yaw) * cos(cd->pitch);
-	dir.y = sin(cd->pitch);
-	dir.z = sin(cd->yaw) * cos(cd->pitch);
+	dir.x = cos(yaw) * cos(pitch);
+	dir.y = sin(pitch);
+	dir.z = sin(yaw) * cos(pitch);
 	dir = F3Noramlize(dir);
-    cd->camerFront = dir;
+    camerFront = dir;
 }
 
-void CameraKeyInput(struct CameraData *cd, GLFWwindow *window) {
-    cd->moveVec = F3Zero();
+void Camera::CameraKeyInput(GLFWwindow *window) {
+    moveVec = F3Zero();
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cd->moveVec.z += 1.0f;
+		moveVec.z += 1.0f;
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cd->moveVec.z += -1.0f;
+		moveVec.z += -1.0f;
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cd->moveVec.x += 1.0f;
+		moveVec.x += 1.0f;
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cd->moveVec.x += -1.0f;
+		moveVec.x += -1.0f;
 	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		cd->moveVec.y += 1.0f;
+		moveVec.y += 1.0f;
 	if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		cd->moveVec.y += -1.0f;
-	cd->moveVec = F3Noramlize(cd->moveVec);
+		moveVec.y += -1.0f;
+	moveVec = F3Noramlize(moveVec);
 }
 

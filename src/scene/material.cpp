@@ -61,9 +61,9 @@ void SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingN
 
 struct Materials *InitMaterials(int materialCount) {
     materialCount++;
-    struct Materials *mat = malloc(sizeof(struct Materials));
-    mat->shaders = malloc(materialCount * sizeof(int));
-    mat->textureCounts = calloc(materialCount, sizeof(int));
+    struct Materials *mat = (struct Materials*)malloc(sizeof(struct Materials));
+    mat->shaders = (int*)malloc(materialCount * sizeof(int));
+    mat->textureCounts = (int*)calloc(materialCount, sizeof(int));
     mat->textures = (int**)Alloc2DArr(materialCount, 16, sizeof(int));
     mat->names = (char**)Alloc2DArr(materialCount, 128, sizeof(char));
 

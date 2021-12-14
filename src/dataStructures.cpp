@@ -4,9 +4,9 @@
 #include <stdlib.h>
 
 void** Alloc2DArr(int x, int y, int typeSize) {
-    void **arr = malloc(x * sizeof(void*));
+    void **arr = (void**)malloc(x * sizeof(void*));
     int allocSize = y * x * typeSize;
-    char* arr2 = malloc(allocSize);
+    char* arr2 = (char*)malloc(allocSize);
     if (arr == NULL || arr2 == NULL) {
         printf("2Darray alloc error");
         exit(EXIT_FAILURE);

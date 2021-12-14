@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cglm/cglm.h>
+#include "camera.h"
 
 struct RenderContext {
     struct Materials *mat;
@@ -29,7 +30,7 @@ struct Scene {
     struct StaticPrimitives *sp;
     struct Materials *mat;
     struct RenderContext *rc;
-    struct CameraData *cd;
+    Camera *cd;
 
     vec3 lightDir;
 };

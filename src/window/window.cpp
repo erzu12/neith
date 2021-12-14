@@ -40,12 +40,12 @@ struct Window *CreateWindow() {
         {
             exit(-1);
         }    
-    struct Window *win = malloc(sizeof(struct Window));
+    struct Window *win = (struct Window*)malloc(sizeof(struct Window));
     win->resize = false;
     win->width = 1800;
     win->height = 900; 
     win->window = window;
-    struct CallbackContext *cbc = malloc(sizeof(struct CallbackContext));
+    struct CallbackContext *cbc = (struct CallbackContext*)malloc(sizeof(struct CallbackContext));
     cbc->lastX = 900;
     cbc->lastY = 500;
     cbc->firstMouse = true;
@@ -63,7 +63,7 @@ void AttachSceneToWindow(struct Scene *sc, struct Window *win) {
 }
 
 void UpdateWindow(struct Window *win) {
-    FrameTime();
+    Time::FrameTime();
     processInput(win->window);
     glfwPollEvents();
 }

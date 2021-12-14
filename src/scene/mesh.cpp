@@ -47,13 +47,13 @@ int AddStaticMesh(struct StaticPrimitives *sp, int primitivesCount) {
 
 struct StaticPrimitives *InitStaticPrimitives(int maxPrimitives) {
     struct StaticPrimitives *sp = (struct StaticPrimitives*)malloc(sizeof(struct StaticPrimitives));
-    sp->modelMats = malloc(sizeof(mat4) * maxPrimitives);
-    sp->meshes = malloc(sizeof(int) * maxPrimitives * 3);
-    sp->vertices = calloc(sizeof(float *), maxPrimitives);
-    sp->indices= calloc(sizeof(int *), maxPrimitives);
-    sp->vertCounts = malloc(sizeof(int) * maxPrimitives);
-    sp->indCounts = malloc(sizeof(int) * maxPrimitives);
-    sp->materials = malloc(sizeof(int) * maxPrimitives);
+    sp->modelMats = (mat4*)malloc(sizeof(mat4) * maxPrimitives);
+    sp->meshes = (int*)malloc(sizeof(int) * maxPrimitives * 3);
+    sp->vertices = (float**)calloc(sizeof(float *), maxPrimitives);
+    sp->indices= (int**)calloc(sizeof(int *), maxPrimitives);
+    sp->vertCounts = (int*)malloc(sizeof(int) * maxPrimitives);
+    sp->indCounts = (int*)malloc(sizeof(int) * maxPrimitives);
+    sp->materials = (int*)malloc(sizeof(int) * maxPrimitives);
 
     sp->primitivesCount = 0;
     sp->meshCount = 0;

@@ -98,7 +98,7 @@ void UpdateRender(struct Scene *sc) {
     //Scene
     glBindFramebuffer(GL_FRAMEBUFFER, sc->rc->FBO);
     mat4 view = GLM_MAT4_IDENTITY_INIT;
-    CameraGetViewMat(sc->cd, view);
+    sc->cd->CameraGetViewMat(view);
 
     int width, height;
     glfwGetWindowSize(sc->rc->win->window, &width, &height);

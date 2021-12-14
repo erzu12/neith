@@ -12,8 +12,8 @@
 
 void InitStaticRender(struct Scene *sc, struct Window *window) {
     struct StaticPrimitives *sp = sc->sp;
-    struct RenderContext *rc = malloc(sizeof(struct RenderContext));
-    rc->VAOs = malloc(sp->primitivesCount * sizeof(int));
+    struct RenderContext *rc = (struct RenderContext*)malloc(sizeof(struct RenderContext));
+    rc->VAOs = (unsigned int*)malloc(sp->primitivesCount * sizeof(int));
 
     for(int i = 0; i < sp->primitivesCount; i++) {
         unsigned int VBO, EBO;
@@ -58,7 +58,7 @@ void InitStaticRender(struct Scene *sc, struct Window *window) {
 void RenderStatic(struct Scene *sc, int width, int height) {
     //Scene
     struct RenderContext *rc = sc->rc;
-    struct CameraData *cd = sc->cd;
+    Camera *cd = sc->cd;
     glViewport(0, 0, width, height);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -66,7 +66,7 @@ void RenderStatic(struct Scene *sc, int width, int height) {
 
     
     mat4 view = GLM_MAT4_IDENTITY_INIT;
-    CameraGetViewMat(cd, view);
+    cd->CameraGetViewMat(view);
     /*
     printf("\n{");
     for(int i = 0; i < 4; i++) {
@@ -110,8 +110,11 @@ void RenderStaticShadows(struct Scene *sc, int shaderProgram) {
     glm_ortho(-10.0, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f, lightProjection);
 
     mat4 lightView = GLM_MAT4_ZERO_INIT;
-    glm_lookat((vec3){-1.6f, 4.0f, 1.6f}, (vec3){0.0f, 0.0f, 0.0f},
-           (vec3){0.0f, 1.0f, 0.0f}, lightView);
+    vec3 test = {1.6f, 4.0f, 1.6f};
+    vec3 test1 = {0.0f, 0.0f, 0.0f};
+    vec3 test2 = {0.0f, 1.0f, 0.0f};
+    glm_lookat(test, test1,
+           test2, lightView);
 
     mat4 lightSpaceMatrix;
     glm_mat4_mul(lightProjection, lightView, lightSpaceMatrix);

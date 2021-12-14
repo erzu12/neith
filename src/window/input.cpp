@@ -11,7 +11,7 @@ void processInput(GLFWwindow *window) {
         //glfwSetWindowShouldClose(window, true);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
-    CameraKeyInput(callbackContext->cd, window);
+    callbackContext->cd->CameraKeyInput(window);
 }
 
 void mouse_callback(GLFWwindow *window, double posX, double posY){
@@ -28,5 +28,6 @@ void mouse_callback(GLFWwindow *window, double posX, double posY){
     cbc->lastX = posX;
     cbc->lastY = posY;
 
-    CameraMouseInput(cbc->cd, offestX, offestY);
+    cbc->cd->CameraMouseInput(offestX, offestY);
+
 }

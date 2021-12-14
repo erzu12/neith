@@ -3,7 +3,6 @@
 #include <cglm/cglm.h>
 #include "mesh.h"
 #include "material.h"
-#include "camera.h"
 #include "window/window.h"
 
 
@@ -13,10 +12,10 @@ void DeleteStaticRender(struct RenderContext *rc) {
 };
 
 struct Scene *InitScene(int maxPrimitives) {
-    struct Scene *scene = malloc(sizeof(struct Scene));
+    struct Scene *scene = (struct Scene*)malloc(sizeof(struct Scene));
     scene->sp = InitStaticPrimitives(maxPrimitives);
     scene->mat = InitMaterials(maxPrimitives);
-    scene->cd = CameraInit();
+    scene->cd = new Camera();
     return scene;
 }
 

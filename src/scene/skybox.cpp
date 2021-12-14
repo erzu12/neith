@@ -77,7 +77,7 @@ float *GetSkyboxVertices() {
          1.0f, -1.0f,  1.0f
     };  
     //this seems stupid
-    float *skyboxVertices = malloc(sizeof(tempSkyboxVertices));
+    float *skyboxVertices = (float*)malloc(sizeof(tempSkyboxVertices));
     memcpy(skyboxVertices, tempSkyboxVertices, sizeof(tempSkyboxVertices));
     return skyboxVertices;
 }

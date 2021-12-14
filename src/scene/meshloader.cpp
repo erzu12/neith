@@ -14,7 +14,7 @@ void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
     struct StaticPrimitives *sp = sc->sp;
 
     for(int i = 0; i < modelCount; i++) {
-        cgltf_options options = {0};
+        cgltf_options options = {(cgltf_file_type)0};
         cgltf_data* gltfData = NULL;
         cgltf_result result = cgltf_parse_file(&options, paths[i], &gltfData);
         if (result != cgltf_result_success) {
@@ -68,7 +68,7 @@ void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
 }
 
 void PathToBinPath(const char *path, char* binPath, char* uri) {
-    char *lastSlash = strrchr(path, '/');
+    char *lastSlash = (char*)strrchr(path, '/');
     int dirPathLen = lastSlash - path + 1;
     
     strncpy(binPath, path, dirPathLen);
@@ -135,7 +135,7 @@ char *LoadBinFile(int dataLength, char *binPath) {
             exit(EXIT_FAILURE);
         }
         
-        char *sceneData = malloc(dataLength);
+        char *sceneData = (char*)malloc(dataLength);
         if(sceneData == NULL) {
             printf("memory error: unable to allocate sceneData");
             exit(EXIT_FAILURE);
@@ -154,7 +154,7 @@ char *LoadBinFile(int dataLength, char *binPath) {
 
 float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents) {
     float *vertData = (float *)sceneData;
-    float *vertices = malloc(sizeof(float) * 12 * vertCount);
+    float *vertices = (float*)malloc(sizeof(float) * 12 * vertCount);
     
     int posOffset = primitive.attributes[0].data->buffer_view->offset;
     int normalOffset = primitive.attributes[1].data->buffer_view->offset;
@@ -190,7 +190,7 @@ float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, b
 }
 
 int *LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount) {
-    int *indices = malloc(sizeof(int) * indCount);
+    int *indices = (int*)malloc(sizeof(int) * indCount);
 
     int indOffset = primitive.indices->buffer_view->offset;
 
@@ -210,7 +210,7 @@ int *LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount) {
 }
 
 void CalcTangents(float *vertices, int vertCount, int *indices, int indCount) {
-    vec3 *tan1 = calloc(vertCount * 2, sizeof(vec3));
+    vec3 *tan1 = (vec3*)calloc(vertCount * 2, sizeof(vec3));
     vec3 *tan2 = tan1 + vertCount;
     
     for (int i = 0; i < indCount / 3; i++)
