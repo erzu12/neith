@@ -1,22 +1,13 @@
-#pragma once
+#include "meshloader.h"
 
 #include "dataStructures.h"
 #include "mesh.h"
 #include "scene.h"
+#include "material.h"
 #include <cgltf.h>
 #include <stdio.h>
 #include <string.h>
 
-
-void PathToBinPath(const char *path, char* binPath, char* uri);
-void ReadTransform(cgltf_node *node, mat4 modelMat);
-bool CheckAtributeFormat(cgltf_primitive *primitive);
-bool HasTangents(cgltf_primitive *primitive);
-int ReadMaterial(struct Materials *mat, cgltf_material *material);
-char *LoadBinFile(int dataLength, char *binPath);
-float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents);
-int *LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount);
-void CalcTangents(float *vertices, int vertCount, int *indices, int indCount);
 
 void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
     const int VERT_SIZE = 12;

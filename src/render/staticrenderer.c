@@ -1,15 +1,16 @@
-#pragma once
+#include "staticrenderer.h"
 
-#include "mesh.h"
 #include "shaders.h"
-#include "material.h"
-#include "scene.h"
-#include "camera.h"
+#include "textures.h"
+#include "scene/mesh.h"
+#include "scene/material.h"
+#include "scene/scene.h"
+#include "scene/camera.h"
+#include "window/window.h"
 
 #include <glad/glad.h>
 
-
-void InitStaticRender(struct Scene *sc) {
+void InitStaticRender(struct Scene *sc, struct Window *window) {
     struct StaticPrimitives *sp = sc->sp;
     struct RenderContext *rc = malloc(sizeof(struct RenderContext));
     rc->VAOs = malloc(sp->primitivesCount * sizeof(int));

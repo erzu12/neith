@@ -1,11 +1,9 @@
-#pragma once
+#include "collision.h"
 
 #include <math.h>
 #include <stdbool.h>
 //#include <cglm/cglm.h>
 #include "vecmath.h"
-
-Float3 ClosestPointOnLineSegment(Float3 a, Float3 b, Float3 point);
 
 bool SphereTriangleIntersction(Float3 t0, Float3 t1, Float3 t2, Float3 sc, float r) {
     Float3 N = F3Noramlize(F3Cross(F3Subtraction(t1, t0), F3Subtraction(t2, t0)));
