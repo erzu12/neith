@@ -11,7 +11,7 @@
 
 void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
     const int VERT_SIZE = 12;
-    struct StaticPrimitives *sp = sc->sp;
+    StaticPrimitives *sp = sc->sp;
 
     for(int i = 0; i < modelCount; i++) {
         cgltf_options options = {(cgltf_file_type)0};
@@ -61,7 +61,7 @@ void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
 
                 int material = ReadMaterial(sc->mat, gltfData->nodes[j].mesh->primitives[k].material);
 
-                AddStaticPrimitive(sp, modelMat, vertices, vertCount, indices, indCount, material);
+                sp->AddStaticPrimitive(modelMat, vertices, vertCount, indices, indCount, material);
             }
         }
     }
@@ -109,7 +109,7 @@ bool HasTangents(cgltf_primitive *primitive) {
     return true;
 }
 
-int ReadMaterial(struct Materials *mat, cgltf_material *material) {
+int ReadMaterial(Materials *mat, cgltf_material *material) {
     if(material == NULL) 
         return 0;
 
@@ -126,30 +126,30 @@ int ReadMaterial(struct Materials *mat, cgltf_material *material) {
 }
 
 char *LoadBinFile(int dataLength, char *binPath) {
-        FILE * pFile;
-        
-        pFile = fopen(binPath, "rb");
+    FILE * pFile;
+    
+    pFile = fopen(binPath, "rb");
 
-        if(!pFile) {
-            printf("faild to Load binary file: %s\n", binPath);
-            exit(EXIT_FAILURE);
-        }
-        
-        char *sceneData = (char*)malloc(dataLength);
-        if(sceneData == NULL) {
-            printf("memory error: unable to allocate sceneData");
-            exit(EXIT_FAILURE);
-        }
+    if(!pFile) {
+        printf("faild to Load binary file: %s\n", binPath);
+        exit(EXIT_FAILURE);
+    }
+    
+    char *sceneData = (char*)malloc(dataLength);
+    if(sceneData == NULL) {
+        printf("memory error: unable to allocate sceneData");
+        exit(EXIT_FAILURE);
+    }
 
-        int readResult = fread(sceneData, 1, dataLength, pFile);
-        if(readResult != dataLength) {
-        	printf("error reading file: %s\n", binPath);
-            exit(EXIT_FAILURE);
-        }
-        
-        fclose(pFile);
+    int readResult = fread(sceneData, 1, dataLength, pFile);
+    if(readResult != dataLength) {
+        printf("error reading file: %s\n", binPath);
+        exit(EXIT_FAILURE);
+    }
+    
+    fclose(pFile);
 
-        return sceneData;
+    return sceneData;
 }
 
 float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents) {

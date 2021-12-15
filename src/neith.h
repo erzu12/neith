@@ -26,17 +26,17 @@ namespace neith {
 
     unsigned int nth_LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath);
 
-    void nth_SetShader(struct Materials *mat, int material, int shader);
+    void nth_SetShader(Materials *mat, int material, int shader);
 
-    int nth_SetShaderByName(struct Materials *mat, char *materialName, int shader);
+    int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
 
-    void nth_SetTexture(struct Materials *mat, int material, int texture, char *bindingName);
+    void nth_SetTexture(Materials *mat, int material, int texture, char *bindingName);
 
-    int nth_SetTextureByName(struct Materials *mat, char *materialName, int texture, char *bindingName);
+    int nth_SetTextureByName(Materials *mat, char *materialName, int texture, char *bindingName);
 
-    void nth_SetValueByNameF(struct Materials *mat, char *materialName, char *bindingName, float value);
+    void nth_SetValueByNameF(Materials *mat, char *materialName, char *bindingName, float value);
 
-    void nth_SetValueByNameV3(struct Materials *mat, char *materialName, char *bindingName, float *value);
+    void nth_SetValueByNameV3(Materials *mat, char *materialName, char *bindingName, float *value);
 
-    void nth_SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
+    void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
 }

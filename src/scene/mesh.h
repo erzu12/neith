@@ -2,7 +2,8 @@
 
 #include "cglm/cglm.h"
 
-struct StaticPrimitives {
+class StaticPrimitives {
+public:
     int primitivesCount;
     int meshCount;
     mat4 *modelMats;
@@ -14,18 +15,17 @@ struct StaticPrimitives {
     int *vertCounts;
     int *indCounts;
     int *materials;
+
+    StaticPrimitives(int maxPrimitives);
+
+    int AddStaticPrimitive(mat4 modelMat,
+                           float *vertices,
+                           int vertCount,
+                           int *indices,
+                           int indCount,
+                           int material);
+
+    int AddStaticMesh(int primitivesCount);
+
+    ~StaticPrimitives();
 };
-
-int AddStaticPrimitive(struct StaticPrimitives *sp,
-                       mat4 modelMat,
-                       float *vertices,
-                       int vertCount,
-                       int *indices,
-                       int indCount,
-                       int material);
-
-int AddStaticMesh(struct StaticPrimitives *sp, int primitivesCount);
-
-struct StaticPrimitives *InitStaticPrimitives(int maxPrimitives);
-
-void DeleteStaticPrimitives(struct StaticPrimitives *sp);

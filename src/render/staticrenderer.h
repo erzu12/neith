@@ -5,8 +5,14 @@
 #include "scene/scene.h"
 #include "window/window.h"
 
-void InitStaticRender(struct Scene *sc, struct Window *window);
+class StaticRenderer {
+public:
+    unsigned int *VAOs;
+    mat4 lightSpaceMatrix;
 
-void RenderStatic(struct Scene *sc, int width, int height);
+    StaticRenderer(struct Scene *sc, struct Window *window);
 
-void RenderStaticShadows(struct Scene *sc, int shaderProgram);
+    void RenderStatic(struct Scene *sc, int width, int height);
+
+    void RenderStaticShadows(struct Scene *sc, int shaderProgram);
+};

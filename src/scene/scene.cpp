@@ -1,27 +1,32 @@
 #include "scene.h"
 
 #include <cglm/cglm.h>
-#include "mesh.h"
 #include "material.h"
 #include "window/window.h"
 
 
-void DeleteStaticRender(struct RenderContext *rc) {
-    free(rc->VAOs);
-    free(rc);
-};
+//void DeleteStaticRender(struct RenderContext *rc) {
+//    free(rc->VAOs);
+//    free(rc);
+//};
 
-struct Scene *InitScene(int maxPrimitives) {
-    struct Scene *scene = (struct Scene*)malloc(sizeof(struct Scene));
-    scene->sp = InitStaticPrimitives(maxPrimitives);
-    scene->mat = InitMaterials(maxPrimitives);
-    scene->cd = new Camera();
-    return scene;
+Scene::Scene(int maxPrimitives) {
+    sp = new StaticPrimitives(maxPrimitives);
+    mat = new Materials(maxPrimitives);
+    cd = new Camera();
 }
 
-void DeleteScene(struct Scene *sc) {
-    DeleteMaterials(sc->mat);
-    DeleteStaticRender(sc->rc);
-    DeleteStaticPrimitives(sc->sp);
-    free(sc->cd); 
+void Scene::InitRenderer(Scene *sc, struct Window *window) {
+    re = new Renderer(sc, window);
+}
+
+void Scene::UpdateRender(Scene *sc) {
+    re->UpdateRender(sc);
+}
+
+Scene::~Scene() {
+    delete mat;
+    //DeleteStaticRender(rc);
+    delete sp;
+    free(cd); 
 }

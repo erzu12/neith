@@ -1,27 +1,28 @@
 #pragma once
 
-struct Materials {
+class Materials {
+public:
     int materialCount;
     int *shaders;
     char **names;
     int *textureCounts;
     int **textures;
+
+    Materials(int materialCount);
+
+    void SetShader(int material, int shader);
+
+    int SetShaderByName(char *materialName, int shader);
+
+    void SetTexture(int material, int texture, char *bindingName);
+
+    int SetTextureByName(char *materialName, int texture, char *bindingName);
+
+    void SetValueByNameF(char *materialName, char *bindingName, float value);
+
+    void SetValueByNameV3(char *materialName, char *bindingName, float *value);
+
+    void SetValueByNameV3v(char *materialName, char *bindingName, float x, float y, float z);
+
+    ~Materials();
 };
-
-void SetShader(struct Materials *mat, int material, int shader);
-
-int SetShaderByName(struct Materials *mat, char *materialName, int shader);
-
-void SetTexture(struct Materials *mat, int material, int texture, char *bindingName);
-
-int SetTextureByName(struct Materials *mat, char *materialName, int texture, char *bindingName);
-
-void SetValueByNameF(struct Materials *mat, char *materialName, char *bindingName, float value);
-
-void SetValueByNameV3(struct Materials *mat, char *materialName, char *bindingName, float *value);
-
-void SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
-
-struct Materials *InitMaterials(int materialCount);
-
-void DeleteMaterials(struct Materials *mat);

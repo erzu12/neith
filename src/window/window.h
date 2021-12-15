@@ -15,7 +15,7 @@ struct CallbackContext {
     Float3 moveVec;
     bool firstMouse;
     float lastX, lastY;
-    struct CameraData *cd;
+    Camera *cd;
     struct Window *win;
 };
 struct Window* CreateWindow();

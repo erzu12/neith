@@ -7,71 +7,63 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int AddStaticPrimitive(struct StaticPrimitives *sp,
-                       mat4 modelMat,
-                       float *vertices,
-                       int vertCount,
-                       int *indices,
-                       int indCount,
-                       int material)
-{
-    //int primitive = sp->meshes[mesh * 3] + sp->meshes[mesh * 3 + 1];
-    //if(primitive >= sp->meshes[mesh * 3 + 2]) 
-    //    return 0;
-    int primitive = sp->primitivesCount;
-    sp->primitivesCount++;
+StaticPrimitives::StaticPrimitives(int maxPrimitives) {
+    modelMats = (mat4*)malloc(sizeof(mat4) * maxPrimitives);
+    meshes = (int*)malloc(sizeof(int) * maxPrimitives * 3);
+    vertices = (float**)calloc(sizeof(float *), maxPrimitives);
+    indices= (int**)calloc(sizeof(int *), maxPrimitives);
+    vertCounts = (int*)malloc(sizeof(int) * maxPrimitives);
+    indCounts = (int*)malloc(sizeof(int) * maxPrimitives);
+    materials = (int*)malloc(sizeof(int) * maxPrimitives);
 
-    glm_mat4_copy(modelMat, sp->modelMats[primitive]);
-    sp->vertices[primitive] = vertices;
-    sp->indices[primitive] = indices;
-    sp->vertCounts[primitive] = vertCount;
-    sp->indCounts[primitive] = indCount;
-    sp->materials[primitive] = material;
+    primitivesCount = 0;
+    meshCount = 0;
+    indSize = 0;
+    vertSize = 0;
+}
+
+int StaticPrimitives::AddStaticPrimitive(mat4 modelMat,
+                                         float *vertices,
+                                         int vertCount,
+                                         int *indices,
+                                         int indCount,
+                                         int material)
+{
+    int primitive = primitivesCount;
+    primitivesCount++;
+
+    glm_mat4_copy(modelMat, modelMats[primitive]);
+    this->vertices[primitive] = vertices;
+    this->indices[primitive] = indices;
+    this->vertCounts[primitive] = vertCount;
+    this->indCounts[primitive] = indCount;
+    this->materials[primitive] = material;
 
     return primitive;
 }
 
-int AddStaticMesh(struct StaticPrimitives *sp, int primitivesCount) {
-    int mesh = sp->meshCount;
-    sp->meshCount++;
+int StaticPrimitives::AddStaticMesh(int primitivesCount) {
+    int mesh = meshCount;
+    meshCount++;
 
-    int primitive = sp->primitivesCount;
-    sp->primitivesCount = primitive + primitivesCount;
+    int primitive = primitivesCount;
+    primitivesCount = primitive + primitivesCount;
 
-    sp->meshes[mesh * 3] = sp->primitivesCount;
-    sp->meshes[mesh * 3 + 1] = 0;
-    sp->meshes[mesh * 3 + 2] = sp->primitivesCount + primitivesCount;
+    meshes[mesh * 3] = primitivesCount;
+    meshes[mesh * 3 + 1] = 0;
+    meshes[mesh * 3 + 2] = primitivesCount + primitivesCount;
 
     return mesh;
 }
 
-struct StaticPrimitives *InitStaticPrimitives(int maxPrimitives) {
-    struct StaticPrimitives *sp = (struct StaticPrimitives*)malloc(sizeof(struct StaticPrimitives));
-    sp->modelMats = (mat4*)malloc(sizeof(mat4) * maxPrimitives);
-    sp->meshes = (int*)malloc(sizeof(int) * maxPrimitives * 3);
-    sp->vertices = (float**)calloc(sizeof(float *), maxPrimitives);
-    sp->indices= (int**)calloc(sizeof(int *), maxPrimitives);
-    sp->vertCounts = (int*)malloc(sizeof(int) * maxPrimitives);
-    sp->indCounts = (int*)malloc(sizeof(int) * maxPrimitives);
-    sp->materials = (int*)malloc(sizeof(int) * maxPrimitives);
-
-    sp->primitivesCount = 0;
-    sp->meshCount = 0;
-    sp->indSize = 0;
-    sp->vertSize = 0;
-    
-    return sp;
-}
-
-void DeleteStaticPrimitives(struct StaticPrimitives *sp) {
-    free(sp->modelMats);
-    free(sp->meshes);
-    free(sp->vertices);
-    free(sp->indices);
-    free(sp->vertCounts);
-    free(sp->indCounts);
-    free(sp->materials);
-    free(sp);
+StaticPrimitives::~StaticPrimitives() {
+    free(modelMats);
+    free(meshes);
+    free(vertices);
+    free(indices);
+    free(vertCounts);
+    free(indCounts);
+    free(materials);
 }
 
 //int AddDynamicMesh(struct DynamicMeshes *meshes, float *vertices, int vertSize, int *indices, int indSize) {
