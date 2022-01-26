@@ -2,17 +2,21 @@
 
 #include <glad/glad.h>
 
+#include <glm/mat4x4.hpp>
+
 #include "scene/scene.h"
 #include "window/window.h"
 
-class StaticRenderer {
-public:
-    unsigned int *VAOs;
-    mat4 lightSpaceMatrix;
+namespace neith {
+    class StaticRenderer {
+    public:
+        unsigned int *VAOs;
+        glm::mat4 lightSpaceMatrix;
 
-    StaticRenderer(struct Scene *sc, struct Window *window);
+        StaticRenderer(struct Scene *sc, struct Window *window);
 
-    void RenderStatic(struct Scene *sc, int width, int height);
+        void RenderStatic(struct Scene *sc, int width, int height);
 
-    void RenderStaticShadows(struct Scene *sc, int shaderProgram);
-};
+        void RenderStaticShadows(struct Scene *sc, int shaderProgram);
+    };
+}

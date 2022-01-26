@@ -8,6 +8,7 @@
 
 #include "scene/scene.h"
 #include "window/window.h"
+#include "render/render.h"
 
 namespace neith {
     struct Window* nth_CreateWindow();
@@ -18,11 +19,11 @@ namespace neith {
 
     void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount);
 
-    void nth_InitRender(struct Scene *sc, struct Window *win);
+    Renderer *nth_InitRender(struct Scene *sc, struct Window *win);
 
     void nth_UpdateWindow(struct Window *win);
 
-    void nth_UpdateRender(struct Scene *sc);
+    void nth_UpdateRender(Renderer *re, struct Scene *sc);
 
     unsigned int nth_LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath);
 

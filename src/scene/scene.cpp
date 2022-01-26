@@ -1,6 +1,5 @@
 #include "scene.h"
 
-#include <cglm/cglm.h>
 #include "material.h"
 #include "window/window.h"
 
@@ -10,23 +9,29 @@
 //    free(rc);
 //};
 
-Scene::Scene(int maxPrimitives) {
-    sp = new StaticPrimitives(maxPrimitives);
-    mat = new Materials(maxPrimitives);
-    cd = new Camera();
-}
 
-void Scene::InitRenderer(Scene *sc, struct Window *window) {
-    re = new Renderer(sc, window);
-}
+namespace neith {
 
-void Scene::UpdateRender(Scene *sc) {
-    re->UpdateRender(sc);
-}
+    //unsigned int Scene::getComponentTypeID() {
+        //static unsigned int lastID = 0;
+        //components.push_back(new Component());
+        //return lastID++;
+    //}
+    //template<typename T>
+    //unsigned int Scene::getComponentTypeID() {
+        //static unsigned int componentID = getComponentTypeID();
+        //return componentID;
+    //}
 
-Scene::~Scene() {
-    delete mat;
-    //DeleteStaticRender(rc);
-    delete sp;
-    free(cd); 
+    Scene::Scene(int maxPrimitives) {
+        sp = new StaticPrimitives(maxPrimitives);
+        mat = new Materials(maxPrimitives);
+        cd = new Camera();
+    }
+
+    Scene::~Scene() {
+        delete mat;
+        delete sp;
+        delete cd; 
+    }
 }

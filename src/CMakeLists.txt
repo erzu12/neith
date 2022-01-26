@@ -29,14 +29,20 @@ add_library("${PROJECT_NAME}"
     "scene/scene.cpp"
     "scene/skybox.h"
     "scene/skybox.cpp"
+    "scene/entity.h"
+    "scene/entity.cpp"
+    "scene/components/component.h"
+    "scene/components/component.cpp"
+    "scene/components/meshComp.h"
+    "scene/components/meshComp.cpp"
     "window/input.h"
     "window/input.cpp"
     "window/window.h"
     "window/window.cpp"
     "dataStructures.h"
     "dataStructures.cpp"
-	"time.h"
-	"time.cpp"
+	"timer.h"
+	"timer.cpp"
     "vecmath.h"
     "vecmath.cpp"
 )
@@ -46,7 +52,6 @@ target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glfw/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
-	PUBLIC ${CMAKE_SOURCE_DIR}/external/cglm/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
 	PUBLIC ${CMAKE_SOURCE_DIR}/src
 )
@@ -54,7 +59,7 @@ target_include_directories("${PROJECT_NAME}"
 target_link_libraries("${PROJECT_NAME}"
 	glfw
 	glad
-	cglm
     cgltf
     stb
+    glm
 )

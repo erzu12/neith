@@ -1,10 +1,15 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/vec3.hpp>
+#include <vector>
+#include <unordered_map>
+#include <string>
+
+#include "components/component.h"
+#include "components/meshComp.h"
 #include "mesh.h"
 #include "camera.h"
 #include "material.h"
-#include "render/render.h"
 
 //struct RenderContext {
 //   struct Materials *mat;
@@ -31,21 +36,20 @@
 //   int **indices;
 //};
 
-class Scene {
-public:
-    StaticPrimitives *sp;
-    Materials *mat;
-    //struct RenderContext *rc;
-    Camera *cd;
-    Renderer *re;
-    vec3 lightDir;
 
-    Scene(int maxPrimitives);
+namespace neith {
+    class Scene {
+    private:
+        std::unordered_map<std::string, int> entityNames;
+    public:
+        StaticPrimitives *sp;
+        Materials *mat;
+        //struct RenderContext *rc;
+        Camera *cd;
+        glm::vec3 lightDir;
 
-    void InitRenderer(struct Scene *sc, struct Window *window);
-    void UpdateRender(struct Scene *sc);
+        Scene(int maxPrimitives);
 
-    ~Scene();
-};
-
-void DeleteStaticRender(struct RenderContext *rc);
+        ~Scene();
+    };
+}
