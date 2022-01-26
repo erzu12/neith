@@ -2,68 +2,75 @@
 
 #include "window/window.h"
 #include "scene/meshloader.h"
-#include "render/render.h"
 #include "scene/scene.h"
 #include "scene/material.h"
 #include "render/shaders.h"
 
-struct Window* neith::nth_CreateWindow() {
-    return CreateWindow();
-}
+#include "scene/systems/sysTransform.h"
 
-struct Scene* neith::nth_InitScene(int maxPrimitives) {
-    return new Scene(maxPrimitives);
-}
+namespace neith {
+    struct Window* nth_CreateWindow() {
+        return CreateWindow();
+    }
 
-void neith::nth_AttachSceneToWindow(struct Scene *sc, struct Window *win) {
-    AttachSceneToWindow(sc, win);
-}
+    Scene* nth_InitScene(int maxPrimitives) {
+        return new Scene(maxPrimitives);
+    }
 
-void neith::nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
-    LoadModels(sc, paths, modelCount);
-}
+    void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win) {
+        AttachSceneToWindow(sc, win);
+    }
 
-void neith::nth_InitRender(struct Scene *sc, struct Window *win) {
-    InitRender(sc, win);
-}
+    void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
+        LoadModels(sc, paths, modelCount);
+    }
 
-void neith::nth_UpdateWindow(struct Window *win) {
-    UpdateWindow(win);
-}
+    Renderer *nth_InitRender(struct Scene *sc, struct Window *win) {
+        return new Renderer(sc, win);
+    }
 
-void neith::nth_UpdateRender(struct Scene *sc) {
-    UpdateRender(sc);
-}
+    void nth_UpdateWindow(struct Window *win) {
+        UpdateWindow(win);
+    }
 
-unsigned int neith::nth_LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath) {
-    return LoadAndCompileShaders(vertexPath, fragmentPath);
-}
+    void nth_UpdateRender(Renderer *re, struct Scene *sc) {
+        re->UpdateRender(sc);
+    }
 
-void neith::nth_SetShader(struct Materials *mat, int material, int shader) {
-    mat->SetShader(material, shader);
-}
+    unsigned int nth_LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath) {
+        return LoadAndCompileShaders(vertexPath, fragmentPath);
+    }
 
-int neith::nth_SetShaderByName(struct Materials *mat, char *materialName, int shader) {
-    return mat->SetShaderByName(materialName, shader);
-}
+    void nth_SetShader(struct Materials *mat, int material, int shader) {
+        mat->SetShader(material, shader);
+    }
 
-void neith::nth_SetTexture(struct Materials *mat, int material, int texture, char *bindingName) {
-    mat->SetTexture(material, texture, bindingName);
-}
+    int nth_SetShaderByName(struct Materials *mat, char *materialName, int shader) {
+        return mat->SetShaderByName(materialName, shader);
+    }
 
-int neith::nth_SetTextureByName(struct Materials *mat, char *materialName, int texture, char *bindingName) {
-    return mat->SetTextureByName(materialName, texture, bindingName);
-}
+    void nth_SetTexture(struct Materials *mat, int material, int texture, char *bindingName) {
+        mat->SetTexture(material, texture, bindingName);
+    }
+
+    int nth_SetTextureByName(struct Materials *mat, char *materialName, int texture, char *bindingName) {
+        return mat->SetTextureByName(materialName, texture, bindingName);
+    }
 
 
-void neith::nth_SetValueByNameF(struct Materials *mat, char *materialName, char *bindingName, float value) {
-    mat->SetValueByNameF(materialName, bindingName, value);
-}
+    void nth_SetValueByNameF(struct Materials *mat, char *materialName, char *bindingName, float value) {
+        mat->SetValueByNameF(materialName, bindingName, value);
+    }
 
-void neith::nth_SetValueByNameV3(struct Materials *mat, char *materialName, char *bindingName, float *value) {
-    mat->SetValueByNameV3(materialName, bindingName, value);
-}
+    void nth_SetValueByNameV3(struct Materials *mat, char *materialName, char *bindingName, float *value) {
+        mat->SetValueByNameV3(materialName, bindingName, value);
+    }
 
-void neith::nth_SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z) {
-    mat->SetValueByNameV3v(materialName, bindingName, x, y, z);
+    void nth_SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z) {
+        mat->SetValueByNameV3v(materialName, bindingName, x, y, z);
+    }
+
+    void nth_Transform(unsigned int entityID, glm::mat4 &transform) {
+        system::Transform(entityID, transform);
+    }
 }

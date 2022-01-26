@@ -15,6 +15,8 @@ add_library("${PROJECT_NAME}"
 	"render/shaders.cpp"
     "render/staticrenderer.h"
     "render/staticrenderer.cpp"
+    "render/instancerenderer.h"
+    "render/instancerenderer.cpp"
     "render/textures.h"
     "render/textures.cpp"
 	"scene/camera.h"
@@ -29,14 +31,28 @@ add_library("${PROJECT_NAME}"
     "scene/scene.cpp"
     "scene/skybox.h"
     "scene/skybox.cpp"
+    "scene/entity.h"
+    "scene/entity.cpp"
+    "scene/components/compManager.h"
+    "scene/components/compManager.cpp"
+    "scene/components/component.h"
+    "scene/components/component.cpp"
+    "scene/components/meshComp.h"
+    "scene/components/meshComp.cpp"
+    "scene/components/transformComp.h"
+    "scene/components/transformComp.cpp"
+    "scene/systems/sysMesh.h"
+    "scene/systems/sysMesh.cpp"
+    "scene/systems/sysTransform.h"
+    "scene/systems/sysTransform.cpp"
     "window/input.h"
     "window/input.cpp"
     "window/window.h"
     "window/window.cpp"
     "dataStructures.h"
     "dataStructures.cpp"
-	"time.h"
-	"time.cpp"
+	"timer.h"
+	"timer.cpp"
     "vecmath.h"
     "vecmath.cpp"
 )
@@ -46,7 +62,6 @@ target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glfw/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
-	PUBLIC ${CMAKE_SOURCE_DIR}/external/cglm/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
 	PUBLIC ${CMAKE_SOURCE_DIR}/src
 )
@@ -54,7 +69,7 @@ target_include_directories("${PROJECT_NAME}"
 target_link_libraries("${PROJECT_NAME}"
 	glfw
 	glad
-	cglm
     cgltf
     stb
+    glm
 )
