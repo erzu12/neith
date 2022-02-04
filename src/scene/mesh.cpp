@@ -18,8 +18,6 @@ namespace neith {
 
         primitivesCount = 0;
         meshCount = 0;
-        indSize = 0;
-        vertSize = 0;
     }
 
     int StaticPrimitives::AddStaticPrimitive(glm::mat4 modelMat,

@@ -40,4 +40,6 @@ namespace neith {
     void nth_SetValueByNameV3(Materials *mat, char *materialName, char *bindingName, float *value);
 
     void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
+
+    void nth_Transform(unsigned int entityID, glm::mat4 &transform);
 }

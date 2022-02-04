@@ -5,5 +5,5 @@ compdb -p build/ list > compile_commands.json
 make -C build
 printf "\n\n=============================================================================\n\n"
 
-#mangohud --dlsym build/src/neith
-./build/testapp/src/testapp
+mangohud --dlsym build/testapp/src/testapp
+#./build/testapp/src/testapp

@@ -1,14 +1,34 @@
 #pragma once
 
+#include <vector>
+
+#include <glm/mat4x4.hpp>
+
 namespace neith {
-    struct Entity {
+    class Entity {
+private:
+        bool mHasComp[64] = { false };
+        unsigned int mID;
+        unsigned int mParentID;
+        std::vector<Entity*> children;
+public:
+        Entity(unsigned int mID);
 
-        unsigned int ID;
-        unsigned int parentID;
+        void SetParent(unsigned int newParentID);
 
-        Entity(unsigned int ID);
+        void AddComponentByID(int compID);
 
-        Entity(unsigned int ID, unsigned int parentID);
+        bool HasComponentByID(int compID);
+
+        int GetID();
+
+        void Transforme(glm::mat4 transform);
+
+        int GetChildCount();
+
+        Entity* GetChild(int index);
+
+        Entity(unsigned int mID, unsigned int mParentID);
     
     };
 }

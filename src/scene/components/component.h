@@ -7,9 +7,9 @@
 
 namespace neith {
 
-    struct Component {
-        static std::unordered_map<int, int> indexMap;
-        static std::vector<glm::mat4> transform;
+    class Component {
+public:
+        static std::unordered_map<unsigned int, unsigned int> mIndexMap;
     };
 
 }

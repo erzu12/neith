@@ -5,11 +5,10 @@
 #include <unordered_map>
 #include <string>
 
-#include "components/component.h"
-#include "components/meshComp.h"
 #include "mesh.h"
 #include "camera.h"
 #include "material.h"
+#include "entity.h"
 
 //struct RenderContext {
 //   struct Materials *mat;
@@ -40,16 +39,26 @@
 namespace neith {
     class Scene {
     private:
-        std::unordered_map<std::string, int> entityNames;
+        static std::unordered_map<std::string, unsigned int> mEntityNames;
+        static std::vector<Entity*> mEntitys;
     public:
-        StaticPrimitives *sp;
         Materials *mat;
-        //struct RenderContext *rc;
         Camera *cd;
         glm::vec3 lightDir;
 
         Scene(int maxPrimitives);
 
+        static int AddEntity();
+        static int AddEntity(unsigned int parentID);
+        static int AddEntity(std::string &name);
+        static int AddEntity(std::string &name, unsigned int parentID);
+        static int AddEntity(std::string &name, std::string parentName);
+
+        static Entity* GetEntity(unsigned int entityID);
+
         ~Scene();
+
+        //StaticPrimitives *sp;
+        //struct RenderContext *rc;
     };
 }

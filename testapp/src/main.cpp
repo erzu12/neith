@@ -1,6 +1,7 @@
 #include <neith.h>
 
 #include <stdio.h>
+#include <glm/gtx/transform.hpp>
 
 #define ASSET_DIR "assets/"
 
@@ -35,6 +36,8 @@ int main () {
     neith::nth_SetValueByNameF(sc->mat, "Material.001", "material.metallic", 0.0f);
 
     while(!glfwWindowShouldClose(win->window)) {
+        glm::mat4 moveMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0001f, 0.0f, 0.0f));
+        neith::nth_Transform(1, moveMat);
         neith::nth_UpdateWindow(win);
         neith::nth_UpdateRender(re, sc);
     }

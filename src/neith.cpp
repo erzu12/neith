@@ -5,6 +5,9 @@
 #include "scene/scene.h"
 #include "scene/material.h"
 #include "render/shaders.h"
+
+#include "scene/systems/sysTransform.h"
+
 namespace neith {
     struct Window* nth_CreateWindow() {
         return CreateWindow();
@@ -65,5 +68,9 @@ namespace neith {
 
     void nth_SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z) {
         mat->SetValueByNameV3v(materialName, bindingName, x, y, z);
+    }
+
+    void nth_Transform(unsigned int entityID, glm::mat4 &transform) {
+        system::Transform(entityID, transform);
     }
 }

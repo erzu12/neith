@@ -8,8 +8,6 @@ namespace neith {
         int primitivesCount;
         int meshCount;
         glm::mat4 *modelMats;
-        int vertSize;
-        int indSize;
         float **vertices;
         int **indices;
         int *meshes;

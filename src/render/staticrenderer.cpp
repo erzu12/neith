@@ -9,6 +9,7 @@
 #include "scene/scene.h"
 #include "scene/camera.h"
 #include "window/window.h"
+#include "scene/components/meshComp.h"
 
 #include "vecmath.h"
 #include <glm/ext/matrix_clip_space.hpp>
@@ -20,11 +21,11 @@
 
 namespace neith {
     StaticRenderer::StaticRenderer(struct Scene *sc, struct Window *window) {
-        StaticPrimitives *sp = sc->sp;
+        //StaticPrimitives *sp = sc->sp;
         //struct RenderContext *rc = (struct RenderContext*)malloc(sizeof(struct RenderContext));
-        VAOs = (unsigned int*)malloc(sp->primitivesCount * sizeof(int));
+        VAOs = (unsigned int*)malloc(MeshComp::mPrimitivesCount * sizeof(int));
 
-        for(int i = 0; i < sp->primitivesCount; i++) {
+        for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
             unsigned int VBO, EBO;
 
             glGenBuffers(1, &VBO);
@@ -34,10 +35,10 @@ namespace neith {
             glBindVertexArray(VAOs[i]);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sp->vertCounts[i] * sizeof(float) * 12, sp->vertices[i], GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, MeshComp::mVertCounts[i] * sizeof(float) * 12, MeshComp::mVertices[i], GL_STATIC_DRAW);
             
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sp->indCounts[i] * sizeof(int), sp->indices[i], GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, MeshComp::mIndCounts[i] * sizeof(int), MeshComp::mIndices[i], GL_STATIC_DRAW);
             
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
@@ -78,8 +79,8 @@ namespace neith {
         glm::mat4 projection = glm::perspective(PI / 2.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
 
-        for(int i = 0; i < sc->sp->primitivesCount; i++) {
-            int material = sc->sp->materials[i];
+        for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
+            int material = MeshComp::mMaterials[i];
             glUseProgram(sc->mat->shaders[material]);
             float cameraPos[3];
             F3ToArr(cd->cameraPos, cameraPos);
@@ -98,9 +99,13 @@ namespace neith {
                 glBindTexture(GL_TEXTURE_2D, sc->mat->textures[material][j]);
             }
 
-            UniformMat4v(sc->mat->shaders[material], "model", sc->sp->modelMats[i]);
+            if(MeshComp::mUpdate.at(i)) {
+                UniformMat4v(sc->mat->shaders[material], "model", MeshComp::mModelMats[i]);
+                MeshComp::UpdateDone(i);
+                //std::cout << "Update" << std::endl;
+            }
             glBindVertexArray(VAOs[i]);
-            glDrawElements(GL_TRIANGLES, sc->sp->indCounts[i], GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0);
         }
     }
 
@@ -119,15 +124,15 @@ namespace neith {
         glViewport(0, 0, 4096, 4096);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        for(int i = 0; i < sc->sp->primitivesCount; i++) {
+        for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
             for(int j = 0; j < sc->mat->textureCounts[i]; j++) {
                 glActiveTexture(GL_TEXTURE0 + j);
                 glBindTexture(GL_TEXTURE_2D, sc->mat->textures[i][j]);
             }
 
-            UniformMat4v(shaderProgram, "model", sc->sp->modelMats[i]);
+            UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
             glBindVertexArray(VAOs[i]);
-            glDrawElements(GL_TRIANGLES, sc->sp->indCounts[i], GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0);
         }
 
     }

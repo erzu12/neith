@@ -15,12 +15,14 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include "systems/sysMesh.h"
+
 #include <iostream>
 
 namespace neith {
     void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
         const int VERT_SIZE = 12;
-        StaticPrimitives *sp = sc->sp;
+        //StaticPrimitives *sp = sc->sp;
 
         for(int i = 0; i < modelCount; i++) {
             cgltf_options options = {(cgltf_file_type)0};
@@ -70,7 +72,9 @@ namespace neith {
 
                     int material = ReadMaterial(sc->mat, gltfData->nodes[j].mesh->primitives[k].material);
 
-                    sp->AddStaticPrimitive(modelMat, vertices, vertCount, indices, indCount, material);
+                    unsigned int entity = Scene::AddEntity();
+
+                    system::AddStaticPrimitive(entity, modelMat, vertices, vertCount, indices, indCount, material);
                 }
             }
         }
