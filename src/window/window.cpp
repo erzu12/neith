@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glad/glad.h>
+#include <iostream>
 
 #include "timer.h"
 #include "scene/scene.h"
@@ -12,9 +13,18 @@
 #include "render/framebuffer.h"
 
 namespace neith {
+    static void error_callback(int error, const char* description) {
+        fprintf(stderr, "Error: %s\n", description);
+    }
+
     struct Window *CreateWindow() {
+        glfwSetErrorCallback(error_callback);
+
         //GLFW
-        glfwInit();
+        if(!glfwInit()) {
+            printf("faild to init GLFW");
+            exit(-1);
+        }
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -30,6 +40,7 @@ namespace neith {
         glfwMakeContextCurrent(window);
         glfwSwapInterval(0);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        glfwSetWindowFocusCallback(window, window_focus_callback);
 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         if (glfwRawMouseMotionSupported())
@@ -66,6 +77,12 @@ namespace neith {
         Time::FrameTime();
         processInput(win->window);
         glfwPollEvents();
+    }
+
+    void window_focus_callback(GLFWwindow* window, int focused) {
+        if (focused) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
     }
 
     void DeleteWindow(GLFWwindow* window) {

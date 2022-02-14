@@ -21,5 +21,6 @@ namespace neith {
     };
     struct Window* CreateWindow();
     void AttachSceneToWindow(struct Scene *sc, struct Window *win);
+    void window_focus_callback(GLFWwindow* window, int focused);
     void UpdateWindow(struct Window* win);
 }

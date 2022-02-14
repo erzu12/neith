@@ -17,7 +17,7 @@
 #include "defaults.h"
 namespace neith {
     Renderer::Renderer(struct Scene *sc, struct Window *window) {
-        sr = new StaticRenderer(sc, window);
+        sr = new InstanceRenderer(sc, window);
 
         cubeMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
         screenShader = LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
@@ -98,7 +98,7 @@ namespace neith {
         glEnable(GL_DEPTH_TEST);
 
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-        sr->RenderStaticShadows(sc, shadowMapShader);
+        sr->RenderInstancedShadows(sc, shadowMapShader);
 
         //Scene
         glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -109,7 +109,7 @@ namespace neith {
         glfwGetWindowSize(win->window, &width, &height);
         glm::mat4 projection = glm::perspective(PI / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
-        sr->RenderStatic(sc, win->width, win->height);
+        sr->RenderInstanced(sc, win->width, win->height);
 
         //Cube Map
         glm::mat3 view3 = glm::mat3(view);

@@ -1,9 +1,10 @@
 #pragma once
 #include "staticrenderer.h"
+#include "instancerenderer.h"
 #include "scene/scene.h"
 namespace neith {
     class Renderer {
-        StaticRenderer *sr;
+        InstanceRenderer *sr;
         struct Window *win;
         unsigned int cubeMapShader;
         unsigned int screenShader;
