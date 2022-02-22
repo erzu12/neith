@@ -21,23 +21,24 @@
 #include <glad/glad.h>
 
 namespace neith {
+
     InstanceRenderer::InstanceRenderer(struct Scene *sc, struct Window *window) {
         //StaticPrimitives *sp = sc->sp;
         //struct RenderContext *rc = (struct RenderContext*)malloc(sizeof(struct RenderContext));
         VAOs = (unsigned int*)malloc(MeshComp::mPrimitivesCount * sizeof(int));
-        VBOs = (unsigned int**)Alloc2DArr(MeshComp::mPrimitivesCount * sizeof(int), 1, 4);
+        VBOs = (unsigned int**)Alloc2DArr(MeshComp::mPrimitivesCount, 2, 4);
 
         for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
             unsigned int EBO;
 
-            glGenBuffers(1, &VBOs[i][0]);
+            glGenBuffers(2, VBOs[i]);
             glGenBuffers(1, &EBO);
 
             glGenVertexArrays(1, &VAOs[i]);
             glBindVertexArray(VAOs[i]);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][0]);
-            glBufferData(GL_ARRAY_BUFFER, MeshComp::mVertCounts[i] * sizeof(float) * 12, MeshComp::mVertices[i], GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, MeshComp::mVertCounts[i] * sizeof(float) * 12, MeshComp::mVertices[i], GL_DYNAMIC_DRAW);
             
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, MeshComp::mIndCounts[i] * sizeof(int), MeshComp::mIndices[i], GL_STATIC_DRAW);
@@ -56,10 +57,17 @@ namespace neith {
 
 
             //glGenBuffers(1, &VBOs[i][1]);
-            //glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
+            glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
             //std::cout << "test1" << std::endl;
+            //glEnableVertexAttribArray(4);
             //glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
             //glVertexAttribDivisor(4, 1);
+
+            for(unsigned int j = 0; j < 4 ; j++) {
+                glEnableVertexAttribArray(4 + j);
+                glVertexAttribPointer(4 + j, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(float) * j * 4));
+                glVertexAttribDivisor(4 + j, 1);
+            }
 
 
             glBindVertexArray(0);
@@ -83,11 +91,9 @@ namespace neith {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        
         glm::mat4 view = glm::mat4(1.0f);
         cd->CameraGetViewMat(view);
         glm::mat4 projection = glm::perspective(PI / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
-
 
         for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
             int material = MeshComp::mMaterials[i];
@@ -114,12 +120,14 @@ namespace neith {
                 MeshComp::UpdateDone(i);
                 //std::cout << "Update" << std::endl;
             }
-            float positions[] = {0.0f, 4.0f, 8.0f};
-            //glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-            //glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3, positions, GL_DYNAMIC_DRAW);
+            glm::mat4 positions[] = {glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f}),
+                                     glm::translate(glm::mat4(1.0f), {0.0f, 1.0f, 3.0f}),
+                                     glm::translate(glm::mat4(1.0f), {0.0f, 2.0f, 6.0f})};
+            glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * 3, positions, GL_DYNAMIC_DRAW);
 
             glBindVertexArray(VAOs[i]);
-            glDrawElementsInstanced(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0, 100000);
+            glDrawElementsInstanced(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0, 3);
         }
     }
 
