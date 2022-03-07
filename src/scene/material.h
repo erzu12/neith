@@ -1,29 +1,35 @@
 #pragma once
 
+#include <vector>
+
 namespace neith {
     class Materials {
     public:
-        int materialCount;
-        int *shaders;
-        char **names;
-        int *textureCounts;
-        int **textures;
+        static int mMaterialCount;
+        static std::vector<int> mShaders;
+        //char **names;
+        static std::vector<int> mTextureCounts;
+        static std::vector<int*> mTextures;
 
-        Materials(int materialCount);
+        //Materials(int materialCount);
 
-        void SetShader(int material, int shader);
+        static int AddMaterial();
 
-        int SetShaderByName(char *materialName, int shader);
+        static void SetShader(int material, int shader);
 
-        void SetTexture(int material, int texture, char *bindingName);
+        //int SetShaderByName(char *materialName, int shader);
 
-        int SetTextureByName(char *materialName, int texture, char *bindingName);
+        static void SetTexture(int material, int texture, char *bindingName);
 
-        void SetValueByNameF(char *materialName, char *bindingName, float value);
+        //int SetTextureByName(char *materialName, int texture, char *bindingName);
 
-        void SetValueByNameV3(char *materialName, char *bindingName, float *value);
+        static void SetValue(int material, char *bindingName, float value);
 
-        void SetValueByNameV3v(char *materialName, char *bindingName, float x, float y, float z);
+        //void SetValueByNameF(char *materialName, char *bindingName, float value);
+
+        //void SetValueByNameV3(char *materialName, char *bindingName, float *value);
+
+        //void SetValueByNameV3v(char *materialName, char *bindingName, float x, float y, float z);
 
         ~Materials();
     };

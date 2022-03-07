@@ -97,37 +97,40 @@ namespace neith {
 
         for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
             int material = MeshComp::mMaterials[i];
-            glUseProgram(sc->mat->shaders[material]);
+            glUseProgram(sc->mMaterial->mShaders[material]);
             float cameraPos[3];
             F3ToArr(cd->cameraPos, cameraPos);
-            UniformVec3v(sc->mat->shaders[material], "viewPos", cameraPos);
-            UniformVec3(sc->mat->shaders[material], "light.direction", 0.4, -1.0, -0.4);
-            UniformVec3(sc->mat->shaders[material], "light.color", 3.0f, 3.0f, 3.0f);
+            UniformVec3v(sc->mMaterial->mShaders[material], "viewPos", cameraPos);
+            UniformVec3(sc->mMaterial->mShaders[material], "light.direction", 0.4, -1.0, -0.4);
+            UniformVec3(sc->mMaterial->mShaders[material], "light.color", 3.0f, 3.0f, 3.0f);
 
             //CubeMVPuniforms
-            UniformMat4v(sc->mat->shaders[material], "lightSpaceMatrix", lightSpaceMatrix);
+            UniformMat4v(sc->mMaterial->mShaders[material], "lightSpaceMatrix", lightSpaceMatrix);
             //UniformMat4v(sc->mat->shaders[materia);
-            UniformMat4v(sc->mat->shaders[material], "view", view);
-            UniformMat4v(sc->mat->shaders[material], "projection", projection);
+            UniformMat4v(sc->mMaterial->mShaders[material], "view", view);
+            UniformMat4v(sc->mMaterial->mShaders[material], "projection", projection);
 
-            for(int j = 0; j < sc->mat->textureCounts[material]; j++) {
+            for(int j = 0; j < sc->mMaterial->mTextureCounts[material]; j++) {
                 glActiveTexture(GL_TEXTURE0 + j);
-                glBindTexture(GL_TEXTURE_2D, sc->mat->textures[material][j]);
+                glBindTexture(GL_TEXTURE_2D, sc->mMaterial->mTextures[material][j]);
             }
 
-            if(MeshComp::mUpdate.at(i)) {
-                UniformMat4v(sc->mat->shaders[material], "model", MeshComp::mModelMats[i]);
-                MeshComp::UpdateDone(i);
-                //std::cout << "Update" << std::endl;
-            }
-            glm::mat4 positions[] = {glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f}),
-                                     glm::translate(glm::mat4(1.0f), {0.0f, 1.0f, 3.0f}),
-                                     glm::translate(glm::mat4(1.0f), {0.0f, 2.0f, 6.0f})};
             glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * 3, positions, GL_DYNAMIC_DRAW);
+            if(MeshComp::mUpdate.at(i).at(0)) {
+                glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * 3, MeshComp::mModelMats.at(i).data(), GL_DYNAMIC_DRAW);
+                //for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
+                    //if(MeshComp::mUpdate.at(i).at(j + 1)) {
+                        ////UniformMat4v(sc->mat->shaders[material], "model", MeshComp::mModelMats.at(i).at(j + 1));
+                        //MeshComp::UpdateDone(i, j);
+                    //}
+                //}
+            }
+            //glm::mat4 positions[] = {glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, 0.0f}),
+                                     //glm::translate(glm::mat4(1.0f), {0.0f, 1.0f, 3.0f}),
+                                     //glm::translate(glm::mat4(1.0f), {0.0f, 2.0f, 6.0f})};
 
             glBindVertexArray(VAOs[i]);
-            glDrawElementsInstanced(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0, 3);
+            glDrawElementsInstanced(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0, MeshComp::mInstanceCount.at(i));
         }
     }
 
@@ -147,12 +150,13 @@ namespace neith {
         glClear(GL_DEPTH_BUFFER_BIT);
 
         for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
-            for(int j = 0; j < sc->mat->textureCounts[i]; j++) {
+            for(int j = 0; j < sc->mMaterial->mTextureCounts[i]; j++) {
                 glActiveTexture(GL_TEXTURE0 + j);
-                glBindTexture(GL_TEXTURE_2D, sc->mat->textures[i][j]);
+                glBindTexture(GL_TEXTURE_2D, sc->mMaterial->mTextures[i][j]);
             }
 
-            UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
+            glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
+            //UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
             glBindVertexArray(VAOs[i]);
             glDrawElements(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0);
         }

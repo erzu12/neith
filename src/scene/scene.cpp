@@ -27,10 +27,10 @@ namespace neith {
 
     std::unordered_map<std::string, unsigned int> Scene::mEntityNames = {};
     std::vector<Entity*> Scene::mEntitys = {};
+    Materials* Scene::mMaterial = new Materials(100);
 
     Scene::Scene(int maxPrimitives) {
         //sp = new StaticPrimitives(maxPrimitives);
-        mat = new Materials(maxPrimitives);
         cd = new Camera();
     }
 
@@ -67,7 +67,7 @@ namespace neith {
     }
 
     Scene::~Scene() {
-        delete mat;
+        delete mMaterial;
         //delete sp;
         delete cd; 
     }

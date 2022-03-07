@@ -22,7 +22,15 @@ namespace neith {
     }
 
     void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
-        LoadModels(sc, paths, modelCount);
+        //LoadModels(sc, paths, modelCount);
+    }
+
+    //int LoadModel(std::string path) {
+    //    return -1;
+    //}
+
+    int LoadModel(std::string path, int &outMeshCount) {
+        return ModelLoader::LoadModel1(path, outMeshCount);
     }
 
     Renderer *nth_InitRender(struct Scene *sc, struct Window *win) {

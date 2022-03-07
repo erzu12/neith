@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <iostream>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,6 +69,7 @@ namespace neith {
 
         //VertexShader
         unsigned int vertexShader;
+        std::cout << GL_VERTEX_SHADER << std::endl;
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         
         glShaderSource(vertexShader, 1, vertCodeArr, NULL);

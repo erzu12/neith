@@ -10,6 +10,8 @@
 #include "window/window.h"
 #include "render/render.h"
 
+#include <string>
+
 namespace neith {
     struct Window* nth_CreateWindow();
 
@@ -18,6 +20,10 @@ namespace neith {
     void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win);
 
     void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount);
+
+    //int LoadModel(std::string path);
+
+    int LoadModel(std::string path, int &outMeshCount);
 
     Renderer *nth_InitRender(struct Scene *sc, struct Window *win);
 

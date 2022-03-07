@@ -42,7 +42,7 @@ namespace neith {
         static std::unordered_map<std::string, unsigned int> mEntityNames;
         static std::vector<Entity*> mEntitys;
     public:
-        Materials *mat;
+        static Materials *mMaterial;
         Camera *cd;
         glm::vec3 lightDir;
 
