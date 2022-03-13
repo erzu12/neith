@@ -1,4 +1,7 @@
 #include "meshComp.h"
+#include <glm/gtx/string_cast.hpp>
+
+#include "log.h"
 
 
 namespace neith {
@@ -27,25 +30,67 @@ namespace neith {
         mVertCounts.push_back(vertCount);
         mIndCounts.push_back(indCount);
         mMaterials.push_back(material);
+        mInstanceCount.push_back(0);
+        mInstanceMap.push_back(std::unordered_map<unsigned int, unsigned int>());
+        mModelMats.push_back(std::vector<glm::mat4>());
         mUpdate.push_back(std::vector<bool>{false});
 
         mPrimitivesCount = mModelMats.size();
 
-        return mPrimitivesCount;
+        return mPrimitivesCount - 1;
     }
 
     int MeshComp::AddStaticMesh(int primitivesCount) {
         int mesh = mMeshCount;
         mMeshCount++;
 
-        int primitive = primitivesCount;
-        primitivesCount = primitive + primitivesCount;
-
+        mMeshes.push_back(mPrimitivesCount);
         mMeshes.push_back(primitivesCount);
-        mMeshes.push_back(0);
-        mMeshes.push_back(primitivesCount + primitivesCount);
 
         return mesh;
+    }
+
+    void MeshComp::Transform(unsigned int entityID, glm::mat4 &transform) {
+        mesh meshID = mIndexMap.at(entityID);
+        for(int i = 0; i < mMeshes[meshID * 2 + 1]; i++) {
+            int primitive = mMeshes[meshID + i];
+            unsigned int instanceID = mInstanceMap.at(primitive).at(entityID);
+            mModelMats.at(primitive).at(instanceID) *= transform;
+            ShouldUpdate(primitive, instanceID);
+        }
+    }
+
+    void MeshComp::ShouldUpdate(mesh meshID, unsigned int instanceID) {
+        mUpdate.at(meshID).at(instanceID + 1) = true;
+        mUpdate.at(meshID).at(0) = true;
+    }
+
+    void MeshComp::UpdateDone(mesh meshID, unsigned int instanceID) {
+        mUpdate.at(meshID).at(instanceID + 1) = false;
+        mUpdate.at(meshID).at(0) = false;
+    }
+
+    void MeshComp::AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4 modelMat) {
+        mIndexMap.insert({entityID, meshID});
+
+        for(int i = 0; i < mMeshes[meshID * 2 + 1]; i++) {
+            int primitive = mMeshes[meshID * 2] + i;
+
+            mInstanceMap.at(primitive).insert({entityID, mInstanceCount.at(primitive)});
+            mModelMats.at(primitive).push_back(modelMat);
+            mUpdate.at(primitive).push_back(true);
+            mUpdate.at(primitive).at(0) = true;
+
+            mInstanceCount.at(primitive)++;
+        }
+    }
+
+    int MeshComp::getMaterial(unsigned int meshID, int material) {
+            if(mMeshes[meshID * 2 + 1] <= material) {
+                NT_INTER_ERROR("warning: mesh: {} does not have: {} materialSlots", meshID, material);
+                return -1;
+            }
+            return mMaterials[mMeshes[meshID * 2] + material];
     }
 
     //void MeshComp::UpdateTransform(unsigned int entity, glm::mat4 transform) {

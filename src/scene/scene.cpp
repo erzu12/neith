@@ -2,8 +2,10 @@
 
 #include "material.h"
 #include "window/window.h"
+#include "log.h"
 
 #include <string>
+#include <iostream>
 
 
 //void DeleteStaticRender(struct RenderContext *rc) {
@@ -27,11 +29,12 @@ namespace neith {
 
     std::unordered_map<std::string, unsigned int> Scene::mEntityNames = {};
     std::vector<Entity*> Scene::mEntitys = {};
-    Materials* Scene::mMaterial = new Materials(100);
 
     Scene::Scene(int maxPrimitives) {
         //sp = new StaticPrimitives(maxPrimitives);
         cd = new Camera();
+        Log::Init();
+        Materials::AddMaterial();
     }
 
     int Scene::AddEntity() {
@@ -63,11 +66,14 @@ namespace neith {
     }
 
     Entity* Scene::GetEntity(unsigned int entityID) {
+        if(entityID >= mEntitys.size()) {
+            std::cout << "warnig no entity with id: " << entityID << std::endl;
+            return nullptr;
+        }
         return mEntitys.at(entityID);
     }
 
     Scene::~Scene() {
-        delete mMaterial;
         //delete sp;
         delete cd; 
     }

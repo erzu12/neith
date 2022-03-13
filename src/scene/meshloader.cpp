@@ -7,6 +7,7 @@
 #include <cgltf.h>
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/vec3.hpp>
@@ -17,7 +18,7 @@
 
 #include "systems/sysMesh.h"
 
-#include <iostream>
+#include "log.h"
 
 namespace neith {
     int ModelLoader::LoadModel1(std::string path, int &outMeshCount) {
@@ -33,8 +34,8 @@ namespace neith {
             cgltf_result result = cgltf_parse_file(&options, path.data(), &gltfData);
             if (result != cgltf_result_success) {
                 //printf("faild to load model: %s\n", paths[i]);
-                printf("faild to load model: %s\n", path.data());
-                exit(EXIT_FAILURE);
+                NT_INTER_ERROR("faild to load model: {}", path.data());
+                return 0;
             }
 
             char binPath[1024];
@@ -43,6 +44,9 @@ namespace neith {
 
             int dataSize = gltfData->buffers->size;
             char *sceneData = LoadBinFile(dataSize, binPath);
+            if(!sceneData) {
+                return 0;
+            }
 
             int curretPrimitive = 0;
 
@@ -77,7 +81,7 @@ namespace neith {
 
                 for(int k = 0; k < primitivesCount; k++) {
                     if(!CheckAtributeFormat(&gltfData->nodes[j].mesh->primitives[k])){
-                        printf("WARNING: Vertex Attribute missing on mesh %s\n", gltfData->nodes[j].mesh->name);
+                        NT_INTER_WARN("WARNING: Vertex Attribute missing on mesh {}", gltfData->nodes[j].mesh->name);
                         continue;
                     }
                     bool hasTangents = HasTangents(&gltfData->nodes[j].mesh->primitives[k]); 
@@ -91,6 +95,7 @@ namespace neith {
                         CalcTangents(vertices, vertCount, indices, indCount);
 
                     int material = ReadMaterial(gltfMaterials, materialsCount, gltfData->nodes[j].mesh->primitives[k].material, materials);
+
                     
                     system::AddStaticPrimitive(vertices, vertCount, indices, indCount, material);
                 }
@@ -140,12 +145,12 @@ namespace neith {
         return true;
     }
 
-    int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, int &materialsCount, cgltf_material *material, int *materials) {
-        if(material == NULL) 
+    int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, int &materialsCount, cgltf_material *gltfMaterial, int *materials) {
+        if(gltfMaterial == NULL) 
             return 0;
 
         for(int i = 0; i < materialsCount; i++) {
-            if(material == gltfMaterials[i]) {
+            if(gltfMaterial == gltfMaterials[i]) {
                 return materials[i];
             }
         }
@@ -167,28 +172,46 @@ namespace neith {
     }
 
     char *ModelLoader::LoadBinFile(int dataLength, char *binPath) {
-        FILE * pFile;
-        
-        pFile = fopen(binPath, "rb");
+        //FILE * pFile;
 
-        if(!pFile) {
-            printf("faild to Load binary file: %s\n", binPath);
-            exit(EXIT_FAILURE);
-        }
+        std::ifstream ifs;
+
+        ifs.open(binPath, std::ifstream::in | std::ifstream::binary);
         
-        char *sceneData = (char*)malloc(dataLength);
-        if(sceneData == NULL) {
-            printf("memory error: unable to allocate sceneData");
-            exit(EXIT_FAILURE);
+        //pFile = fopen(binPath, "rb");
+
+        if(!ifs.is_open()) {
+            NT_INTER_ERROR("faild to Load binary file: {}", binPath);
+            return nullptr;
         }
 
-        int readResult = fread(sceneData, 1, dataLength, pFile);
-        if(readResult != dataLength) {
-            printf("error reading file: %s\n", binPath);
-            exit(EXIT_FAILURE);
+        //if(!pFile) {
+            //printf("faild to Load binary file: %s\n", binPath);
+            //exit(EXIT_FAILURE);
+        //}
+        
+        char *sceneData = new char[dataLength];
+        //char *sceneData = (char*)malloc(dataLength);
+        //if(sceneData == NULL) {
+            //printf("memory error: unable to allocate sceneData");
+            //exit(EXIT_FAILURE);
+        //}
+
+        //int readResult = fread(sceneData, 1, dataLength, pFile);
+        //if(readResult != dataLength) {
+            //printf("error reading file: %s\n", binPath);
+            //exit(EXIT_FAILURE);
+        //}
+
+        ifs.read(sceneData, dataLength);
+        if(!ifs) {
+            NT_INTER_ERROR("faild to read: {}", binPath);
+            ifs.close();
+            return nullptr;
         }
         
-        fclose(pFile);
+        ifs.close();
+        //fclose(pFile);
 
         return sceneData;
     }

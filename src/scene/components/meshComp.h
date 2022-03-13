@@ -30,28 +30,19 @@ public:
 
         static int id;
 
-        int static AddStaticPrimitive(float *vertices,
-                               int vertCount,
-                               int *indices,
-                               int indCount,
-                               int material);
+        static int AddStaticPrimitive(float *vertices, int vertCount, int *indices, int indCount, int material);
 
-        void static Transform(unsigned int entityID, glm::mat4 &transform) {
-            mesh meshID = mIndexMap.at(entityID);
-            unsigned int instanceID = mInstanceMap.at(meshID).at(entityID);
-            mModelMats.at(meshID).at(instanceID) *= transform;
-            ShouldUpdate(meshID, instanceID);
-        }
+        static void Transform(unsigned int entityID, glm::mat4 &transform);
 
-        void static ShouldUpdate(mesh meshID, unsigned int instanceID) {
-            mUpdate.at(meshID).at(instanceID) = true;
-        }
+        static void ShouldUpdate(mesh meshID, unsigned int instanceID);
 
-        void static UpdateDone(mesh meshID, unsigned int instanceID) {
-            mUpdate.at(meshID).at(instanceID) = false;
-        }
+        static void UpdateDone(mesh meshID, unsigned int instanceID);
 
-        int static AddStaticMesh(int primitivesCount);
+        static void AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4 modelMat);
+
+        static int AddStaticMesh(int primitivesCount);
+
+        static int getMaterial(unsigned int entity, int material);
 
         //void static UpdateTransform(unsigned int entity, glm::mat4 transform);
 

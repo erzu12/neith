@@ -12,5 +12,6 @@ namespace neith {
 
     int AddMesh(int primitivesCount);
 
+    void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
     }
 }

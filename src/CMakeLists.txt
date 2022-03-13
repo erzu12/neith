@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.16.2)
 add_library("${PROJECT_NAME}"
     "neith.h"
     "neith.cpp"
+    "log.h"
+    "log.cpp"
     "defaults.h"
     "physics/collision.h"
     "physics/collision.cpp"
@@ -43,6 +45,8 @@ add_library("${PROJECT_NAME}"
     "scene/systems/sysMesh.cpp"
     "scene/systems/sysTransform.h"
     "scene/systems/sysTransform.cpp"
+    "scene/systems/sysMaterial.h"
+    "scene/systems/sysMaterial.cpp"
     "window/input.h"
     "window/input.cpp"
     "window/window.h"
@@ -61,7 +65,8 @@ target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
-	PUBLIC ${CMAKE_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/spdlog/include
+   	PUBLIC ${CMAKE_SOURCE_DIR}/src
 )
 
 target_link_libraries("${PROJECT_NAME}"
@@ -70,4 +75,5 @@ target_link_libraries("${PROJECT_NAME}"
     cgltf
     stb
     glm
+    spdlog
 )

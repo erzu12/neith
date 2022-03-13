@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "log.h"
+
 #include "scene/scene.h"
 #include "window/window.h"
 #include "render/render.h"
@@ -25,6 +27,10 @@ namespace neith {
 
     int LoadModel(std::string path, int &outMeshCount);
 
+    unsigned int AddEntity(std::string name);
+
+    void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
+
     Renderer *nth_InitRender(struct Scene *sc, struct Window *win);
 
     void nth_UpdateWindow(struct Window *win);
@@ -33,19 +39,25 @@ namespace neith {
 
     unsigned int nth_LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath);
 
-    void nth_SetShader(Materials *mat, int material, int shader);
+    void SetShader(unsigned int meshID, int material, int shader);
 
-    int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
+    //int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
 
-    void nth_SetTexture(Materials *mat, int material, int texture, char *bindingName);
+    void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
 
-    int nth_SetTextureByName(Materials *mat, char *materialName, int texture, char *bindingName);
+    void SetValue(unsigned int meshID, int material, const char *bindingName, float value);
 
-    void nth_SetValueByNameF(Materials *mat, char *materialName, char *bindingName, float value);
+    void SetValue(unsigned int meshID, int material, const char *bindingName, float *value);
 
-    void nth_SetValueByNameV3(Materials *mat, char *materialName, char *bindingName, float *value);
+    void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z);
 
-    void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
+    //int nth_SetTextureByName(Materials *mat, char *materialName, int texture, char *bindingName);
+
+    //void nth_SetValueByNameF(Materials *mat, char *materialName, char *bindingName, float value);
+
+    //void nth_SetValueByNameV3(Materials *mat, char *materialName, char *bindingName, float *value);
+
+    //void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
 
     void nth_Transform(unsigned int entityID, glm::mat4 &transform);
 }

@@ -5,6 +5,8 @@
 namespace neith {
     unsigned int LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath);
 
+    char *LoadShader(const char *path);
+
     void UniformVec3(unsigned int shader, const char* name, float x, float y, float z);
 
     void UniformVec3v(unsigned int shader, const char* name, const GLfloat *val);

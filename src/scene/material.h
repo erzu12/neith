@@ -19,11 +19,15 @@ namespace neith {
 
         //int SetShaderByName(char *materialName, int shader);
 
-        static void SetTexture(int material, int texture, char *bindingName);
+        static void SetTexture(int material, int texture, const char *bindingName);
 
         //int SetTextureByName(char *materialName, int texture, char *bindingName);
 
-        static void SetValue(int material, char *bindingName, float value);
+        static void SetValue(int material, const char *bindingName, float value);
+
+        static void SetValue(int material, const char *bindingName, float *value);
+
+        static void SetValue(int material, const char *bindingName, float x, float y, float z);
 
         //void SetValueByNameF(char *materialName, char *bindingName, float value);
 

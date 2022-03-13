@@ -21,5 +21,9 @@ namespace neith {
         int AddMesh(int primitivesCount) {
             return MeshComp::AddStaticMesh(primitivesCount);
         }
+
+        void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat) {
+            MeshComp::AddInstance(meshID, entityID, modelMat);
+        }
     }
 }

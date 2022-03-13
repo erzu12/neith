@@ -97,27 +97,27 @@ namespace neith {
 
         for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
             int material = MeshComp::mMaterials[i];
-            glUseProgram(sc->mMaterial->mShaders[material]);
+            glUseProgram(Materials::mShaders[material]);
             float cameraPos[3];
             F3ToArr(cd->cameraPos, cameraPos);
-            UniformVec3v(sc->mMaterial->mShaders[material], "viewPos", cameraPos);
-            UniformVec3(sc->mMaterial->mShaders[material], "light.direction", 0.4, -1.0, -0.4);
-            UniformVec3(sc->mMaterial->mShaders[material], "light.color", 3.0f, 3.0f, 3.0f);
+            UniformVec3v(Materials::mShaders[material], "viewPos", cameraPos);
+            UniformVec3(Materials::mShaders[material], "light.direction", 0.4, -1.0, -0.4);
+            UniformVec3(Materials::mShaders[material], "light.color", 3.0f, 3.0f, 3.0f);
 
             //CubeMVPuniforms
-            UniformMat4v(sc->mMaterial->mShaders[material], "lightSpaceMatrix", lightSpaceMatrix);
+            UniformMat4v(Materials::mShaders[material], "lightSpaceMatrix", lightSpaceMatrix);
             //UniformMat4v(sc->mat->shaders[materia);
-            UniformMat4v(sc->mMaterial->mShaders[material], "view", view);
-            UniformMat4v(sc->mMaterial->mShaders[material], "projection", projection);
+            UniformMat4v(Materials::mShaders[material], "view", view);
+            UniformMat4v(Materials::mShaders[material], "projection", projection);
 
-            for(int j = 0; j < sc->mMaterial->mTextureCounts[material]; j++) {
+            for(int j = 0; j < Materials::mTextureCounts[material]; j++) {
                 glActiveTexture(GL_TEXTURE0 + j);
-                glBindTexture(GL_TEXTURE_2D, sc->mMaterial->mTextures[material][j]);
+                glBindTexture(GL_TEXTURE_2D, Materials::mTextures[material][j]);
             }
 
             glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
             if(MeshComp::mUpdate.at(i).at(0)) {
-                glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * 3, MeshComp::mModelMats.at(i).data(), GL_DYNAMIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::mInstanceCount.at(i), MeshComp::mModelMats.at(i).data(), GL_DYNAMIC_DRAW);
                 //for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
                     //if(MeshComp::mUpdate.at(i).at(j + 1)) {
                         ////UniformMat4v(sc->mat->shaders[material], "model", MeshComp::mModelMats.at(i).at(j + 1));
@@ -150,9 +150,9 @@ namespace neith {
         glClear(GL_DEPTH_BUFFER_BIT);
 
         for(int i = 0; i < MeshComp::mPrimitivesCount; i++) {
-            for(int j = 0; j < sc->mMaterial->mTextureCounts[i]; j++) {
+            for(int j = 0; j < Materials::mTextureCounts[i]; j++) {
                 glActiveTexture(GL_TEXTURE0 + j);
-                glBindTexture(GL_TEXTURE_2D, sc->mMaterial->mTextures[i][j]);
+                glBindTexture(GL_TEXTURE_2D, Materials::mTextures[i][j]);
             }
 
             glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);

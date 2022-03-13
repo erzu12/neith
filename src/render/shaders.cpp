@@ -2,74 +2,30 @@
 
 #include <glad/glad.h>
 
-#include <iostream>
+#include "log.h"
 
-#include <stdio.h>
+#include <fstream>
 #include <stdlib.h>
 #include <string.h>
 
 namespace neith {
     unsigned int LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath) {
 
-        FILE *fpVert, *fpFrag;
-        unsigned int sizev, sizef;
+        const char *vertCode = LoadShader(vertexPath);
+        const char *fragCode = LoadShader(fragmentPath);
 
-        fpVert = fopen(vertexPath, "r");
-        fpFrag = fopen(fragmentPath, "r");
-
-        if(fpVert == NULL) {
-            printf("faild to load %s\n", vertexPath);
-            exit(EXIT_FAILURE);
-        }
-        if(fpFrag == NULL) {
-            printf("faild to load %s\n", fragmentPath);
-            exit(EXIT_FAILURE);
+        if(!vertCode || !fragCode) {
+            return 0;
         }
 
-        fseek(fpVert, 0, SEEK_END); 
-        sizev = ftell(fpVert);
-        fseek(fpVert, 0, SEEK_SET);
-
-        fseek(fpFrag, 0, SEEK_END); 
-        sizef = ftell(fpFrag);
-        fseek(fpFrag, 0, SEEK_SET);
-
-        char *vertCode = (char *)malloc((size_t)sizev + 1);
-        if (vertCode == NULL) { printf("Memory error"); exit (EXIT_FAILURE); }
-        char *fragCode = (char *)malloc((size_t)sizef + 1);
-        if (fragCode == NULL) { printf("Memory error"); exit (EXIT_FAILURE); }
-
-        int result = fread (vertCode, 1, sizev, fpVert);
-        if (result != sizev) { printf("ERROR: faild to read: %s\n", vertexPath); }
-
-        result = fread (fragCode, 1, sizef, fpFrag);
-        if (result != sizef) { printf("ERROR: faild to read: %s\n", fragmentPath); }
-
-        //for(int i = 0; i < sizev; i++){
-        //	vertCode[i] = fgetc(fpVert);
-        //}
-        vertCode[sizev] = '\0';
-        //for(int i = 0; i < sizef; i++){
-        //	fragCode[i] = fgetc(fpFrag);
-        //}
-        fragCode[sizef] = '\0';
-
-        fclose(fpVert);
-        fclose(fpFrag);
-
-
-        const char* vertCodeArr[1];
-        const char* fragCodeArr[1];
-
-        vertCodeArr[0] = vertCode;
-        fragCodeArr[0] = fragCode;
+        const char *vertCodeArr[1] = {vertCode};
+        const char *fragCodeArr[1] = {fragCode};
 
         int success;
         char infoLog[512];
 
         //VertexShader
         unsigned int vertexShader;
-        std::cout << GL_VERTEX_SHADER << std::endl;
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         
         glShaderSource(vertexShader, 1, vertCodeArr, NULL);
@@ -79,8 +35,8 @@ namespace neith {
         
         if(!success) {
             glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            printf("ERROR: VertexShader: %s faild to compile:\n%s\n", vertexPath, infoLog);
-            exit(EXIT_FAILURE);
+            NT_INTER_CRITICAL("VertexShader: {} faild to compile:\n{}", vertexPath, infoLog);
+            return 0;
         }
 
         //Fragment Shader
@@ -94,8 +50,8 @@ namespace neith {
         
         if(!success) {
             glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            printf("ERROR: FragmentShader: %s faild to compile:\n%s\n", fragmentPath, infoLog);
-            exit(EXIT_FAILURE);
+            NT_INTER_CRITICAL("FragmentShader: {} faild to compile:\n{}", fragmentPath, infoLog);
+            return 0;
         }
         
         //Shader Program
@@ -109,15 +65,49 @@ namespace neith {
         glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
         if(!success) {
             glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-            printf("ERROR: shader_program linking faild", infoLog, "\n");
-            exit(EXIT_FAILURE);
+            NT_INTER_CRITICAL("shader_program linking faild {}", infoLog );
+            return 0;
         }
+
+        delete vertCode;
+        delete fragCode;
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
 
         return shaderProgram;
     }
+
+    char *LoadShader(const char *path) {
+
+        std::ifstream ifs;
+
+        ifs.open(path, std::ifstream::in);
+        if(!ifs.is_open()) {
+            NT_INTER_ERROR("faild to load: {}", path);
+            return nullptr;
+        }
+
+        ifs.seekg (0, ifs.end);
+        int length = ifs.tellg();
+        ifs.seekg (0, ifs.beg);
+
+        char *buffer = new char[length + 1];
+
+        ifs.read(buffer, length);
+        if(!ifs) {
+            NT_INTER_ERROR("faild to read: {}", path);
+            ifs.close();
+            return nullptr;
+        }
+        ifs.close();
+
+        buffer[length] = '\0';
+
+        return buffer;
+    }
+
+
 
     void UniformVec3(unsigned int shader, const char* name, float x, float y, float z) {
         glUniform3f(glGetUniformLocation(shader, name), x, y, z);
