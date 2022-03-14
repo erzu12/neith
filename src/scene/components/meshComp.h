@@ -9,14 +9,18 @@
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
+typedef unsigned int mesh;
+
 namespace neith {
 
     class MeshComp : public Component {
 public:
         static int mPrimitivesCount;
         static int mMeshCount;
-        static std::vector<glm::mat4> mModelMats;
-        static std::vector<bool> mUpdate;
+        static std::vector<std::vector<glm::mat4>> mModelMats;
+        static std::vector<int> mInstanceCount;
+        static std::vector<std::unordered_map<unsigned int, unsigned int>> mInstanceMap;
+        static std::vector<std::vector<bool>> mUpdate;
         static std::vector<float*> mVertices;
         static std::vector<int*> mIndices;
         static std::vector<int> mMeshes;
@@ -26,30 +30,19 @@ public:
 
         static int id;
 
-        int static AddStaticPrimitive(unsigned int entity,
-                               glm::mat4 modelMat,
-                               float *vertices,
-                               int vertCount,
-                               int *indices,
-                               int indCount,
-                               int material);
+        static int AddStaticPrimitive(float *vertices, int vertCount, int *indices, int indCount, int material);
 
-        void static Transform(unsigned int entityID, glm::mat4 &transform) {
-            unsigned int meshID = mIndexMap.at(entityID);
-            mModelMats.at(meshID) *= transform;
-            //std::cout << glm::to_string(mModelMats.at(meshID)) << std::endl;
-            ShouldUpdate(meshID);
-        }
+        static void Transform(unsigned int entityID, glm::mat4 &transform);
 
-        void static ShouldUpdate(unsigned int meshID) {
-            mUpdate.at(meshID) = true;
-        }
+        static void ShouldUpdate(mesh meshID, unsigned int instanceID);
 
-        void static UpdateDone(unsigned int meshID) {
-            mUpdate.at(meshID) = false;
-        }
+        static void UpdateDone(mesh meshID, unsigned int instanceID);
 
-        int AddStaticMesh(unsigned int entity, int primitivesCount);
+        static void AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4 modelMat);
+
+        static int AddStaticMesh(int primitivesCount);
+
+        static int getMaterial(unsigned int entity, int material);
 
         //void static UpdateTransform(unsigned int entity, glm::mat4 transform);
 

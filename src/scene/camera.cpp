@@ -28,7 +28,7 @@ namespace neith {
         //TODO: make seperat function for pos update
         Float3 cameraUp = {0.0f, 1.0f, 0.0f};
 
-        const float speed = 5.0f * Time::DeltaTime();
+        const float speed = 20.0f * Time::DeltaTime();
 
         cameraPos = F3Add(cameraPos, F3Scale(camerFront, moveVec.z * speed));
         Float3 cameraRight = F3Noramlize(F3Cross(camerFront, cameraUp));

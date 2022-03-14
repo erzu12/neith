@@ -4,6 +4,8 @@
 #include <stb_image.h>
 #include <glad/glad.h>
 
+#include "log.h"
+
 namespace neith {
     unsigned int CreatValueTextureF(float value) {
         
@@ -68,7 +70,7 @@ namespace neith {
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else {
-            printf("faild to load texture: %s\n", path);
+            NT_INTER_ERROR("faild to load texture: {}", path);
         }
         stbi_image_free(data);
 

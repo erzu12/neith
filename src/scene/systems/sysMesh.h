@@ -4,12 +4,14 @@
 
 namespace neith {
     namespace system {
-        int AddStaticPrimitive(unsigned int entity,
-                               glm::mat4 modelMat,
-                               float *vertices,
+        int AddStaticPrimitive(float *vertices,
                                int vertCount,
                                int *indices,
                                int indCount,
                                int material);
+
+    int AddMesh(int primitivesCount);
+
+    void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
     }
 }

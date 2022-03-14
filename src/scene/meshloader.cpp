@@ -7,6 +7,7 @@
 #include <cgltf.h>
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/vec3.hpp>
@@ -17,27 +18,35 @@
 
 #include "systems/sysMesh.h"
 
-#include <iostream>
+#include "log.h"
 
 namespace neith {
-    void LoadModels(struct Scene *sc, const char* paths[], int modelCount) {
+    int ModelLoader::LoadModel1(std::string path, int &outMeshCount) {
         const int VERT_SIZE = 12;
+        unsigned int mesh = -1;
+        outMeshCount = 0;
         //StaticPrimitives *sp = sc->sp;
 
-        for(int i = 0; i < modelCount; i++) {
+        //for(int i = 0; i < modelCount; i++) {
             cgltf_options options = {(cgltf_file_type)0};
             cgltf_data* gltfData = NULL;
-            cgltf_result result = cgltf_parse_file(&options, paths[i], &gltfData);
+            //cgltf_result result = cgltf_parse_file(&options, paths[i], &gltfData);
+            cgltf_result result = cgltf_parse_file(&options, path.data(), &gltfData);
             if (result != cgltf_result_success) {
-                printf("faild to load model: %s\n", paths[i]);
-                exit(EXIT_FAILURE);
+                //printf("faild to load model: %s\n", paths[i]);
+                NT_INTER_ERROR("faild to load model: {}", path.data());
+                return 0;
             }
 
             char binPath[1024];
-            PathToBinPath(paths[i], binPath, gltfData->buffers->uri);
+            //PathToBinPath(paths[i], binPath, gltfData->buffers->uri);
+            PathToBinPath(path.data(), binPath, gltfData->buffers->uri);
 
             int dataSize = gltfData->buffers->size;
             char *sceneData = LoadBinFile(dataSize, binPath);
+            if(!sceneData) {
+                return 0;
+            }
 
             int curretPrimitive = 0;
 
@@ -46,18 +55,33 @@ namespace neith {
 
             int nodeCount = gltfData->nodes_count;
 
+            cgltf_material *gltfMaterials[gltfData->materials_count];
+            int materials[gltfData->materials_count];
+            int materialsCount = 0;
+
             for(int j = 0; j < nodeCount; j++) {
                 if(gltfData->nodes[j].mesh == NULL)
                     continue;
 
+                //unsigned int entity = Scene::AddEntity();
+
                 int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
+
+                if(mesh == -1) {
+                    mesh = system::AddMesh(primitivesCount);
+                }
+                else {
+                    system::AddMesh(primitivesCount);
+                } 
+
+                outMeshCount++;
 
                 glm::mat4 modelMat(1.0f);
                 ReadTransform(&gltfData->nodes[j], modelMat);
 
                 for(int k = 0; k < primitivesCount; k++) {
                     if(!CheckAtributeFormat(&gltfData->nodes[j].mesh->primitives[k])){
-                        printf("WARNING: Vertex Attribute missing on mesh %s\n", gltfData->nodes[j].mesh->name);
+                        NT_INTER_WARN("WARNING: Vertex Attribute missing on mesh {}", gltfData->nodes[j].mesh->name);
                         continue;
                     }
                     bool hasTangents = HasTangents(&gltfData->nodes[j].mesh->primitives[k]); 
@@ -70,17 +94,17 @@ namespace neith {
                     if(!hasTangents)
                         CalcTangents(vertices, vertCount, indices, indCount);
 
-                    int material = ReadMaterial(sc->mat, gltfData->nodes[j].mesh->primitives[k].material);
+                    int material = ReadMaterial(gltfMaterials, materialsCount, gltfData->nodes[j].mesh->primitives[k].material, materials);
 
-                    unsigned int entity = Scene::AddEntity();
-
-                    system::AddStaticPrimitive(entity, modelMat, vertices, vertCount, indices, indCount, material);
+                    
+                    system::AddStaticPrimitive(vertices, vertCount, indices, indCount, material);
                 }
             }
-        }
+        //}
+        return mesh;
     }
 
-    void PathToBinPath(const char *path, char* binPath, char* uri) {
+    void ModelLoader::PathToBinPath(const char *path, char* binPath, char* uri) {
         char *lastSlash = (char*)strrchr(path, '/');
         int dirPathLen = lastSlash - path + 1;
         
@@ -88,7 +112,7 @@ namespace neith {
         strncpy(binPath + dirPathLen, uri, 1024 - dirPathLen); 
     }
 
-    void ReadTransform(cgltf_node *node, glm::mat4 &modelMat) {
+    void ModelLoader::ReadTransform(cgltf_node *node, glm::mat4 &modelMat) {
         if(node->has_translation) {
             glm::translate(modelMat, glm::make_vec3(node->translation));
         }
@@ -103,7 +127,7 @@ namespace neith {
         }
     }
 
-    bool CheckAtributeFormat(cgltf_primitive *primitive) {
+    bool ModelLoader::CheckAtributeFormat(cgltf_primitive *primitive) {
         // refactor this garbage
         if(primitive->attributes_count < 3) return false;
 
@@ -116,55 +140,83 @@ namespace neith {
         return true;
     }
 
-    bool HasTangents(cgltf_primitive *primitive) {
+    bool ModelLoader::HasTangents(cgltf_primitive *primitive) {
         if(strcmp(primitive->attributes[2].name, "TANGENT") != 0) return false;
         return true;
     }
 
-    int ReadMaterial(Materials *mat, cgltf_material *material) {
-        if(material == NULL) 
+    int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, int &materialsCount, cgltf_material *gltfMaterial, int *materials) {
+        if(gltfMaterial == NULL) 
             return 0;
 
-        int matInd = mat->materialCount;
-        for(int i = 0; i < matInd; i++) {
-            if(strcmp(material->name, mat->names[i]) == 0) {
-                return i;
+        for(int i = 0; i < materialsCount; i++) {
+            if(gltfMaterial == gltfMaterials[i]) {
+                return materials[i];
             }
         }
-        strncpy(mat->names[matInd], material->name, 128);
-        mat->materialCount++;
+        
+        //int matInd = mat->mMaterialCount;
+        //for(int i = 0; i < matInd; i++) {
+            //if(strcmp(material->name, mat->names[i]) == 0) {
+                //return i;
+            //}
+        //}
+        //strncpy(mat->names[matInd], material->name, 128);
+        //mat->mMaterialCount++;
+        
+        int newMat = Materials::AddMaterial();
+        materials[materialsCount] = newMat;
+        materialsCount++;
 
-        return matInd;
+        return newMat;
     }
 
-    char *LoadBinFile(int dataLength, char *binPath) {
-        FILE * pFile;
-        
-        pFile = fopen(binPath, "rb");
+    char *ModelLoader::LoadBinFile(int dataLength, char *binPath) {
+        //FILE * pFile;
 
-        if(!pFile) {
-            printf("faild to Load binary file: %s\n", binPath);
-            exit(EXIT_FAILURE);
-        }
+        std::ifstream ifs;
+
+        ifs.open(binPath, std::ifstream::in | std::ifstream::binary);
         
-        char *sceneData = (char*)malloc(dataLength);
-        if(sceneData == NULL) {
-            printf("memory error: unable to allocate sceneData");
-            exit(EXIT_FAILURE);
+        //pFile = fopen(binPath, "rb");
+
+        if(!ifs.is_open()) {
+            NT_INTER_ERROR("faild to Load binary file: {}", binPath);
+            return nullptr;
         }
 
-        int readResult = fread(sceneData, 1, dataLength, pFile);
-        if(readResult != dataLength) {
-            printf("error reading file: %s\n", binPath);
-            exit(EXIT_FAILURE);
+        //if(!pFile) {
+            //printf("faild to Load binary file: %s\n", binPath);
+            //exit(EXIT_FAILURE);
+        //}
+        
+        char *sceneData = new char[dataLength];
+        //char *sceneData = (char*)malloc(dataLength);
+        //if(sceneData == NULL) {
+            //printf("memory error: unable to allocate sceneData");
+            //exit(EXIT_FAILURE);
+        //}
+
+        //int readResult = fread(sceneData, 1, dataLength, pFile);
+        //if(readResult != dataLength) {
+            //printf("error reading file: %s\n", binPath);
+            //exit(EXIT_FAILURE);
+        //}
+
+        ifs.read(sceneData, dataLength);
+        if(!ifs) {
+            NT_INTER_ERROR("faild to read: {}", binPath);
+            ifs.close();
+            return nullptr;
         }
         
-        fclose(pFile);
+        ifs.close();
+        //fclose(pFile);
 
         return sceneData;
     }
 
-    float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents) {
+    float *ModelLoader::LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents) {
         float *vertData = (float *)sceneData;
         float *vertices = (float*)malloc(sizeof(float) * 12 * vertCount);
         
@@ -201,7 +253,7 @@ namespace neith {
         return vertices;
     }
 
-    int *LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount) {
+    int *ModelLoader::LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount) {
         int *indices = (int*)malloc(sizeof(int) * indCount);
 
         int indOffset = primitive.indices->buffer_view->offset;
@@ -221,7 +273,7 @@ namespace neith {
         return indices;
     }
 
-    void CalcTangents(float *vertices, int vertCount, int *indices, int indCount) {
+    void ModelLoader::CalcTangents(float *vertices, int vertCount, int *indices, int indCount) {
         glm::vec3 *tan1 = (glm::vec3*)calloc(vertCount * 2, sizeof(glm::vec3));
         glm::vec3 *tan2 = tan1 + vertCount;
         

@@ -1,5 +1,5 @@
 #pragma once
-#include "staticrenderer.h"
+//#include "staticrenderer.h"
 #include "instancerenderer.h"
 #include "scene/scene.h"
 namespace neith {

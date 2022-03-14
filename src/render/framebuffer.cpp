@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <stdbool.h>
 #include "window/window.h"
+
+#include "log.h"
 namespace neith {
     void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
         struct CallbackContext *cbc = (struct CallbackContext *)glfwGetWindowUserPointer(window);
@@ -37,8 +39,9 @@ namespace neith {
         
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            printf("ERROR: Framebuffer not Complete %i\n", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            NT_INTER_CRITICAL("ERROR: Framebuffer not Complete %i\n", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         return fbo;
     }

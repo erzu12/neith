@@ -2,8 +2,10 @@
 
 #include "material.h"
 #include "window/window.h"
+#include "log.h"
 
 #include <string>
+#include <iostream>
 
 
 //void DeleteStaticRender(struct RenderContext *rc) {
@@ -30,8 +32,9 @@ namespace neith {
 
     Scene::Scene(int maxPrimitives) {
         //sp = new StaticPrimitives(maxPrimitives);
-        mat = new Materials(maxPrimitives);
         cd = new Camera();
+        Log::Init();
+        Materials::AddMaterial();
     }
 
     int Scene::AddEntity() {
@@ -63,11 +66,14 @@ namespace neith {
     }
 
     Entity* Scene::GetEntity(unsigned int entityID) {
+        if(entityID >= mEntitys.size()) {
+            std::cout << "warnig no entity with id: " << entityID << std::endl;
+            return nullptr;
+        }
         return mEntitys.at(entityID);
     }
 
     Scene::~Scene() {
-        delete mat;
         //delete sp;
         delete cd; 
     }
