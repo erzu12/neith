@@ -6,10 +6,17 @@
 #include "scene/scene.h"
 
 namespace neith {
-    struct Window {
+    class Window {
+    private:
         bool resize;
         int width, height;
         GLFWwindow *window;
+
+    public:
+        Window();
+        void AttachSceneToWindow(struct Scene *sc);
+        void window_focus_callback(GLFWwindow* window, int focused);
+        void UpdateWindow();
     };
 
     struct CallbackContext {
@@ -19,8 +26,4 @@ namespace neith {
         Camera *cd;
         struct Window *win;
     };
-    struct Window* CreateWindow();
-    void AttachSceneToWindow(struct Scene *sc, struct Window *win);
-    void window_focus_callback(GLFWwindow* window, int focused);
-    void UpdateWindow(struct Window* win);
 }

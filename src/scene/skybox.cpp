@@ -2,6 +2,8 @@
 #include <stb_image.h>
 #include <glad/glad.h>
 #include <string.h>
+
+#include "log.h"
 namespace neith {
     unsigned int LoadCubeMap(const char *path[6]) {
         unsigned int cubeMap;
@@ -19,7 +21,7 @@ namespace neith {
                 stbi_image_free(data);
             }
             else {
-                printf("error: faild to load cubeMap file: %s\n", path[i]);
+                NT_INTER_ERROR("faild to load cubeMap file: {}", path[i]);
                 stbi_image_free(data);
             }
         }

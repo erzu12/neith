@@ -67,7 +67,7 @@ namespace neith {
 
     Entity* Scene::GetEntity(unsigned int entityID) {
         if(entityID >= mEntitys.size()) {
-            std::cout << "warnig no entity with id: " << entityID << std::endl;
+            NT_INTER_WARN("warnig no entity with id: {}", entityID);
             return nullptr;
         }
         return mEntitys.at(entityID);

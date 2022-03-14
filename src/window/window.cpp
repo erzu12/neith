@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 #include <iostream>
 
+#include "log.h"
 #include "timer.h"
 #include "scene/scene.h"
 #include "vecmath.h"
@@ -14,16 +15,16 @@
 
 namespace neith {
     static void error_callback(int error, const char* description) {
-        fprintf(stderr, "Error: %s\n", description);
+        NT_INTER_ERROR(description);
     }
 
-    struct Window *CreateWindow() {
+    Window::Window() {
         glfwSetErrorCallback(error_callback);
 
         //GLFW
         if(!glfwInit()) {
-            printf("faild to init GLFW");
-            exit(-1);
+            NT_INTER_CRITICAL("faild to init GLFW");
+            return nullptr;
         }
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -33,9 +34,9 @@ namespace neith {
 
         GLFWwindow* window = glfwCreateWindow(1800, 1000, "Neith", NULL, NULL);
         if(window == NULL) {
-            printf("faild to crate window\n");
+            NT_INTER_CRITICAL("faild to crate window");
             glfwTerminate();
-            exit(-1);
+            return nullptr;
         }
         glfwMakeContextCurrent(window);
         glfwSwapInterval(0);
