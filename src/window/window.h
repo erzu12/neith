@@ -3,27 +3,38 @@
 #include <GLFW/glfw3.h>
 #include <stdbool.h>
 #include <vecmath.h>
+
 #include "scene/scene.h"
 
 namespace neith {
-    class Window {
-    private:
-        bool resize;
-        int width, height;
-        GLFWwindow *window;
+class Window {
+private:
+    bool resize;
+    int width, height;
+    GLFWwindow *window;
 
-    public:
-        Window();
-        void AttachSceneToWindow(struct Scene *sc);
-        void window_focus_callback(GLFWwindow* window, int focused);
-        void UpdateWindow();
-    };
+public:
+    Window();
+    void AttachSceneToWindow(struct Scene *sc);
+    void UpdateWindow();
 
-    struct CallbackContext {
-        Float3 moveVec;
-        bool firstMouse;
-        float lastX, lastY;
-        Camera *cd;
-        struct Window *win;
-    };
-}
+    int GetWidth();
+    int GetHeight();
+
+    void SetWidth(int width);
+    void SetHeight(int height);
+
+    void SetResize(bool resize);
+    bool GetResize();
+
+    GLFWwindow *GetGLFWwindow();
+};
+
+struct CallbackContext {
+    Float3 moveVec;
+    bool firstMouse;
+    float lastX, lastY;
+    Camera *cd;
+    struct Window *win;
+};
+}  // namespace neith

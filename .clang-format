@@ -1,0 +1,15 @@
+﻿---
+BasedOnStyle: Google
+AccessModifierOffset: '-4'
+AllowShortCaseLabelsOnASingleLine: 'false'
+#AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: 'false'
+BinPackParameters: 'false'
+BreakBeforeBraces: Stroustrup
+ColumnLimit: '120'
+Cpp11BracedListStyle: 'false'
+IndentWidth: '4'
+
+...
+

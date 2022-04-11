@@ -8,16 +8,16 @@
 #include "window/window.h"
 
 namespace neith {
-    class InstanceRenderer {
-    public:
-        unsigned int *VAOs;
-        unsigned int **VBOs;
-        glm::mat4 lightSpaceMatrix;
+class InstanceRenderer {
+public:
+    InstanceRenderer(struct Scene *sc, struct Window *window);
 
-        InstanceRenderer(struct Scene *sc, struct Window *window);
+    void RenderInstanced(struct Scene *sc, int width, int height);
+    void RenderInstancedShadows(struct Scene *sc, int shaderProgram);
 
-        void RenderInstanced(struct Scene *sc, int width, int height);
-
-        void RenderInstancedShadows(struct Scene *sc, int shaderProgram);
-    };
-}
+private:
+    unsigned int *VAOs;
+    unsigned int **VBOs;
+    glm::mat4 lightSpaceMatrix;
+};
+}  // namespace neith
