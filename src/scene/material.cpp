@@ -16,6 +16,7 @@ unsigned int Materials::mMaterialCount = 0;
 std::vector<unsigned int> Materials::mShaders;
 std::vector<unsigned int> Materials::mTextureCounts;
 std::vector<unsigned int *> Materials::mTextures;
+std::unordered_map<int, std::unordered_map<std::string , int>> Materials::mBindingMap;
 
 // Materials::Materials(int materialCount) {
 // materialCount++;
@@ -70,8 +71,25 @@ void Materials::SetShader(unsigned int material, unsigned int shader)
 void Materials::SetTexture(unsigned int material, unsigned int texture, const char *bindingName)
 {
     glUseProgram(mShaders[material]);
-    mTextures.at(material)[mTextureCounts.at(material)] = texture;
-    glUniform1i(glGetUniformLocation(mShaders[material], bindingName), mTextureCounts[material]);
+    int location = glGetUniformLocation(mShaders[material], bindingName);
+    if(location != -1) {
+        auto searchShader = mBindingMap.find(mShaders[material]);
+        if(searchShader == mBindingMap.end()) {
+            searchShader = mBindingMap.insert({mShaders[material], std::unordered_map<std::string, int>()}).first;
+        }
+        auto searchBinding = searchShader->second.find(bindingName);
+        if(searchBinding == searchShader->second.end()) {
+            searchBinding = searchShader->second.insert({bindingName, mTextureCounts.at(material)}).first;
+            glUniform1i(location, mTextureCounts[material]);
+            mTextures.at(material)[mTextureCounts.at(material)] = texture;
+        }
+        else {
+            mTextures.at(material)[searchBinding->second] = texture;
+        }
+    }
+    else {
+        NT_INTER_WARN("No such binding: {} in shader: {}", bindingName, mShaders[material]);
+    }
     mTextureCounts[material]++;
 }
 

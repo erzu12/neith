@@ -28,7 +28,7 @@ namespace neith {
 std::unordered_map<std::string, unsigned int> Scene::mEntityNames = {};
 std::vector<Entity *> Scene::mEntitys = {};
 
-Scene::Scene(int maxPrimitives)
+Scene::Scene()
 {
     // sp = new StaticPrimitives(maxPrimitives);
     Materials::AddMaterial();

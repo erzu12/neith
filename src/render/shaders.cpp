@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <glm/vec3.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #include <fstream>
 
 #include "log.h"

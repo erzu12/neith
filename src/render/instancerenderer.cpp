@@ -3,6 +3,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/vec4.hpp>
 #include <iostream>
 
 #include "dataStructures.h"
@@ -22,7 +23,7 @@
 
 namespace neith {
 
-InstanceRenderer::InstanceRenderer(Scene *sc, Window *window)
+InstanceRenderer::InstanceRenderer()
 {
     // StaticPrimitives *sp = sc->sp;
     // struct RenderContext *rc = (struct RenderContext*)malloc(sizeof(struct
@@ -86,7 +87,7 @@ InstanceRenderer::InstanceRenderer(Scene *sc, Window *window)
     // sc->rc = rc;
 }
 
-void InstanceRenderer::RenderInstanced(Scene *sc, int width, int height)
+void InstanceRenderer::RenderInstanced(int width, int height)
 {
     // Scene
     glViewport(0, 0, width, height);
@@ -113,11 +114,14 @@ void InstanceRenderer::RenderInstanced(Scene *sc, int width, int height)
 
         for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
             glActiveTexture(GL_TEXTURE0 + j);
+            //NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
             glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
         if (MeshComp::ShouldUpdate(i)) {
+            //glm::mat4 test = MeshComp::GetModelMats(i)[0];
+            //NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
             glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
                          GL_DYNAMIC_DRAW);
             // for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
@@ -138,7 +142,7 @@ void InstanceRenderer::RenderInstanced(Scene *sc, int width, int height)
     }
 }
 
-void InstanceRenderer::RenderInstancedShadows(Scene *sc, int shaderProgram)
+void InstanceRenderer::RenderInstancedShadows(int shaderProgram)
 {
     glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
 

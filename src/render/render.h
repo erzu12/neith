@@ -6,24 +6,23 @@
 namespace neith {
 class Renderer {
 public:
-    Renderer(Scene *sc, struct Window *window);
+    Renderer();
     ~Renderer();
 
-    void UpdateRender(Scene *sc);
+    static void UpdateRender();
 
 private:
-    InstanceRenderer *sr;
-    struct Window *win;
-    unsigned int cubeMapShader;
-    unsigned int screenShader;
-    unsigned int shadowMapShader;
-    unsigned int screenVAO;
-    unsigned int cubeMapVAO;
-    unsigned int FBO;
-    unsigned int depthMapFBO;
-    unsigned int intermediateFBO;
-    unsigned int texColorBuffer;
-    unsigned int screenTexture;
-    unsigned int cubeMap;
+    static InstanceRenderer *mInstancedRenderer;
+    static unsigned int mCubeMapShader;
+    static unsigned int mScreenShader;
+    static unsigned int mShadowMapShader;
+    static unsigned int mScreenVAO;
+    static unsigned int mCubeMapVAO;
+    static unsigned int mFBO;
+    static unsigned int mDepthMapFBO;
+    static unsigned int mIntermediateFBO;
+    static unsigned int mTexColorBuffer;
+    static unsigned int mScreenTexture;
+    static unsigned int mCubeMap;
 };
 }  // namespace neith

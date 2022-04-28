@@ -10,10 +10,10 @@
 namespace neith {
 class InstanceRenderer {
 public:
-    InstanceRenderer(struct Scene *sc, struct Window *window);
+    InstanceRenderer();
 
-    void RenderInstanced(struct Scene *sc, int width, int height);
-    void RenderInstancedShadows(struct Scene *sc, int shaderProgram);
+    void RenderInstanced(int width, int height);
+    void RenderInstancedShadows(int shaderProgram);
 
 private:
     unsigned int *VAOs;

@@ -5,14 +5,13 @@
 
 class Camera {
 public:
-    Camera(neith::Window* window);
+    Camera();
     void UpdateCamera();
 
 private:
     float mYaw, mPitch;
     glm::vec3 mCameraFront;
     glm::vec3 mCameraPos;
-    neith::Window* mWindow;
     unsigned int camera;
 
     glm::vec3 KeyInput();

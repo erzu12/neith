@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
+#include <map>
+#include <string>
 
 namespace neith {
 class Materials {
@@ -45,5 +48,6 @@ private:
     // char **names;
     static std::vector<unsigned int> mTextureCounts;
     static std::vector<unsigned int *> mTextures;
+    static std::unordered_map<int, std::unordered_map<std::string, int>> mBindingMap;
 };
 }  // namespace neith

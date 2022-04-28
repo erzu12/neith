@@ -32,17 +32,17 @@ void Input::mouse_callback(GLFWwindow *window, double posX, double posY)
     cbc->lastY = posY;
 }
 
-bool Input::GetKeyDown(Window *window, Key key)
+bool Input::GetKeyDown(Key key)
 {
-    return glfwGetKey(window->GetGLFWwindow(), static_cast<int>(key)) == GLFW_PRESS;
+    return glfwGetKey(Window::GetGLFWwindow(), static_cast<int>(key)) == GLFW_PRESS;
 }
 
-glm::vec2 Input::GetDeltaMouse(Window *window)
+glm::vec2 Input::GetDeltaMouse()
 {
     double xPos;
     double yPos;
 
-    glfwGetCursorPos(window->GetGLFWwindow(), &xPos, &yPos);
+    glfwGetCursorPos(Window::GetGLFWwindow(), &xPos, &yPos);
     glm::vec2 mouseDelta = glm::vec2(xPos, yPos) - mLastMousePos;
     mLastMousePos = glm::vec2(xPos, yPos);
     return mouseDelta;

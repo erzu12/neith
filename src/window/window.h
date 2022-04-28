@@ -6,24 +6,25 @@
 namespace neith {
 class Window {
 private:
-    bool resize;
-    int width, height;
-    GLFWwindow *window;
+    static bool mResize;
+    static int mWidth;
+    static int mHeight;
+    static GLFWwindow *mGLTFwindow;
 
 public:
     Window();
-    void UpdateWindow();
+    static void UpdateWindow();
 
-    int GetWidth();
-    int GetHeight();
+    static int GetWidth();
+    static int GetHeight();
 
-    void SetWidth(int width);
-    void SetHeight(int height);
+    static void SetWidth(int width);
+    static void SetHeight(int height);
 
-    void SetResize(bool resize);
-    bool GetResize();
+    static void SetResize(bool resize);
+    static bool GetResize();
 
-    GLFWwindow *GetGLFWwindow();
+    static GLFWwindow *GetGLFWwindow();
 };
 
 struct CallbackContext {

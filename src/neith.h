@@ -20,11 +20,7 @@
 namespace neith {
 Window *nth_CreateWindow();
 
-Scene *nth_InitScene(int maxPrimitives);
-
-// void nth_LoadModels(Scene *sc, const char *paths[], int modelCount);
-
-// int LoadModel(std::string path);
+void InitScene();
 
 int LoadModel(std::string path, int &outMeshCount);
 
@@ -34,11 +30,11 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 model
 
 void AttachCamera(unsigned int entityID);
 
-Renderer *nth_InitRender(Scene *sc, Window *win);
+void Update();
 
-void nth_UpdateWindow(Window *win);
+void UpdateWindow();
 
-void nth_UpdateRender(Renderer *re, Scene *sc);
+void UpdateRender();
 
 unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath);
 
@@ -64,6 +60,6 @@ void SetValue(unsigned int meshID, int material, const char *bindingName, float 
 
 void TransformEntity(unsigned int entityID, glm::mat4 &transform);
 
-bool GetKey(Window *window, Key key);
-glm::vec2 GetDeltaMouse(Window *window);
+bool GetKey(Key key);
+glm::vec2 GetDeltaMouse();
 }  // namespace neith

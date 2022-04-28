@@ -43,7 +43,7 @@ private:
     glm::vec3 lightDir;
 
 public:
-    Scene(int maxPrimitives);
+    Scene();
 
     static int AddEntity();
     static int AddEntity(unsigned int parentID);

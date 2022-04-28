@@ -132,8 +132,8 @@ enum class Key {
 };
 class Input {
 public:
-    static bool GetKeyDown(Window *window, Key key);
-    static glm::vec2 GetDeltaMouse(Window *window);
+    static bool GetKeyDown(Key key);
+    static glm::vec2 GetDeltaMouse();
     static void processInput(GLFWwindow *window);
     static void mouse_callback(GLFWwindow *window, double posX, double posY);
 

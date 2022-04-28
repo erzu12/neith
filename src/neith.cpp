@@ -13,7 +13,12 @@
 namespace neith {
 Window *nth_CreateWindow() { return new Window(); }
 
-Scene *nth_InitScene(int maxPrimitives) { return new Scene(maxPrimitives); }
+void InitScene() {
+    new Scene();
+    new Renderer();
+}
+
+//Scene *nth_InitScene() { return new Scene(); }
 
 // void nth_LoadModels(Scene *sc, const char *paths[], int modelCount)
 //{
@@ -31,11 +36,16 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 model
 
 void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
 
-Renderer *nth_InitRender(Scene *sc, Window *win) { return new Renderer(sc, win); }
+//Renderer *nth_InitRender(Scene *sc, Window *win) { return new Renderer(sc, win); }
 
-void nth_UpdateWindow(Window *win) { win->UpdateWindow(); }
+void Update() {
+    Window::UpdateWindow();
+    Renderer::UpdateRender();
+}
 
-void nth_UpdateRender(Renderer *re, Scene *sc) { re->UpdateRender(sc); }
+void UpdateWindow(Window *win) { Window::UpdateWindow(); }
+
+void UpdateRender() { Renderer::UpdateRender(); }
 
 unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
 {
@@ -86,7 +96,7 @@ void SetValue(unsigned int meshID, int material, const char *bindingName, float 
 
 void TransformEntity(unsigned int entityID, glm::mat4 &transform) { system::Transform(entityID, transform); }
 
-bool GetKey(Window *window, Key key) { return Input::GetKeyDown(window, key); }
+bool GetKey(Key key) { return Input::GetKeyDown(key); }
 
-glm::vec2 GetDeltaMouse(Window *window) { return Input::GetDeltaMouse(window); }
+glm::vec2 GetDeltaMouse() { return Input::GetDeltaMouse(); }
 }  // namespace neith

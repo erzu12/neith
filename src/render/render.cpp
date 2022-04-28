@@ -16,19 +16,32 @@
 #include "shaders.h"
 #include "textures.h"
 #include "window/window.h"
-namespace neith {
-Renderer::Renderer(struct Scene *sc, struct Window *window)
-{
-    sr = new InstanceRenderer(sc, window);
 
-    cubeMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
-    screenShader = LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
-    shadowMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", NTH_ASSET_DIR "shadowMap.frag");
+namespace neith {
+
+InstanceRenderer *Renderer::mInstancedRenderer;
+unsigned int Renderer::mCubeMapShader;
+unsigned int Renderer::mScreenShader;
+unsigned int Renderer::mShadowMapShader;
+unsigned int Renderer::mScreenVAO;
+unsigned int Renderer::mCubeMapVAO;
+unsigned int Renderer::mFBO;
+unsigned int Renderer::mDepthMapFBO;
+unsigned int Renderer::mIntermediateFBO;
+unsigned int Renderer::mTexColorBuffer;
+unsigned int Renderer::mScreenTexture;
+unsigned int Renderer::mCubeMap;
+
+Renderer::Renderer()
+{
+    mInstancedRenderer = new InstanceRenderer();
+
+    mCubeMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
+    mScreenShader = LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
+    mShadowMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", NTH_ASSET_DIR "shadowMap.frag");
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
-
-    win = window;
 
     float screenVertices[] = {
         -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f,
@@ -37,12 +50,12 @@ Renderer::Renderer(struct Scene *sc, struct Window *window)
 
     unsigned int screenVBO;
     glGenBuffers(1, &screenVBO);
-    glGenVertexArrays(1, &screenVAO);
+    glGenVertexArrays(1, &mScreenVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), screenVertices, GL_STATIC_DRAW);
 
-    glBindVertexArray(screenVAO);
+    glBindVertexArray(mScreenVAO);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -52,12 +65,12 @@ Renderer::Renderer(struct Scene *sc, struct Window *window)
 
     unsigned int cubeMapVBO;
     glGenBuffers(1, &cubeMapVBO);
-    glGenVertexArrays(1, &cubeMapVAO);
+    glGenVertexArrays(1, &mCubeMapVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, cubeMapVBO);
     glBufferData(GL_ARRAY_BUFFER, 108 * sizeof(float), GetSkyboxVertices(), GL_STATIC_DRAW);
 
-    glBindVertexArray(cubeMapVAO);
+    glBindVertexArray(mCubeMapVAO);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -68,82 +81,84 @@ Renderer::Renderer(struct Scene *sc, struct Window *window)
         NTH_ASSET_DIR "test/skybox/top.jpg",   NTH_ASSET_DIR "test/skybox/bottom.jpg",
         NTH_ASSET_DIR "test/skybox/front.jpg", NTH_ASSET_DIR "test/skybox/back.jpg",
     };
-    cubeMap = LoadCubeMap(cubeMapPaths);
+    mCubeMap = LoadCubeMap(cubeMapPaths);
 
-    FBO = CreatFrameBuffer(1800, 1000, &texColorBuffer);
+    mFBO = CreatFrameBuffer(1800, 1000, &mTexColorBuffer);
 
-    intermediateFBO = CreatIntermediateFrameBuffer(1800, 1000, &screenTexture);
+    mIntermediateFBO = CreatIntermediateFrameBuffer(1800, 1000, &mScreenTexture);
 
     unsigned int depthMap;
-    depthMapFBO = CreatDepthMapFrameBuffer(&depthMap);
+    mDepthMapFBO = CreatDepthMapFrameBuffer(&depthMap);
 
-    glUseProgram(cubeMapShader);
-    glUniform1i(glGetUniformLocation(cubeMapShader, "skybox"), 0);
+    glUseProgram(mCubeMapShader);
+    glUniform1i(glGetUniformLocation(mCubeMapShader, "skybox"), 0);
 
-    // SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
+    //SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
+    //neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
+    Materials::SetTexture(0, depthMap, "shadowMap");
 }
 
-void Renderer::UpdateRender(struct Scene *sc)
+void Renderer::UpdateRender()
 {
-    if (win->GetResize()) {
-        glDeleteFramebuffers(1, &FBO);
-        FBO = CreatFrameBuffer(win->GetWidth(), win->GetHeight(), &texColorBuffer);
-        intermediateFBO = CreatIntermediateFrameBuffer(win->GetWidth(), win->GetHeight(), &screenTexture);
+    if (Window::GetResize()) {
+        glDeleteFramebuffers(1, &mFBO);
+        mFBO = CreatFrameBuffer(Window::GetWidth(), Window::GetHeight(), &mTexColorBuffer);
+        mIntermediateFBO = CreatIntermediateFrameBuffer(Window::GetWidth(), Window::GetHeight(), &mScreenTexture);
     }
     glEnable(GL_DEPTH_TEST);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-    sr->RenderInstancedShadows(sc, shadowMapShader);
+    glBindFramebuffer(GL_FRAMEBUFFER, mDepthMapFBO);
+    mInstancedRenderer->RenderInstancedShadows(mShadowMapShader);
 
     // Scene
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
     glm::mat4 view = CameraComp::GetViewMat();
 
     int width, height;
-    glfwGetWindowSize(win->GetGLFWwindow(), &width, &height);
+    glfwGetWindowSize(Window::GetGLFWwindow(), &width, &height);
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
-    sr->RenderInstanced(sc, win->GetWidth(), win->GetHeight());
+    mInstancedRenderer->RenderInstanced(Window::GetWidth(), Window::GetHeight());
 
     // Cube Map
     glm::mat3 view3 = glm::mat3(view);
     glm::mat4 viewCubeMap = glm::mat4(view3);
 
-    glUseProgram(cubeMapShader);
+    glUseProgram(mCubeMapShader);
 
     glDepthFunc(GL_LEQUAL);
 
-    UniformMat4v(cubeMapShader, "view", viewCubeMap);
-    UniformMat4v(cubeMapShader, "projection", projection);
-    glBindVertexArray(cubeMapVAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
+    UniformMat4v(mCubeMapShader, "view", viewCubeMap);
+    UniformMat4v(mCubeMapShader, "projection", projection);
+    glBindVertexArray(mCubeMapVAO);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, mCubeMap);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glDepthFunc(GL_LESS);
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
-    glBlitFramebuffer(0, 0, win->GetWidth(), win->GetHeight(), 0, 0, win->GetWidth(), win->GetHeight(),
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, mFBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mIntermediateFBO);
+    glBlitFramebuffer(0, 0, Window::GetWidth(), Window::GetHeight(), 0, 0, Window::GetWidth(), Window::GetHeight(),
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    if (win->GetResize()) {
-        glViewport(0, 0, win->GetWidth(), win->GetHeight());
-        win->SetResize(false);
+    if (Window::GetResize()) {
+        glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
+        Window::SetResize(false);
     }
 
     glClearColor(0.1f, 0.1f, 0.4f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(screenShader);
-    glBindVertexArray(screenVAO);
+    glUseProgram(mScreenShader);
+    glBindVertexArray(mScreenVAO);
     glDisable(GL_DEPTH_TEST);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, screenTexture);
+    glBindTexture(GL_TEXTURE_2D, mScreenTexture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    glfwSwapBuffers(win->GetGLFWwindow());
+    glfwSwapBuffers(Window::GetGLFWwindow());
 }
 
-Renderer::~Renderer() { delete sr; }
+Renderer::~Renderer() { delete mInstancedRenderer; }
 }  // namespace neith

@@ -15,6 +15,13 @@
 #include "timer.h"
 
 namespace neith {
+
+bool Window::mResize = false;
+int Window::mWidth = 1800;
+int Window::mHeight = 900;
+GLFWwindow *Window::mGLTFwindow;
+
+
 static void error_callback(int error, const char* description) { NT_INTER_ERROR(description); }
 
 void window_focus_callback(GLFWwindow* window, int focused)
@@ -59,10 +66,7 @@ Window::Window()
         NT_INTER_CRITICAL("faild to load glad");
         throw WindowCreationException("faild to load glad");
     }
-    this->resize = false;
-    this->width = 1800;
-    this->height = 900;
-    this->window = window;
+    mGLTFwindow = window;
     struct CallbackContext* cbc = (struct CallbackContext*)malloc(sizeof(struct CallbackContext));
     cbc->lastX = 900;
     cbc->lastY = 500;
@@ -73,24 +77,24 @@ Window::Window()
     glfwSetCursorPosCallback(window, Input::mouse_callback);
 }
 
-int Window::GetWidth() { return width; }
+int Window::GetWidth() { return mWidth; }
 
-int Window::GetHeight() { return height; }
+int Window::GetHeight() { return mHeight; }
 
-void Window::SetWidth(int width) { this->width = width; }
+void Window::SetWidth(int width) { mWidth = width; }
 
-void Window::SetHeight(int height) { this->height = height; }
+void Window::SetHeight(int height) { mHeight = height; }
 
-bool Window::GetResize() { return resize; }
+bool Window::GetResize() { return mResize; }
 
-void Window::SetResize(bool resize) { this->resize = resize; }
+void Window::SetResize(bool resize) { mResize = resize; }
 
-GLFWwindow* Window::GetGLFWwindow() { return window; }
+GLFWwindow* Window::GetGLFWwindow() { return mGLTFwindow; }
 
 void Window::UpdateWindow()
 {
     Time::FrameTime();
-    Input::processInput(window);
+    Input::processInput(mGLTFwindow);
     glfwPollEvents();
 }
 }  // namespace neith

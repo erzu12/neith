@@ -6,9 +6,8 @@
 #include <iostream>
 #define PI glm::pi<float>()
 
-Camera::Camera(neith::Window *window)
+Camera::Camera()
 {
-    mWindow = window;
     mPitch = 0.0f;
     // mYaw = -PI * 0.5f;
 
@@ -25,7 +24,7 @@ void Camera::UpdateCamera()
     const float speed = 10.0f * neith::Time::DeltaTime();
     const float sens = 0.0005f;
 
-    glm::vec2 deltaMouse = neith::GetDeltaMouse(mWindow);
+    glm::vec2 deltaMouse = neith::GetDeltaMouse();
 
     deltaMouse *= sens;
 
@@ -68,17 +67,17 @@ void Camera::UpdateCamera()
 glm::vec3 Camera::KeyInput()
 {
     glm::vec3 moveVec = glm::vec3(0.0f);
-    if (neith::GetKey(mWindow, neith::Key::W))
+    if (neith::GetKey(neith::Key::W))
         moveVec.z += 1.0f;
-    if (neith::GetKey(mWindow, neith::Key::S))
+    if (neith::GetKey(neith::Key::S))
         moveVec.z += -1.0f;
-    if (neith::GetKey(mWindow, neith::Key::D))
+    if (neith::GetKey(neith::Key::D))
         moveVec.x += 1.0f;
-    if (neith::GetKey(mWindow, neith::Key::A))
+    if (neith::GetKey(neith::Key::A))
         moveVec.x += -1.0f;
-    if (neith::GetKey(mWindow, neith::Key::Space))
+    if (neith::GetKey(neith::Key::Space))
         moveVec.y += 1.0f;
-    if (neith::GetKey(mWindow, neith::Key::Left_Control))
+    if (neith::GetKey(neith::Key::Left_Control))
         moveVec.y += -1.0f;
     if (glm::length(moveVec) != 0) {
         moveVec = glm::normalize(moveVec);
