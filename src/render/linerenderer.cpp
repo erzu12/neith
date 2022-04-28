@@ -190,7 +190,7 @@ void LineRenderer::RednerGrid()
     glm::mat4 view = CameraComp::GetViewMat();
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.0f,
                                             (float)Window::GetWidth() / (float)Window::GetHeight(), 0.1f, 2000000.0f);
-    glm::vec3 gridPos = glm::vec3(floor(cameraPos.x / 10) * 10, 0.0f, floor(cameraPos.z / 10) * 10);
+    glm::vec3 gridPos = glm::vec3(floor(cameraPos.x / 10) * 10, cameraPos.y * -0.01, floor(cameraPos.z / 10) * 10);
     model = glm::translate(model, gridPos);
     VP = projection * view;
 
