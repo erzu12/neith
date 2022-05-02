@@ -18,8 +18,8 @@ unsigned int LoadAndCompileShaders(const char *vertexPath, const char *fragmentP
         return 0;
     }
 
-    const char *vertCodeArr[1] = {vertCode};
-    const char *fragCodeArr[1] = {fragCode};
+    const char *vertCodeArr[1] = { vertCode };
+    const char *fragCodeArr[1] = { fragCode };
 
     int success;
     char infoLog[512];
@@ -111,9 +111,9 @@ void UniformVec3(unsigned int shader, const char *name, float x, float y, float 
 {
     glUniform3f(glGetUniformLocation(shader, name), x, y, z);
 }
-void UniformVec3v(unsigned int shader, const char *name, const GLfloat *val)
+void UniformVec3v(unsigned int shader, const char *name, const glm::vec3 &val)
 {
-    glUniform3fv(glGetUniformLocation(shader, name), 1, val);
+    glUniform3fv(glGetUniformLocation(shader, name), 1, &val[0]);
 }
 void UniformMat4v(unsigned int shader, const char *name, const glm::mat4 &val)
 {

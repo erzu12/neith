@@ -4,14 +4,13 @@
 
 #include <glm/mat4x4.hpp>
 
-#include "vecmath.h"
 namespace neith {
 class Camera {
 public:
     float mYaw, mPitch;
-    Float3 mCamerFront;
-    Float3 mCameraPos;
-    Float3 mMoveVec;
+    glm::vec3 mCameraFront;
+    glm::vec3 mCameraPos;
+    glm::vec3 mMoveVec;
 
     Camera();
 

@@ -2,68 +2,74 @@
 
 #include <stdlib.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <glm/vec3.hpp>
 #include <iostream>
 
+#include "log.h"
 #include "timer.h"
-#include "vecmath.h"
 namespace neith {
+
 Camera::Camera()
 {
     mPitch = 0.0f;
-    mYaw = -PI * 0.5f;
+    mYaw = -glm::pi<float>() * 0.5f;
 
-    mCamerFront = F3Zero();
+    mCameraFront = glm::vec3(0.0f);
 
-    mCamerFront.z = -1.0f;
-    mCameraPos = F3Zero();
+    mCameraFront.z = -1.0f;
+    mCameraPos = glm::vec3(0.0f);
     mCameraPos.z = 3.0f;
     mCameraPos.y = 3.0f;
-    mMoveVec = F3Zero();
+    mMoveVec = glm::vec3(0.0f);
 }
 
 void Camera::CameraGetViewMat(glm::mat4 &dest)
 {
     // TODO: make seperat function for pos update
-    Float3 cameraUp = {0.0f, 1.0f, 0.0f};
+    glm::vec3 cameraUp = { 0.0f, 1.0f, 0.0f };
 
-    const float speed = 20.0f * Time::DeltaTime();
+    const float speed = 5.0f * Time::DeltaTime();
 
-    mCameraPos = F3Add(mCameraPos, F3Scale(mCamerFront, mMoveVec.z * speed));
-    Float3 cameraRight = F3Noramlize(F3Cross(mCamerFront, cameraUp));
-    mCameraPos = F3Add(mCameraPos, F3Scale(cameraRight, mMoveVec.x * speed));
+    mCameraPos = mCameraPos + mCameraFront * (mMoveVec.z * speed);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(mCameraFront, cameraUp));
+    mCameraPos = mCameraPos + cameraRight * (mMoveVec.x * speed);
 
-    mCameraPos = F3Add(mCameraPos, F3Init(0.0f, mMoveVec.y * speed, 0.0f));
+    mCameraPos = mCameraPos + glm::vec3(0.0f, mMoveVec.y * speed, 0.0f);
 
-    Look(mCameraPos, mCamerFront, cameraUp, dest);
+    glm::vec3 target = mCameraPos + mCameraFront;
+    dest = glm::lookAt(mCameraPos, target, cameraUp);
+    // NT_INTER_INFO(glm::to_string(dest));
 }
 
 void Camera::CameraMouseInput(float offestX, float offestY)
 {
-    const float sens = 0.001f;
+    const float sens = 0.0005f;
     offestX *= sens;
     offestY *= sens;
 
     mYaw += offestX;
     mPitch -= offestY;
 
-    if (mPitch > PI * 0.4f)
-        mPitch = PI * 0.4f;
-    if (mPitch < -PI * 0.4f)
-        mPitch = -PI * 0.4f;
+    if (mPitch > glm::pi<float>() * 0.4f)
+        mPitch = glm::pi<float>() * 0.4f;
+    if (mPitch < -glm::pi<float>() * 0.4f)
+        mPitch = -glm::pi<float>() * 0.4f;
 
-    Float3 dir = F3Zero();
+    glm::vec3 dir = glm::vec3();
     dir.x = cos(mYaw) * cos(mPitch);
     dir.y = sin(mPitch);
     dir.z = sin(mYaw) * cos(mPitch);
-    dir = F3Noramlize(dir);
-    mCamerFront = dir;
+    if (glm::length(mMoveVec) != 0) {
+        dir = glm::normalize(dir);
+    }
+    mCameraFront = dir;
 }
 
 void Camera::CameraKeyInput(GLFWwindow *window)
 {
-    mMoveVec = F3Zero();
+    mMoveVec = glm::vec3(0.0f);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         mMoveVec.z += 1.0f;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -76,6 +82,8 @@ void Camera::CameraKeyInput(GLFWwindow *window)
         mMoveVec.y += 1.0f;
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         mMoveVec.y += -1.0f;
-    mMoveVec = F3Noramlize(mMoveVec);
+    if (glm::length(mMoveVec) != 0) {
+        mMoveVec = glm::normalize(mMoveVec);
+    }
 }
 }  // namespace neith

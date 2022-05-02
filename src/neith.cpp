@@ -4,6 +4,7 @@
 #include "scene/material.h"
 #include "scene/meshloader.h"
 #include "scene/scene.h"
+#include "scene/systems/sysCamera.h"
 #include "scene/systems/sysMaterial.h"
 #include "scene/systems/sysMesh.h"
 #include "scene/systems/sysTransform.h"
@@ -14,18 +15,12 @@ Window *nth_CreateWindow() { return new Window(); }
 
 Scene *nth_InitScene(int maxPrimitives) { return new Scene(maxPrimitives); }
 
-void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win) { win->AttachSceneToWindow(sc); }
+// void nth_LoadModels(Scene *sc, const char *paths[], int modelCount)
+//{
+//// LoadModels(sc, paths, modelCount);
+//}
 
-void nth_LoadModels(struct Scene *sc, const char *paths[], int modelCount)
-{
-    // LoadModels(sc, paths, modelCount);
-}
-
-// int LoadModel(std::string path) {
-//     return -1;
-// }
-
-int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel1(path, outMeshCount); }
+int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
 unsigned int AddEntity(std::string name) { return Scene::AddEntity(name); }
 
@@ -34,11 +29,13 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 model
     system::AddMeshToEntity(entityID, meshID, modelMat);
 }
 
-Renderer *nth_InitRender(struct Scene *sc, struct Window *win) { return new Renderer(sc, win); }
+void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
 
-void nth_UpdateWindow(struct Window *win) { win->UpdateWindow(); }
+Renderer *nth_InitRender(Scene *sc, Window *win) { return new Renderer(sc, win); }
 
-void nth_UpdateRender(Renderer *re, struct Scene *sc) { re->UpdateRender(sc); }
+void nth_UpdateWindow(Window *win) { win->UpdateWindow(); }
+
+void nth_UpdateRender(Renderer *re, Scene *sc) { re->UpdateRender(sc); }
 
 unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
 {
@@ -87,5 +84,9 @@ void SetValue(unsigned int meshID, int material, const char *bindingName, float 
 // mat->SetValueByNameV3v(materialName, bindingName, x, y, z);
 //}
 
-void nth_Transform(unsigned int entityID, glm::mat4 &transform) { system::Transform(entityID, transform); }
+void TransformEntity(unsigned int entityID, glm::mat4 &transform) { system::Transform(entityID, transform); }
+
+bool GetKey(Window *window, Key key) { return Input::GetKeyDown(window, key); }
+
+glm::vec2 GetDeltaMouse(Window *window) { return Input::GetDeltaMouse(window); }
 }  // namespace neith

@@ -5,7 +5,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
-#include "scene/camera.h"
 #include "scene/components/meshComp.h"
 #include "scene/material.h"
 #include "scene/mesh.h"

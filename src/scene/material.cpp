@@ -12,10 +12,10 @@
 #include "render/textures.h"
 
 namespace neith {
-int Materials::mMaterialCount = 0;
-std::vector<int> Materials::mShaders;
-std::vector<int> Materials::mTextureCounts;
-std::vector<int *> Materials::mTextures;
+unsigned int Materials::mMaterialCount = 0;
+std::vector<unsigned int> Materials::mShaders;
+std::vector<unsigned int> Materials::mTextureCounts;
+std::vector<unsigned int *> Materials::mTextures;
 
 // Materials::Materials(int materialCount) {
 // materialCount++;
@@ -32,7 +32,7 @@ std::vector<int *> Materials::mTextures;
 // this->mMaterialCount = 1;
 //}
 
-int Materials::AddMaterial()
+unsigned int Materials::AddMaterial()
 {
     static unsigned int defaultShader =
         LoadAndCompileShaders(NTH_ASSET_DIR "default.vert", NTH_ASSET_DIR "default.frag");
@@ -41,12 +41,12 @@ int Materials::AddMaterial()
 
     mShaders.push_back(defaultShader);
     mTextureCounts.push_back(0);
-    mTextures.push_back(new int[16]);
+    mTextures.push_back(new unsigned int[16]);
 
     return mMaterialCount - 1;
 }
 
-void Materials::SetShader(int material, int shader)
+void Materials::SetShader(unsigned int material, unsigned int shader)
 {
     if (mShaders.size() < material) {
         NT_INTER_ERROR("no material with index: {}", material);
@@ -67,7 +67,7 @@ void Materials::SetShader(int material, int shader)
 // return 0;
 //}
 
-void Materials::SetTexture(int material, int texture, const char *bindingName)
+void Materials::SetTexture(unsigned int material, unsigned int texture, const char *bindingName)
 {
     glUseProgram(mShaders[material]);
     mTextures.at(material)[mTextureCounts.at(material)] = texture;
@@ -86,19 +86,19 @@ void Materials::SetTexture(int material, int texture, const char *bindingName)
 // return 0;
 //}
 
-void Materials::SetValue(int material, const char *bindingName, float value)
+void Materials::SetValue(unsigned int material, const char *bindingName, float value)
 {
     unsigned int texture = CreatValueTextureF(value);
     SetTexture(material, texture, bindingName);
 }
 
-void Materials::SetValue(int material, const char *bindingName, float *value)
+void Materials::SetValue(unsigned int material, const char *bindingName, float *value)
 {
     unsigned int texture = CreatValueTextureV3(value);
     SetTexture(material, texture, bindingName);
 }
 
-void Materials::SetValue(int material, const char *bindingName, float x, float y, float z)
+void Materials::SetValue(unsigned int material, const char *bindingName, float x, float y, float z)
 {
     unsigned int texture = CreatValueTextureV3v(x, y, z);
     SetTexture(material, texture, bindingName);

@@ -2,9 +2,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <stdbool.h>
-#include <vecmath.h>
-
-#include "scene/scene.h"
 
 namespace neith {
 class Window {
@@ -15,7 +12,6 @@ private:
 
 public:
     Window();
-    void AttachSceneToWindow(struct Scene *sc);
     void UpdateWindow();
 
     int GetWidth();
@@ -31,10 +27,8 @@ public:
 };
 
 struct CallbackContext {
-    Float3 moveVec;
     bool firstMouse;
     float lastX, lastY;
-    Camera *cd;
-    struct Window *win;
+    Window *win;
 };
 }  // namespace neith

@@ -5,29 +5,23 @@
 namespace neith {
 class Materials {
 public:
-    static int mMaterialCount;
-    static std::vector<int> mShaders;
-    // char **names;
-    static std::vector<int> mTextureCounts;
-    static std::vector<int *> mTextures;
-
     // Materials(int materialCount);
 
-    static int AddMaterial();
+    static unsigned int AddMaterial();
 
-    static void SetShader(int material, int shader);
+    static void SetShader(unsigned int material, unsigned int shader);
 
     // int SetShaderByName(char *materialName, int shader);
 
-    static void SetTexture(int material, int texture, const char *bindingName);
+    static void SetTexture(unsigned int material, unsigned int texture, const char *bindingName);
 
     // int SetTextureByName(char *materialName, int texture, char *bindingName);
 
-    static void SetValue(int material, const char *bindingName, float value);
+    static void SetValue(unsigned int material, const char *bindingName, float value);
 
-    static void SetValue(int material, const char *bindingName, float *value);
+    static void SetValue(unsigned int material, const char *bindingName, float *value);
 
-    static void SetValue(int material, const char *bindingName, float x, float y, float z);
+    static void SetValue(unsigned int material, const char *bindingName, float x, float y, float z);
 
     // void SetValueByNameF(char *materialName, char *bindingName, float value);
 
@@ -35,6 +29,21 @@ public:
 
     // void SetValueByNameV3v(char *materialName, char *bindingName, float x, float y, float z);
 
+    static unsigned int GetMaterialCount() { return mMaterialCount; }
+    static unsigned int GetShader(unsigned int material) { return mShaders.at(material); }
+    static unsigned int GetTextureCount(unsigned int material) { return mTextureCounts.at(material); }
+    static unsigned int GetTexture(unsigned int material, unsigned int texture)
+    {
+        return mTextures.at(material)[texture];
+    }
+
     ~Materials();
+
+private:
+    static unsigned int mMaterialCount;
+    static std::vector<unsigned int> mShaders;
+    // char **names;
+    static std::vector<unsigned int> mTextureCounts;
+    static std::vector<unsigned int *> mTextures;
 };
 }  // namespace neith
