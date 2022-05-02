@@ -4,6 +4,8 @@ project(testapp)
 
 add_executable("${PROJECT_NAME}"
     "main.cpp"
+    "camera.h"
+    "camera.cpp"
 )
 
 set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 11)

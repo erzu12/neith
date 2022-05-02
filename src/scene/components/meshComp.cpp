@@ -54,11 +54,11 @@ void MeshComp::Transform(unsigned int entityID, glm::mat4 &transform)
         int primitive = mMeshes[meshID + i];
         unsigned int instanceID = mInstanceMap.at(primitive).at(entityID);
         mModelMats.at(primitive).at(instanceID) *= transform;
-        ShouldUpdate(primitive, instanceID);
+        ScheduleUpdate(primitive, instanceID);
     }
 }
 
-void MeshComp::ShouldUpdate(mesh meshID, unsigned int instanceID)
+void MeshComp::ScheduleUpdate(mesh meshID, unsigned int instanceID)
 {
     mUpdate.at(meshID).at(instanceID + 1) = true;
     mUpdate.at(meshID).at(0) = true;
@@ -69,6 +69,8 @@ void MeshComp::UpdateDone(mesh meshID, unsigned int instanceID)
     mUpdate.at(meshID).at(instanceID + 1) = false;
     mUpdate.at(meshID).at(0) = false;
 }
+
+bool MeshComp::ShouldUpdate(mesh meshID) { return mUpdate.at(meshID).at(0); }
 
 void MeshComp::AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4 modelMat)
 {
@@ -86,7 +88,7 @@ void MeshComp::AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4
     }
 }
 
-int MeshComp::getMaterial(unsigned int meshID, int material)
+int MeshComp::GetMaterial(unsigned int meshID, int material)
 {
     if (mMeshes[meshID * 2 + 1] <= material) {
         NT_INTER_ERROR("warning: mesh: {} does not have: {} materialSlots", meshID, material);

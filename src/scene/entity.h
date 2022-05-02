@@ -6,7 +6,7 @@
 namespace neith {
 class Entity {
 private:
-    bool mHasComp[64] = {false};
+    bool mHasComp[64] = { false };
     unsigned int mID;
     unsigned int mParentID;
     std::vector<Entity*> children;
@@ -27,6 +27,8 @@ public:
     int GetChildCount();
 
     Entity* GetChild(int index);
+
+    unsigned int GetParent() { return mParentID; };
 
     Entity(unsigned int mID, unsigned int mParentID);
 };

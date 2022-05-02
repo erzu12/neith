@@ -13,16 +13,16 @@
 #include "log.h"
 #include "render/render.h"
 #include "scene/scene.h"
+#include "timer.h"
+#include "window/input.h"
 #include "window/window.h"
 
 namespace neith {
-struct Window *nth_CreateWindow();
+Window *nth_CreateWindow();
 
-struct Scene *nth_InitScene(int maxPrimitives);
+Scene *nth_InitScene(int maxPrimitives);
 
-void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win);
-
-void nth_LoadModels(struct Scene *sc, const char *paths[], int modelCount);
+// void nth_LoadModels(Scene *sc, const char *paths[], int modelCount);
 
 // int LoadModel(std::string path);
 
@@ -32,11 +32,13 @@ unsigned int AddEntity(std::string name);
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
 
-Renderer *nth_InitRender(struct Scene *sc, struct Window *win);
+void AttachCamera(unsigned int entityID);
 
-void nth_UpdateWindow(struct Window *win);
+Renderer *nth_InitRender(Scene *sc, Window *win);
 
-void nth_UpdateRender(Renderer *re, struct Scene *sc);
+void nth_UpdateWindow(Window *win);
+
+void nth_UpdateRender(Renderer *re, Scene *sc);
 
 unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath);
 
@@ -60,5 +62,8 @@ void SetValue(unsigned int meshID, int material, const char *bindingName, float 
 
 // void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
 
-void nth_Transform(unsigned int entityID, glm::mat4 &transform);
+void TransformEntity(unsigned int entityID, glm::mat4 &transform);
+
+bool GetKey(Window *window, Key key);
+glm::vec2 GetDeltaMouse(Window *window);
 }  // namespace neith

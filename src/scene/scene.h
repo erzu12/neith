@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "camera.h"
 #include "entity.h"
 #include "material.h"
 #include "mesh.h"
@@ -41,7 +40,6 @@ private:
     static std::unordered_map<std::string, unsigned int> mEntityNames;
     static std::vector<Entity *> mEntitys;
     static Materials *mMaterial;
-    Camera *cd;
     glm::vec3 lightDir;
 
 public:
@@ -55,7 +53,6 @@ public:
 
     static Entity *GetEntity(unsigned int entityID);
 
-    Camera *GetCamera();
     glm::vec3 GetLightDir();
 
     ~Scene();

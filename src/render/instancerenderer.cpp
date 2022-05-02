@@ -6,30 +6,32 @@
 #include <iostream>
 
 #include "dataStructures.h"
-#include "scene/camera.h"
+#include "scene/components/cameraComp.h"
 #include "scene/components/meshComp.h"
 #include "scene/material.h"
 #include "scene/mesh.h"
 #include "scene/scene.h"
 #include "shaders.h"
 #include "textures.h"
-#include "vecmath.h"
 #include "window/window.h"
 #define GLM_FORCE_RADIANS
 
 #include <glad/glad.h>
 
+#include "log.h"
+
 namespace neith {
 
-InstanceRenderer::InstanceRenderer(struct Scene *sc, struct Window *window)
+InstanceRenderer::InstanceRenderer(Scene *sc, Window *window)
 {
     // StaticPrimitives *sp = sc->sp;
     // struct RenderContext *rc = (struct RenderContext*)malloc(sizeof(struct
     // RenderContext));
-    VAOs = (unsigned int *)malloc(MeshComp::mPrimitivesCount * sizeof(int));
-    VBOs = (unsigned int **)Alloc2DArr(MeshComp::mPrimitivesCount, 2, 4);
+    VAOs = new unsigned int[MeshComp::GetPrimitivesCount()];
+    VBOs = Alloc2DArr<unsigned int>(MeshComp::GetPrimitivesCount(), 2);
+    // VBOs = (unsigned int **)oldAlloc2DArr(MeshComp::GetPrimitivesCount(), 2, 4);
 
-    for (int i = 0; i < MeshComp::mPrimitivesCount; i++) {
+    for (int i = 0; i < MeshComp::GetPrimitivesCount(); i++) {
         unsigned int EBO;
 
         glGenBuffers(2, VBOs[i]);
@@ -84,43 +86,40 @@ InstanceRenderer::InstanceRenderer(struct Scene *sc, struct Window *window)
     // sc->rc = rc;
 }
 
-void InstanceRenderer::RenderInstanced(struct Scene *sc, int width, int height)
+void InstanceRenderer::RenderInstanced(Scene *sc, int width, int height)
 {
     // Scene
-    Camera *cd = sc->GetCamera();
     glViewport(0, 0, width, height);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 view = glm::mat4(1.0f);
-    cd->CameraGetViewMat(view);
-    glm::mat4 projection = glm::perspective(PI / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
+    glm::mat4 view = CameraComp::GetViewMat();
 
-    for (int i = 0; i < MeshComp::mPrimitivesCount; i++) {
-        int material = MeshComp::mMaterials[i];
-        glUseProgram(Materials::mShaders[material]);
-        float cameraPos[3];
-        F3ToArr(cd->mCameraPos, cameraPos);
-        UniformVec3v(Materials::mShaders[material], "viewPos", cameraPos);
-        UniformVec3(Materials::mShaders[material], "light.direction", 0.4, -1.0, -0.4);
-        UniformVec3(Materials::mShaders[material], "light.color", 3.0f, 3.0f, 3.0f);
+    glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
+
+    for (int i = 0; i < MeshComp::GetPrimitivesCount(); i++) {
+        int material = MeshComp::GetMaterial(i);
+        glUseProgram(Materials::GetShader(material));
+        UniformVec3v(Materials::GetShader(material), "viewPos", CameraComp::GetCameraPos());
+        UniformVec3(Materials::GetShader(material), "light.direction", 0.4, -1.0, -0.4);
+        UniformVec3(Materials::GetShader(material), "light.color", 3.0f, 3.0f, 3.0f);
 
         // CubeMVPuniforms
-        UniformMat4v(Materials::mShaders[material], "lightSpaceMatrix", lightSpaceMatrix);
+        UniformMat4v(Materials::GetShader(material), "lightSpaceMatrix", lightSpaceMatrix);
         // UniformMat4v(sc->mat->shaders[materia);
-        UniformMat4v(Materials::mShaders[material], "view", view);
-        UniformMat4v(Materials::mShaders[material], "projection", projection);
+        UniformMat4v(Materials::GetShader(material), "view", view);
+        UniformMat4v(Materials::GetShader(material), "projection", projection);
 
-        for (int j = 0; j < Materials::mTextureCounts[material]; j++) {
+        for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
             glActiveTexture(GL_TEXTURE0 + j);
-            glBindTexture(GL_TEXTURE_2D, Materials::mTextures[material][j]);
+            glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-        if (MeshComp::mUpdate.at(i).at(0)) {
-            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::mInstanceCount.at(i),
-                         MeshComp::mModelMats.at(i).data(), GL_DYNAMIC_DRAW);
+        if (MeshComp::ShouldUpdate(i)) {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
+                         GL_DYNAMIC_DRAW);
             // for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
             // if(MeshComp::mUpdate.at(i).at(j + 1)) {
             ////UniformMat4v(sc->mat->shaders[material], "model",
@@ -134,12 +133,12 @@ void InstanceRenderer::RenderInstanced(struct Scene *sc, int width, int height)
         // glm::translate(glm::mat4(1.0f), {0.0f, 2.0f, 6.0f})};
 
         glBindVertexArray(VAOs[i]);
-        glDrawElementsInstanced(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0,
-                                MeshComp::mInstanceCount.at(i));
+        glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
+                                MeshComp::GetInstanceCount(i));
     }
 }
 
-void InstanceRenderer::RenderInstancedShadows(struct Scene *sc, int shaderProgram)
+void InstanceRenderer::RenderInstancedShadows(Scene *sc, int shaderProgram)
 {
     glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
 
@@ -155,16 +154,16 @@ void InstanceRenderer::RenderInstancedShadows(struct Scene *sc, int shaderProgra
     glViewport(0, 0, 4096, 4096);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 0; i < MeshComp::mPrimitivesCount; i++) {
-        for (int j = 0; j < Materials::mTextureCounts[i]; j++) {
+    for (int i = 0; i < MeshComp::GetPrimitivesCount(); i++) {
+        for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
             glActiveTexture(GL_TEXTURE0 + j);
-            glBindTexture(GL_TEXTURE_2D, Materials::mTextures[i][j]);
+            glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
         // UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
         glBindVertexArray(VAOs[i]);
-        glDrawElements(GL_TRIANGLES, MeshComp::mIndCounts[i], GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0);
     }
 }
 }  // namespace neith

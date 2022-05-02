@@ -13,7 +13,6 @@
 #include "render/framebuffer.h"
 #include "scene/scene.h"
 #include "timer.h"
-#include "vecmath.h"
 
 namespace neith {
 static void error_callback(int error, const char* description) { NT_INTER_ERROR(description); }
@@ -71,13 +70,7 @@ Window::Window()
     cbc->win = this;
     glfwSetWindowUserPointer(window, cbc);
 
-    glfwSetCursorPosCallback(window, mouse_callback);
-}
-
-void Window::AttachSceneToWindow(struct Scene* sc)
-{
-    struct CallbackContext* cbc = (struct CallbackContext*)glfwGetWindowUserPointer(window);
-    cbc->cd = sc->GetCamera();
+    glfwSetCursorPosCallback(window, Input::mouse_callback);
 }
 
 int Window::GetWidth() { return width; }
@@ -97,7 +90,7 @@ GLFWwindow* Window::GetGLFWwindow() { return window; }
 void Window::UpdateWindow()
 {
     Time::FrameTime();
-    processInput(window);
+    Input::processInput(window);
     glfwPollEvents();
 }
 }  // namespace neith

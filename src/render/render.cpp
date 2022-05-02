@@ -3,18 +3,18 @@
 #include <glad/glad.h>
 
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/scalar_constants.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 #include "defaults.h"
 #include "framebuffer.h"
-#include "scene/camera.h"
+#include "scene/components/cameraComp.h"
 #include "scene/material.h"
 #include "scene/scene.h"
 #include "scene/skybox.h"
 #include "shaders.h"
 #include "textures.h"
-#include "vecmath.h"
 #include "window/window.h"
 namespace neith {
 Renderer::Renderer(struct Scene *sc, struct Window *window)
@@ -97,12 +97,11 @@ void Renderer::UpdateRender(struct Scene *sc)
 
     // Scene
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    glm::mat4 view = glm::mat4(1.0f);
-    sc->GetCamera()->CameraGetViewMat(view);
+    glm::mat4 view = CameraComp::GetViewMat();
 
     int width, height;
     glfwGetWindowSize(win->GetGLFWwindow(), &width, &height);
-    glm::mat4 projection = glm::perspective(PI / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
     sr->RenderInstanced(sc, win->GetWidth(), win->GetHeight());
 

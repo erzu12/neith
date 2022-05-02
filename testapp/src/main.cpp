@@ -5,6 +5,8 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 
+#include "camera.h"
+
 #define ASSET_DIR "assets/"
 
 int main()
@@ -16,7 +18,6 @@ int main()
     neith::Window *win = neith::nth_CreateWindow();
 
     neith::Scene *sc = neith::nth_InitScene(1000);
-    neith::nth_AttachSceneToWindow(sc, win);
     // neith::nth_LoadModels(sc, modelPaths, 1);
     int meshCount;
     int meshes = neith::LoadModel(ASSET_DIR "models/testScene.gltf", meshCount);
@@ -34,6 +35,8 @@ int main()
 
     int entity1 = neith::AddEntity("test");
     neith::AddMeshToEntity(entity1, meshes, glm::mat4(1.0f));
+
+    Camera camera(win);
 
     neith::Renderer *re = neith::nth_InitRender(sc, win);
 
@@ -73,10 +76,12 @@ int main()
     // "material.metallic", 0.0f);
 
     while (!glfwWindowShouldClose(win->GetGLFWwindow())) {
+        camera.UpdateCamera();
         // glm::mat4 moveMat = glm::translate(glm::mat4(1.0f),
         // glm::vec3(0.0001f, 0.0f, 0.0f)); neith::nth_Transform(1, moveMat);
         neith::nth_UpdateWindow(win);
         neith::nth_UpdateRender(re, sc);
+        // NT_INFO(neith::GetKey(win, neith::Key::G));
     }
     // glDeleteProgram(shaderProgram);
 

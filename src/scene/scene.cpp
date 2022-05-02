@@ -31,7 +31,6 @@ std::vector<Entity *> Scene::mEntitys = {};
 Scene::Scene(int maxPrimitives)
 {
     // sp = new StaticPrimitives(maxPrimitives);
-    cd = new Camera();
     Materials::AddMaterial();
 }
 
@@ -51,7 +50,7 @@ int Scene::AddEntity(std::string &name)
 {
     int id = mEntitys.size();
     mEntitys.push_back(new Entity(id));
-    mEntityNames.insert({name, id});
+    mEntityNames.insert({ name, id });
     return id;
 }
 
@@ -59,7 +58,7 @@ int Scene::AddEntity(std::string &name, unsigned int parentID)
 {
     int id = mEntitys.size();
     mEntitys.push_back(new Entity(id, parentID));
-    mEntityNames.insert({name, id});
+    mEntityNames.insert({ name, id });
     return id;
 }
 
@@ -74,12 +73,10 @@ Entity *Scene::GetEntity(unsigned int entityID)
     return mEntitys.at(entityID);
 }
 
-Camera *Scene::GetCamera() { return cd; }
 glm::vec3 Scene::GetLightDir() { return lightDir; }
 
 Scene::~Scene()
 {
     // delete sp;
-    delete cd;
 }
 }  // namespace neith

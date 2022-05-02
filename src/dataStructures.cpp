@@ -6,7 +6,7 @@
 #include "log.h"
 
 namespace neith {
-void** Alloc2DArr(int x, int y, int typeSize)
+void** oldAlloc2DArr(int x, int y, int typeSize)
 {
     void** arr = (void**)malloc(x * sizeof(void*));
     int allocSize = y * x * typeSize;

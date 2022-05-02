@@ -10,7 +10,7 @@ namespace neith {
 class ModelLoader {
 public:
     // static void LoadModels(const char* paths[], int modelCount);
-    static int LoadModel1(std::string path, int &outMeshCount);
+    static int LoadModel(std::string path, int &outMeshCount);
 
 private:
     static void PathToBinPath(const char *path, char *binPath, char *uri);

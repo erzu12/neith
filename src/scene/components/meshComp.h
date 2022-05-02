@@ -16,18 +16,21 @@ class MeshComp : public Component {
 public:
     static int AddStaticPrimitive(float *vertices, int vertCount, int *indices, int indCount, int material);
     static void Transform(unsigned int entityID, glm::mat4 &transform);
-    static void ShouldUpdate(mesh meshID, unsigned int instanceID);
+    static bool ShouldUpdate(mesh meshID);
+    static void ScheduleUpdate(mesh meshID, unsigned int instanceID);
     static void UpdateDone(mesh meshID, unsigned int instanceID);
     static void AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4 modelMat);
     static int AddStaticMesh(int primitivesCount);
-    static int getMaterial(unsigned int entity, int material);
 
     static int GetPrimitivesCount() { return mPrimitivesCount; }
-
-    static int GetVertCount(int i);
-    static int GetIndCount(int i);
-    static float *GetVertices(int i);
-    static int *GetIndices(int i);
+    static int GetInstanceCount(mesh meshID) { return mInstanceCount.at(meshID); }
+    static int GetVertCount(unsigned int primitveID) { return mVertCounts.at(primitveID); }
+    static int GetIndCount(unsigned int primitveID) { return mIndCounts.at(primitveID); }
+    static float *GetVertices(unsigned int primitveID) { return mVertices.at(primitveID); }
+    static int *GetIndices(unsigned int primitveID) { return mIndices.at(primitveID); }
+    static int GetMaterial(unsigned int primitveID) { return mMaterials.at(primitveID); }
+    static int GetMaterial(unsigned int entity, int material);
+    static glm::mat4 *GetModelMats(unsigned int primitveID) { return mModelMats.at(primitveID).data(); }
 
 private:
     static int id;

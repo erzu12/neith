@@ -17,6 +17,7 @@ int AddMesh(int primitivesCount) { return MeshComp::AddStaticMesh(primitivesCoun
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat)
 {
+    Scene::GetEntity(entityID)->AddComponentByID(CompManager::GetCompID<MeshComp>());
     MeshComp::AddInstance(meshID, entityID, modelMat);
 }
 }  // namespace system

@@ -20,15 +20,14 @@
 #include "systems/sysMesh.h"
 
 namespace neith {
-int ModelLoader::LoadModel1(std::string path, int &outMeshCount)
+int ModelLoader::LoadModel(std::string path, int &outMeshCount)
 {
-    const int VERT_SIZE = 12;
     unsigned int mesh = -1;
     outMeshCount = 0;
     // StaticPrimitives *sp = sc->sp;
 
     // for(int i = 0; i < modelCount; i++) {
-    cgltf_options options = {(cgltf_file_type)0};
+    cgltf_options options = { (cgltf_file_type)0 };
     cgltf_data *gltfData = NULL;
     // cgltf_result result = cgltf_parse_file(&options, paths[i], &gltfData);
     cgltf_result result = cgltf_parse_file(&options, path.data(), &gltfData);
@@ -47,11 +46,6 @@ int ModelLoader::LoadModel1(std::string path, int &outMeshCount)
     if (!sceneData) {
         return 0;
     }
-
-    int curretPrimitive = 0;
-
-    int vertLength;
-    int indLength;
 
     int nodeCount = gltfData->nodes_count;
 
@@ -299,13 +293,13 @@ void ModelLoader::CalcTangents(float *vertices, int vertCount, int *indices, int
         long i2 = indices[i * 3 + 1];
         long i3 = indices[i * 3 + 2];
 
-        glm::vec3 pos0 = {vertices[i1], vertices[i1 + 1], vertices[i1 + 2]};
-        glm::vec3 pos1 = {vertices[i2], vertices[i2 + 1], vertices[i2 + 2]};
-        glm::vec3 pos2 = {vertices[i3], vertices[i3 + 1], vertices[i3 + 2]};
+        glm::vec3 pos0 = { vertices[i1], vertices[i1 + 1], vertices[i1 + 2] };
+        glm::vec3 pos1 = { vertices[i2], vertices[i2 + 1], vertices[i2 + 2] };
+        glm::vec3 pos2 = { vertices[i3], vertices[i3 + 1], vertices[i3 + 2] };
 
-        glm::vec2 tex0 = {vertices[i1 + 10], vertices[i1 + 11]};
-        glm::vec2 tex1 = {vertices[i2 + 10], vertices[i2 + 11]};
-        glm::vec2 tex2 = {vertices[i3 + 10], vertices[i3 + 11]};
+        glm::vec2 tex0 = { vertices[i1 + 10], vertices[i1 + 11] };
+        glm::vec2 tex1 = { vertices[i2 + 10], vertices[i2 + 11] };
+        glm::vec2 tex2 = { vertices[i3 + 10], vertices[i3 + 11] };
 
         float edge1x = pos1[0] - pos0[0];
         float edge1y = pos1[1] - pos0[1];
@@ -323,10 +317,10 @@ void ModelLoader::CalcTangents(float *vertices, int vertCount, int *indices, int
 
         float r = 1.0F / (u1 * v2 - u2 * v1);
 
-        glm::vec3 tangent = {(v2 * edge1x - v1 * edge2x) * r, (v2 * edge1y - v1 * edge2y) * r,
-                             (v2 * edge1z - v1 * edge2z) * r};
-        glm::vec3 bitangent = {(u1 * edge2x - u2 * edge1x) * r, (u1 * edge2y - u2 * edge1y) * r,
-                               (u1 * edge2z - u2 * edge1z) * r};
+        glm::vec3 tangent = { (v2 * edge1x - v1 * edge2x) * r, (v2 * edge1y - v1 * edge2y) * r,
+                              (v2 * edge1z - v1 * edge2z) * r };
+        // glm::vec3 bitangent = { (u1 * edge2x - u2 * edge1x) * r, (u1 * edge2y - u2 * edge1y) * r, (u1 * edge2z - u2 *
+        // edge1z) * r };
 
         tan1[i1] = tan1[i1] + tangent;
         tan1[i2] = tan1[i2] + tangent;
@@ -338,8 +332,8 @@ void ModelLoader::CalcTangents(float *vertices, int vertCount, int *indices, int
     }
 
     for (int i = 0; i < vertCount; i++) {
-        glm::vec3 n = {vertices[i * 12 + 3], vertices[i * 12 + 4], vertices[i * 12 + 5]};
-        glm::vec3 t = {tan1[i][0], tan1[i][1], tan2[i][2]};
+        glm::vec3 n = { vertices[i * 12 + 3], vertices[i * 12 + 4], vertices[i * 12 + 5] };
+        glm::vec3 t = { tan1[i][0], tan1[i][1], tan2[i][2] };
 
         // Gram-Schmidt orthogonalize
         glm::vec3 tangent = n * glm::dot(n, t);
