@@ -18,13 +18,6 @@ void InitScene() {
     new Renderer();
 }
 
-//Scene *nth_InitScene() { return new Scene(); }
-
-// void nth_LoadModels(Scene *sc, const char *paths[], int modelCount)
-//{
-//// LoadModels(sc, paths, modelCount);
-//}
-
 int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
 unsigned int AddEntity(std::string name) { return Scene::AddEntity(name); }

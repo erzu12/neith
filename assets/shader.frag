@@ -135,5 +135,9 @@ void main()
     vec3 ambient = vec3(0.2, 0.22, 0.26) * diffuse;
     vec3 color = ambient + Lo * shadow;
     
+    //vec3 projCoords = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
+    //projCoords = projCoords * 0.5 + 0.5;
+    //FragColor = vec4(texture(shadowMap, fs_in.TexCoord).r, 0.0, 0.0 , 1.0);
+    //FragColor = vec4(fs_in.TexCoord, 0.0 , 1.0);
     FragColor = vec4(color, 1.0);
 }

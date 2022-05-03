@@ -12,6 +12,10 @@ public:
 
     static unsigned int AddMaterial();
 
+    static void AddDepthMap(unsigned int depthMap);
+
+    static unsigned int GetDepthMap();
+
     static void SetShader(unsigned int material, unsigned int shader);
 
     // int SetShaderByName(char *materialName, int shader);
@@ -49,5 +53,6 @@ private:
     static std::vector<unsigned int> mTextureCounts;
     static std::vector<unsigned int *> mTextures;
     static std::unordered_map<int, std::unordered_map<std::string, int>> mBindingMap;
+    static unsigned int mDepthMap;
 };
 }  // namespace neith

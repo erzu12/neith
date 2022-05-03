@@ -9,6 +9,7 @@
 
 #include <fstream>
 
+#include "render/render.h"
 #include "log.h"
 
 namespace neith {
@@ -77,6 +78,8 @@ unsigned int LoadAndCompileShaders(const char *vertexPath, const char *fragmentP
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    Renderer::AddShadow(shaderProgram);
 
     return shaderProgram;
 }

@@ -112,7 +112,9 @@ void InstanceRenderer::RenderInstanced(int width, int height)
         UniformMat4v(Materials::GetShader(material), "view", view);
         UniformMat4v(Materials::GetShader(material), "projection", projection);
 
-        for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, Materials::GetDepthMap());
+        for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
             glActiveTexture(GL_TEXTURE0 + j);
             //NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
             glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
@@ -146,10 +148,10 @@ void InstanceRenderer::RenderInstancedShadows(int shaderProgram)
 {
     glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
 
-    glm::vec3 test = { 1.6f, 4.0f, 1.6f };
-    glm::vec3 test1 = { 0.0f, 0.0f, 0.0f };
-    glm::vec3 test2 = { 0.0f, 1.0f, 0.0f };
-    glm::mat4 lightView = glm::lookAt(test, test1, test2);
+    glm::vec3 pos = { -1.6f, 4.0f, 1.6f };
+    glm::vec3 target = { 0.0f, 0.0f, 0.0f };
+    glm::vec3 up = { 0.0f, 1.0f, 0.0f };
+    glm::mat4 lightView = glm::lookAt(pos, target, up);
 
     lightSpaceMatrix = lightProjection * lightView;
 

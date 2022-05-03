@@ -31,15 +31,15 @@ int main()
     neith::SetShader(meshes, 0, shaderProgram);
     neith::SetShader(meshes, 1, shaderProgram);
 
-    neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
     neith::SetValue(meshes, 0, "material.diffuse", 0.4f, 0.4f, 0.4f);
-    neith::SetValue(meshes, 0, "material.roughness", 0.5f);
+    neith::SetValue(meshes, 0, "material.roughness", 0.2f);
+    neith::SetValue(meshes, 0, "material.normal", 0.5f, 0.5f, 1.0f);
     neith::SetValue(meshes, 0, "material.specular", 0.2f);
     neith::SetValue(meshes, 0, "material.metallic", 0.2f);
 
     neith::SetValue(meshes, 1, "material.diffuse", 1.0f, 0.0f, 0.0f);
     neith::SetValue(meshes, 1, "material.roughness", 0.2f);
-    neith::SetValue(meshes, 1, "material.normal", 0.5f, 0.5f, 0.0f);
+    neith::SetValue(meshes, 1, "material.normal", 0.5f, 0.5f, 1.0f);
     neith::SetValue(meshes, 1, "material.specular", 0.9f);
     neith::SetValue(meshes, 1, "material.metallic", 0.0f);
     // neith::nth_SetValueByNameV3v(sc->mat, "Material", "material.normal",

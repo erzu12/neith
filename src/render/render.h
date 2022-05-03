@@ -9,6 +9,7 @@ public:
     Renderer();
     ~Renderer();
 
+    static void AddShadow(unsigned int shader);
     static void UpdateRender();
 
 private:
@@ -20,6 +21,7 @@ private:
     static unsigned int mCubeMapVAO;
     static unsigned int mFBO;
     static unsigned int mDepthMapFBO;
+    static unsigned int mDepthMap;
     static unsigned int mIntermediateFBO;
     static unsigned int mTexColorBuffer;
     static unsigned int mScreenTexture;

@@ -17,6 +17,8 @@
 #include "textures.h"
 #include "window/window.h"
 
+#include "log.h"
+
 namespace neith {
 
 InstanceRenderer *Renderer::mInstancedRenderer;
@@ -27,6 +29,7 @@ unsigned int Renderer::mScreenVAO;
 unsigned int Renderer::mCubeMapVAO;
 unsigned int Renderer::mFBO;
 unsigned int Renderer::mDepthMapFBO;
+unsigned int Renderer::mDepthMap;
 unsigned int Renderer::mIntermediateFBO;
 unsigned int Renderer::mTexColorBuffer;
 unsigned int Renderer::mScreenTexture;
@@ -87,15 +90,24 @@ Renderer::Renderer()
 
     mIntermediateFBO = CreatIntermediateFrameBuffer(1800, 1000, &mScreenTexture);
 
-    unsigned int depthMap;
-    mDepthMapFBO = CreatDepthMapFrameBuffer(&depthMap);
+    mDepthMapFBO = CreatDepthMapFrameBuffer(&mDepthMap);
+
+    Materials::AddDepthMap(mDepthMap);
 
     glUseProgram(mCubeMapShader);
     glUniform1i(glGetUniformLocation(mCubeMapShader, "skybox"), 0);
 
     //SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
     //neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
-    Materials::SetTexture(0, depthMap, "shadowMap");
+}
+
+void Renderer::AddShadow(unsigned int shader) {
+    int location = glGetUniformLocation(shader, "shadowMap");
+    if(location == -1) {
+        NT_INTER_WARN("no binding shadowMap in shader: {}", shader);
+        return;
+    }
+    glUniform1i(location, mDepthMap);
 }
 
 void Renderer::UpdateRender()
