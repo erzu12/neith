@@ -1,6 +1,7 @@
 #pragma once
 
 #include "instancerenderer.h"
+#include "linerenderer.h"
 #include "scene/scene.h"
 
 namespace neith {

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "log.h"
+#include "debug.h"
 #include "render/render.h"
 #include "scene/scene.h"
 #include "timer.h"

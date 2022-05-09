@@ -17,6 +17,8 @@
 #include "textures.h"
 #include "window/window.h"
 
+#include "debug.h"
+
 #include "log.h"
 
 namespace neith {
@@ -38,10 +40,12 @@ unsigned int Renderer::mCubeMap;
 Renderer::Renderer()
 {
     mInstancedRenderer = new InstanceRenderer();
+    LineRenderer::InitLineRenderer();
 
     mCubeMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
     mScreenShader = LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
     mShadowMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", NTH_ASSET_DIR "shadowMap.frag");
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
@@ -131,6 +135,8 @@ void Renderer::UpdateRender()
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
     mInstancedRenderer->RenderInstanced(Window::GetWidth(), Window::GetHeight());
+    LineRenderer::RenderLines();
+    LineRenderer::RednerGrid();
 
     // Cube Map
     glm::mat3 view3 = glm::mat3(view);

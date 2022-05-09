@@ -63,6 +63,9 @@ int main()
     while (!glfwWindowShouldClose(win->GetGLFWwindow())) {
         camera.UpdateCamera();
         neith::Update();
+        neith::Debug::DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f));
+        neith::Debug::DrawLine(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f), neith::Color::magenta, 4.0f);
+        neith::Debug::DrawRay(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 5);
         // glm::mat4 moveMat = glm::translate(glm::mat4(1.0f),
         // glm::vec3(0.0001f, 0.0f, 0.0f)); neith::nth_Transform(1, moveMat);
     }
