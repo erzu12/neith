@@ -3,36 +3,64 @@
  */
 
 #pragma once
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+// clang-format on
 
+#include <string>
+
+#include "log.h"
+#include "debug.h"
+#include "render/render.h"
 #include "scene/scene.h"
+#include "timer.h"
+#include "window/input.h"
 #include "window/window.h"
 
-struct Window* nth_CreateWindow();
+namespace neith {
+Window *nth_CreateWindow();
 
-void nth_AttachSceneToWindow(struct Scene *sc, struct Window *win);
+void InitScene();
 
-void nth_LoadModels(struct Scene *sc, const char* paths[], int modelCount);
+int LoadModel(std::string path, int &outMeshCount);
 
-void nth_InitRender(struct Scene *sc, struct Window *win);
+unsigned int AddEntity(std::string name);
 
-void nth_UpdateWindow(struct Window *win);
+void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
 
-void nth_UpdateRender(struct Scene *sc);
+void AttachCamera(unsigned int entityID);
 
-unsigned int nth_LoadAndCompileShaders(const char* vertexPath, const char* fragmentPath);
+void Update();
 
-void nth_SetShader(struct Materials *mat, int material, int shader);
+void UpdateWindow();
 
-int nth_SetShaderByName(struct Materials *mat, char *materialName, int shader);
+void UpdateRender();
 
-void nth_SetTexture(struct Materials *mat, int material, int texture, char *bindingName);
+unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath);
 
-int nth_SetTextureByName(struct Materials *mat, char *materialName, int texture, char *bindingName);
+void SetShader(unsigned int meshID, int material, int shader);
 
-void nth_SetValueByNameF(struct Materials *mat, char *materialName, char *bindingName, float value);
+// int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
 
-void nth_SetValueByNameV3(struct Materials *mat, char *materialName, char *bindingName, float *value);
+void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
 
-void nth_SetValueByNameV3v(struct Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
+void SetValue(unsigned int meshID, int material, const char *bindingName, float value);
+
+void SetValue(unsigned int meshID, int material, const char *bindingName, float *value);
+
+void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z);
+
+// int nth_SetTextureByName(Materials *mat, char *materialName, int texture, char *bindingName);
+
+// void nth_SetValueByNameF(Materials *mat, char *materialName, char *bindingName, float value);
+
+// void nth_SetValueByNameV3(Materials *mat, char *materialName, char *bindingName, float *value);
+
+// void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
+
+void TransformEntity(unsigned int entityID, glm::mat4 &transform);
+
+bool GetKey(Key key);
+glm::vec2 GetDeltaMouse();
+}  // namespace neith
