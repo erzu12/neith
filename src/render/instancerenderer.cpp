@@ -116,14 +116,14 @@ void InstanceRenderer::RenderInstanced(int width, int height)
         glBindTexture(GL_TEXTURE_2D, Materials::GetDepthMap());
         for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
             glActiveTexture(GL_TEXTURE0 + j);
-            //NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
+            // NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
             glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
         if (MeshComp::ShouldUpdate(i)) {
-            //glm::mat4 test = MeshComp::GetModelMats(i)[0];
-            //NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+            // glm::mat4 test = MeshComp::GetModelMats(i)[0];
+            // NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
             glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
                          GL_DYNAMIC_DRAW);
             // for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
@@ -155,21 +155,30 @@ void InstanceRenderer::RenderInstancedShadows(int shaderProgram)
 
     lightSpaceMatrix = lightProjection * lightView;
 
-    glUseProgram(shaderProgram);
-    UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix);
     glViewport(0, 0, 4096, 4096);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 0; i < MeshComp::GetPrimitivesCount(); i++) {
-        for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
-            glActiveTexture(GL_TEXTURE0 + j);
-            glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
-        }
+    for (int i = 1; i < MeshComp::GetPrimitivesCount(); i++) {
+        glUseProgram(shaderProgram);
+        UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, Materials::GetDepthMap());
+        // for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
+        // glActiveTexture(GL_TEXTURE0 + j);
+        // glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
+        //}
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-        // UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
+        if (MeshComp::ShouldUpdate(i)) {
+            // glm::mat4 test = MeshComp::GetModelMats(i)[0];
+            // NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
+                         GL_DYNAMIC_DRAW);
+        }
+        //  UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
         glBindVertexArray(VAOs[i]);
-        glDrawElements(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0);
+        glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
+                                MeshComp::GetInstanceCount(i));
     }
 }
 }  // namespace neith

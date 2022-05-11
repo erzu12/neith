@@ -7,8 +7,10 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+#include "debug.h"
 #include "defaults.h"
 #include "framebuffer.h"
+#include "log.h"
 #include "scene/components/cameraComp.h"
 #include "scene/material.h"
 #include "scene/scene.h"
@@ -16,10 +18,6 @@
 #include "shaders.h"
 #include "textures.h"
 #include "window/window.h"
-
-#include "debug.h"
-
-#include "log.h"
 
 namespace neith {
 
@@ -101,13 +99,14 @@ Renderer::Renderer()
     glUseProgram(mCubeMapShader);
     glUniform1i(glGetUniformLocation(mCubeMapShader, "skybox"), 0);
 
-    //SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
-    //neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
+    // SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
+    // neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
 }
 
-void Renderer::AddShadow(unsigned int shader) {
+void Renderer::AddShadow(unsigned int shader)
+{
     int location = glGetUniformLocation(shader, "shadowMap");
-    if(location == -1) {
+    if (location == -1) {
         NT_INTER_WARN("no binding shadowMap in shader: {}", shader);
         return;
     }
@@ -123,6 +122,9 @@ void Renderer::UpdateRender()
     }
     glEnable(GL_DEPTH_TEST);
 
+    int width, height;
+    glfwGetWindowSize(Window::GetGLFWwindow(), &width, &height);
+
     glBindFramebuffer(GL_FRAMEBUFFER, mDepthMapFBO);
     mInstancedRenderer->RenderInstancedShadows(mShadowMapShader);
 
@@ -130,27 +132,24 @@ void Renderer::UpdateRender()
     glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
     glm::mat4 view = CameraComp::GetViewMat();
 
-    int width, height;
-    glfwGetWindowSize(Window::GetGLFWwindow(), &width, &height);
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
     mInstancedRenderer->RenderInstanced(Window::GetWidth(), Window::GetHeight());
     LineRenderer::RenderLines();
-    LineRenderer::RednerGrid();
 
     // Cube Map
     glm::mat3 view3 = glm::mat3(view);
     glm::mat4 viewCubeMap = glm::mat4(view3);
 
-    glUseProgram(mCubeMapShader);
+    // glUseProgram(mCubeMapShader);
 
     glDepthFunc(GL_LEQUAL);
 
-    UniformMat4v(mCubeMapShader, "view", viewCubeMap);
-    UniformMat4v(mCubeMapShader, "projection", projection);
-    glBindVertexArray(mCubeMapVAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mCubeMap);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // UniformMat4v(mCubeMapShader, "view", viewCubeMap);
+    // UniformMat4v(mCubeMapShader, "projection", projection);
+    // glBindVertexArray(mCubeMapVAO);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, mCubeMap);
+    // glDrawArrays(GL_TRIANGLES, 0, 36);
     glDepthFunc(GL_LESS);
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, mFBO);
