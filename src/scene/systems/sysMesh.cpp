@@ -1,6 +1,5 @@
 #include "sysMesh.h"
 
-#include "scene/components/compManager.h"
 #include "scene/components/meshComp.h"
 #include "scene/scene.h"
 
@@ -17,7 +16,7 @@ int AddMesh(int primitivesCount) { return MeshComp::AddStaticMesh(primitivesCoun
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat)
 {
-    Scene::GetEntity(entityID)->AddComponentByID(CompManager::GetCompID<MeshComp>());
+    Entity::AddComponent(entityID, "Mesh");
     MeshComp::AddInstance(meshID, entityID, modelMat);
 }
 }  // namespace system

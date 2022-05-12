@@ -4,10 +4,11 @@
 #include <glad/glad.h>
 
 #include "debug.h"
+#include "log.h"
 #include "window.h"
 
 namespace neith {
-glm::vec2 Input::mLastMousePos = glm::vec2();
+glm::vec2 Input::mLastMousePos = glm::vec2(0.0f);
 
 void Input::processInput(GLFWwindow *window)
 {

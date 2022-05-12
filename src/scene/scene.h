@@ -55,6 +55,8 @@ public:
 
     glm::vec3 GetLightDir();
 
+    static void Save(std::ofstream file);
+
     ~Scene();
 
     // StaticPrimitives *sp;

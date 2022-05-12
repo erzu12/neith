@@ -9,7 +9,7 @@
 Camera::Camera()
 {
     mPitch = 0.0f;
-    // mYaw = -PI * 0.5f;
+    mYaw = -PI * 0.5f;
 
     mCameraPos = glm::vec3(0.0f);
     mCameraPos.z = 3.0f;
@@ -26,6 +26,8 @@ void Camera::UpdateCamera()
 
     glm::vec2 deltaMouse = neith::GetDeltaMouse();
 
+    // NT_INFO("{}, {}", deltaMouse.x, deltaMouse.y);
+
     deltaMouse *= sens;
 
     mYaw += deltaMouse.x;
@@ -40,6 +42,7 @@ void Camera::UpdateCamera()
     cameraFront.x = sin(mYaw) * cos(mPitch);
     cameraFront.y = sin(mPitch);
     cameraFront.z = -cos(mYaw) * cos(mPitch);
+    // NT_INFO(glm::to_string(cameraFront));
     if (glm::length(cameraFront) != 0) {
         cameraFront = glm::normalize(cameraFront);
     }

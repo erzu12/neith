@@ -13,14 +13,15 @@
 namespace neith {
 Window *nth_CreateWindow() { return new Window(); }
 
-void InitScene() {
+void InitScene()
+{
     new Scene();
     new Renderer();
 }
 
 int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
-unsigned int AddEntity(std::string name) { return Scene::AddEntity(name); }
+unsigned int AddEntity(std::string name) { return Entity::AddEntity(name); }
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat)
 {
@@ -29,9 +30,10 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 model
 
 void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
 
-//Renderer *nth_InitRender(Scene *sc, Window *win) { return new Renderer(sc, win); }
+// Renderer *nth_InitRender(Scene *sc, Window *win) { return new Renderer(sc, win); }
 
-void Update() {
+void Update()
+{
     Window::UpdateWindow();
     Renderer::UpdateRender();
 }

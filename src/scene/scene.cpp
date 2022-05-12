@@ -1,5 +1,6 @@
 #include "scene.h"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -25,55 +26,15 @@ namespace neith {
 // return componentID;
 //}
 
-std::unordered_map<std::string, unsigned int> Scene::mEntityNames = {};
-std::vector<Entity *> Scene::mEntitys = {};
-
 Scene::Scene()
 {
     // sp = new StaticPrimitives(maxPrimitives);
     Materials::AddMaterial();
 }
 
-int Scene::AddEntity()
-{
-    std::string entityName = "Entity." + std::to_string(mEntitys.size());
-    return AddEntity(entityName);
-}
-
-int Scene::AddEntity(unsigned int parentID)
-{
-    std::string entityName = "Entity." + std::to_string(mEntitys.size());
-    return AddEntity(entityName, parentID);
-}
-
-int Scene::AddEntity(std::string &name)
-{
-    int id = mEntitys.size();
-    mEntitys.push_back(new Entity(id));
-    mEntityNames.insert({ name, id });
-    return id;
-}
-
-int Scene::AddEntity(std::string &name, unsigned int parentID)
-{
-    int id = mEntitys.size();
-    mEntitys.push_back(new Entity(id, parentID));
-    mEntityNames.insert({ name, id });
-    return id;
-}
-
-int Scene::AddEntity(std::string &name, std::string parentName) { return AddEntity(name, mEntityNames[parentName]); }
-
-Entity *Scene::GetEntity(unsigned int entityID)
-{
-    if (entityID >= mEntitys.size()) {
-        NT_INTER_WARN("warnig no entity with id: {}", entityID);
-        return nullptr;
-    }
-    return mEntitys.at(entityID);
-}
-
 glm::vec3 Scene::GetLightDir() { return lightDir; }
+
+void Scene::Save(std::ofstream file) {}
 
 Scene::~Scene()
 {

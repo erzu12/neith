@@ -1,6 +1,5 @@
 #include "sysCamera.h"
 
-#include "scene/components/compManager.h"
 #include "sysTransform.h"
 
 namespace neith {
@@ -13,7 +12,7 @@ namespace system {
 
 void AddCamera(unsigned int entityID)
 {
-    Scene::GetEntity(entityID)->AddComponentByID(CompManager::GetCompID<CameraComp>());
+    Entity::AddComponent(entityID, "Camera");
     CameraComp::AttachCamera(entityID);
 }
 }  // namespace system

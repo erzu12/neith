@@ -1,35 +1,38 @@
 #pragma once
 
+#include <fstream>
 #include <glm/mat4x4.hpp>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace neith {
 class Entity {
 private:
-    bool mHasComp[64] = { false };
-    unsigned int mID;
-    unsigned int mParentID;
-    std::vector<Entity*> children;
+    static std::unordered_map<std::string, unsigned int> mEntityNames;
+    static std::vector<std::unordered_set<std::string>> mComponents;
+    static std::vector<unsigned int> mParentIDs;
+    static std::vector<std::vector<unsigned int>> mChildren;
 
 public:
-    Entity(unsigned int mID);
+    static unsigned int AddEntity();
+    static unsigned int AddEntity(std::string& name);
+    static unsigned int AddEntity(unsigned int mParentID);
 
-    void SetParent(unsigned int newParentID);
+    static void SetParent(unsigned int entityID, unsigned int newParentID);
 
-    void AddComponentByID(int compID);
+    static bool HasComponent(unsigned int entityID, std::string compName);
+    static void AddComponent(unsigned int entityID, std::string compName);
 
-    bool HasComponentByID(int compID);
+    static void Transforme(unsigned int entityID, glm::mat4 transform);
 
-    int GetID();
+    static int GetChildCount(unsigned int entityID);
 
-    void Transforme(glm::mat4 transform);
+    static unsigned int GetChild(unsigned int entityID, int index);
 
-    int GetChildCount();
+    static unsigned int GetParent(unsigned int entityID) { return mParentIDs.at(entityID); };
 
-    Entity* GetChild(int index);
-
-    unsigned int GetParent() { return mParentID; };
-
-    Entity(unsigned int mID, unsigned int mParentID);
+    static void Save(std::ofstream& file);
 };
 }  // namespace neith
