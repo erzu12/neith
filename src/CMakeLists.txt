@@ -2,57 +2,81 @@ cmake_minimum_required(VERSION 3.16.2)
 
 add_library("${PROJECT_NAME}"
     "neith.h"
-    "neith.c"
+    "neith.cpp"
+    "log.h"
+    "log.cpp"
+    "debug.h"
+    "debug.cpp"
+    "transform.h"
+    "transform.cpp"
     "defaults.h"
-    "physics/collision.h"
-    "physics/collision.c"
     "render/framebuffer.h"
-    "render/framebuffer.c"
+    "render/framebuffer.cpp"
     "render/render.h"
-    "render/render.c"
+    "render/render.cpp"
 	"render/shaders.h"
-	"render/shaders.c"
-    "render/staticrenderer.h"
-    "render/staticrenderer.c"
+	"render/shaders.cpp"
+    "render/instancerenderer.h"
+    "render/instancerenderer.cpp"
+    "render/linerenderer.h"
+    "render/linerenderer.cpp"
     "render/textures.h"
-    "render/textures.c"
-	"scene/camera.h"
-	"scene/camera.c"
+    "render/textures.cpp"
     "scene/material.h"
-    "scene/material.c"
+    "scene/material.cpp"
     "scene/mesh.h"
-    "scene/mesh.c"
+    "scene/mesh.cpp"
     "scene/meshloader.h"
-    "scene/meshloader.c"
+    "scene/meshloader.cpp"
     "scene/scene.h"
-    "scene/scene.c"
+    "scene/scene.cpp"
+    "scene/save.h"
+    "scene/save.cpp"
     "scene/skybox.h"
-    "scene/skybox.c"
+    "scene/skybox.cpp"
+    "scene/entity.h"
+    "scene/entity.cpp"
+    "scene/components/cameraComp.h"
+    "scene/components/cameraComp.cpp"
+    "scene/components/component.h"
+    "scene/components/component.cpp"
+    "scene/components/meshComp.h"
+    "scene/components/meshComp.cpp"
+    "scene/components/transformComp.h"
+    "scene/components/transformComp.cpp"
+    "scene/systems/sysCamera.h"
+    "scene/systems/sysCamera.cpp"
+    "scene/systems/sysMesh.h"
+    "scene/systems/sysMesh.cpp"
+    "scene/systems/sysTransform.h"
+    "scene/systems/sysTransform.cpp"
+    "scene/systems/sysMaterial.h"
+    "scene/systems/sysMaterial.cpp"
     "window/input.h"
-    "window/input.c"
+    "window/input.cpp"
     "window/window.h"
-    "window/window.c"
+    "window/window.cpp"
     "dataStructures.h"
-    "dataStructures.c"
-	"time.h"
-	"time.c"
-    "vecmath.h"
-    "vecmath.c"
+    "dataStructures.cpp"
+	"timer.h"
+	"timer.cpp"
 )
+
 
 target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glfw/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
-	PUBLIC ${CMAKE_SOURCE_DIR}/external/cglm/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
-	PUBLIC ${CMAKE_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/spdlog/include
+   	PUBLIC ${CMAKE_SOURCE_DIR}/src
 )
 
 target_link_libraries("${PROJECT_NAME}"
 	glfw
 	glad
-	cglm
     cgltf
     stb
+    glm
+    spdlog
 )

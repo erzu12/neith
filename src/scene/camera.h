@@ -1,19 +1,23 @@
 #pragma once
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <cglm/cglm.h>
-#include "vecmath.h"
 
-struct CameraData {
-	float yaw, pitch;
-	Float3 camerFront;
-	Float3 cameraPos;
-	Float3 moveVec;
+#include <glm/mat4x4.hpp>
+
+namespace neith {
+class Camera {
+public:
+    float mYaw, mPitch;
+    glm::vec3 mCameraFront;
+    glm::vec3 mCameraPos;
+    glm::vec3 mMoveVec;
+
+    Camera();
+
+    void CameraGetViewMat(glm::mat4 &dest);
+
+    void CameraMouseInput(float offestX, float offestY);
+
+    void CameraKeyInput(GLFWwindow *window);
 };
-
-struct CameraData *CameraInit();
-
-void CameraGetViewMat(struct CameraData *cd, vec4 *dest);
-
-void CameraMouseInput(struct CameraData *cd ,float offestX, float offestY);
-
-void CameraKeyInput(struct CameraData *cd, GLFWwindow *window);
+}  // namespace neith

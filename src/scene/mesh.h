@@ -1,31 +1,27 @@
 #pragma once
 
-#include "cglm/cglm.h"
+#include <glm/mat4x4.hpp>
 
-struct StaticPrimitives {
+namespace neith {
+class StaticPrimitives {
+public:
     int primitivesCount;
     int meshCount;
-    mat4 *modelMats;
-    int vertSize;
-    int indSize;
+    glm::mat4 *modelMats;
     float **vertices;
     int **indices;
     int *meshes;
     int *vertCounts;
     int *indCounts;
     int *materials;
+
+    StaticPrimitives(int maxPrimitives);
+
+    int AddStaticPrimitive(
+        glm::mat4 modelMat, float *vertices, int vertCount, int *indices, int indCount, int material);
+
+    int AddStaticMesh(int primitivesCount);
+
+    ~StaticPrimitives();
 };
-
-int AddStaticPrimitive(struct StaticPrimitives *sp,
-                       mat4 modelMat,
-                       float *vertices,
-                       int vertCount,
-                       int *indices,
-                       int indCount,
-                       int material);
-
-int AddStaticMesh(struct StaticPrimitives *sp, int primitivesCount);
-
-struct StaticPrimitives *InitStaticPrimitives(int maxPrimitives);
-
-void DeleteStaticPrimitives(struct StaticPrimitives *sp);
+}  // namespace neith

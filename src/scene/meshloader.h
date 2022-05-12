@@ -1,17 +1,30 @@
 #pragma once
 
-#include "scene.h"
 #include <cgltf.h>
 
+#include <glm/mat4x4.hpp>
 
-void LoadModels(struct Scene *sc, const char* paths[], int modelCount);
-void PathToBinPath(const char *path, char* binPath, char* uri);
-void ReadTransform(cgltf_node *node, mat4 modelMat);
-bool CheckAtributeFormat(cgltf_primitive *primitive);
-bool HasTangents(cgltf_primitive *primitive);
-int ReadMaterial(struct Materials *mat, cgltf_material *material);
-char *LoadBinFile(int dataLength, char *binPath);
-float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents);
-int *LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount);
-void CalcTangents(float *vertices, int vertCount, int *indices, int indCount);
+#include "scene.h"
 
+namespace neith {
+class ModelLoader {
+public:
+    // static void LoadModels(const char* paths[], int modelCount);
+    static int LoadModel(std::string path, int &outMeshCount);
+
+private:
+    static void PathToBinPath(const char *path, char *binPath, char *uri);
+    static void ReadTransform(cgltf_node *node, glm::mat4 &modelMat);
+    static bool CheckAtributeFormat(cgltf_primitive *primitive);
+    static bool HasTangents(cgltf_primitive *primitive);
+    static int ReadMaterial(cgltf_material **gltfMaterials,
+                            int &materialsCount,
+                            cgltf_material *material,
+                            int *materials);
+    static char *LoadBinFile(int dataLength, char *binPath);
+    static float *LoadVertices(char *sceneData, cgltf_primitive primitive, int vertCount, bool hasTangents);
+    static int *LoadIndices(char *sceneData, cgltf_primitive primitive, int indCount);
+    static void CalcTangents(float *vertices, int vertCount, int *indices, int indCount);
+};
+
+}  // namespace neith

@@ -2,22 +2,34 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <stdbool.h>
-#include <vecmath.h>
-#include "scene/scene.h"
 
-struct Window {
-    bool resize;
-    int width, height;
-    GLFWwindow *window;
+namespace neith {
+class Window {
+private:
+    static bool mResize;
+    static int mWidth;
+    static int mHeight;
+    static GLFWwindow *mGLTFwindow;
+
+public:
+    Window();
+    static void UpdateWindow();
+
+    static int GetWidth();
+    static int GetHeight();
+
+    static void SetWidth(int width);
+    static void SetHeight(int height);
+
+    static void SetResize(bool resize);
+    static bool GetResize();
+
+    static GLFWwindow *GetGLFWwindow();
 };
 
 struct CallbackContext {
-    Float3 moveVec;
     bool firstMouse;
     float lastX, lastY;
-    struct CameraData *cd;
-    struct Window *win;
+    Window *win;
 };
-struct Window* CreateWindow();
-void AttachSceneToWindow(struct Scene *sc, struct Window *win);
-void UpdateWindow(struct Window* win);
+}  // namespace neith
