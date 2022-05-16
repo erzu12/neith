@@ -30,8 +30,6 @@ add_library("${PROJECT_NAME}"
     "scene/meshloader.cpp"
     "scene/scene.h"
     "scene/scene.cpp"
-    "scene/save.h"
-    "scene/save.cpp"
     "scene/skybox.h"
     "scene/skybox.cpp"
     "scene/entity.h"
@@ -52,6 +50,12 @@ add_library("${PROJECT_NAME}"
     "scene/systems/sysTransform.cpp"
     "scene/systems/sysMaterial.h"
     "scene/systems/sysMaterial.cpp"
+    "scene/systems/sysPhysics.h"
+    "scene/systems/sysPhysics.cpp"
+    "physics/physics.h"
+    "physics/physics.cpp"
+    "physics/colliders.h"
+    "physics/colliders.cpp"
     "window/input.h"
     "window/input.cpp"
     "window/window.h"
@@ -69,6 +73,18 @@ target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
     PUBLIC ${CMAKE_SOURCE_DIR}/external/spdlog/include
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Dynamics
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Collision
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Common
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Geometry
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3OpenCL
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Serialize/Bullet2FileLoader
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/BulletDynamics
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/BulletCollision
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/BulletInverseDynamics
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/BulletSoftBody
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/LinearMath
    	PUBLIC ${CMAKE_SOURCE_DIR}/src
 )
 
@@ -78,5 +94,16 @@ target_link_libraries("${PROJECT_NAME}"
     cgltf
     stb
     glm
+    Bullet3Dynamics
+    Bullet3Collision
+    Bullet3Common
+    Bullet3Geometry
+    Bullet3OpenCL_clew
+    Bullet2FileLoader
+    BulletDynamics
+    BulletCollision
+    BulletInverseDynamics
+    BulletSoftBody
+    LinearMath
     spdlog
 )

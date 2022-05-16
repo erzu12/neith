@@ -1,5 +1,6 @@
 #include "neith.h"
 
+#include "physics/physics.h"
 #include "render/shaders.h"
 #include "scene/material.h"
 #include "scene/meshloader.h"
@@ -17,6 +18,7 @@ void InitScene()
 {
     new Scene();
     new Renderer();
+    new Physics();
 }
 
 int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
@@ -36,6 +38,7 @@ void Update()
 {
     Window::UpdateWindow();
     Renderer::UpdateRender();
+    Physics::UpdatePhysics();
 }
 
 void UpdateWindow(Window *win) { Window::UpdateWindow(); }
