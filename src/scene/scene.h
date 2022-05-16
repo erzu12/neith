@@ -37,19 +37,11 @@
 namespace neith {
 class Scene {
 private:
-    static std::unordered_map<std::string, unsigned int> mEntityNames;
-    static std::vector<Entity *> mEntitys;
     static Materials *mMaterial;
     glm::vec3 lightDir;
 
 public:
     Scene();
-
-    static int AddEntity();
-    static int AddEntity(unsigned int parentID);
-    static int AddEntity(std::string &name);
-    static int AddEntity(std::string &name, unsigned int parentID);
-    static int AddEntity(std::string &name, std::string parentName);
 
     static Entity *GetEntity(unsigned int entityID);
 

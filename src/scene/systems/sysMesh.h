@@ -8,6 +8,6 @@ int AddStaticPrimitive(float *vertices, int vertCount, int *indices, int indCoun
 
 int AddMesh(int primitivesCount);
 
-void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
+void AddMeshToEntity(unsigned int entityID, unsigned int meshID);
 }  // namespace system
 }  // namespace neith

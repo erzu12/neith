@@ -5,6 +5,7 @@
 namespace neith {
 namespace system {
 void Transform(unsigned int entity, glm::mat4 &transform);
+void SetGlobalTransform(unsigned int entityID, glm::mat4 &transform);
 glm::mat4 GetGlobalModelMat(unsigned int entityID);
 // Transform GetGlobalTransform(unsigned int entityID);
 }  // namespace system

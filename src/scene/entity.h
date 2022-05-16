@@ -16,9 +16,9 @@ private:
     static std::vector<std::vector<unsigned int>> mChildren;
 
 public:
-    static unsigned int AddEntity();
-    static unsigned int AddEntity(std::string& name);
-    static unsigned int AddEntity(unsigned int mParentID);
+    static void InitEntites();
+    static unsigned int AddEntity(unsigned int mParentID, glm::mat4 &transform);
+    static unsigned int AddEntity(unsigned int mParentID, glm::mat4 &transform, std::string& name);
 
     static void SetParent(unsigned int entityID, unsigned int newParentID);
 

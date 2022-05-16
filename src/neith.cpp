@@ -8,7 +8,9 @@
 #include "scene/systems/sysMaterial.h"
 #include "scene/systems/sysMesh.h"
 #include "scene/systems/sysTransform.h"
+#include "scene/systems/sysPhysics.h"
 #include "window/window.h"
+#include "physics/colliders.h"
 
 namespace neith {
 Window *nth_CreateWindow() { return new Window(); }
@@ -17,15 +19,21 @@ void InitScene()
 {
     new Scene();
     new Renderer();
+    new Physics();
 }
 
 int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
-unsigned int AddEntity(std::string name) { return Entity::AddEntity(name); }
+unsigned int AddEntity(std::string name) { 
 
-void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat)
+    glm::mat4 transform = glm::mat4(1.0f);
+    return Entity::AddEntity(0, transform, name);
+}
+unsigned int AddEntity(std::string name, glm::mat4 transform) { return Entity::AddEntity(0, transform, name); }
+
+void AddMeshToEntity(unsigned int entityID, unsigned int meshID)
 {
-    system::AddMeshToEntity(entityID, meshID, modelMat);
+    system::AddMeshToEntity(entityID, meshID);
 }
 
 void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
@@ -36,6 +44,7 @@ void Update()
 {
     Window::UpdateWindow();
     Renderer::UpdateRender();
+    Physics::UpdatePhysics();
 }
 
 void UpdateWindow(Window *win) { Window::UpdateWindow(); }
@@ -94,4 +103,9 @@ void TransformEntity(unsigned int entityID, glm::mat4 &transform) { system::Tran
 bool GetKey(Key key) { return Input::GetKeyDown(key); }
 
 glm::vec2 GetDeltaMouse() { return Input::GetDeltaMouse(); }
+
+void AddRigidBody(unsigned int entityID, Collider *collider, float mass) { system::AddRigidBody(entityID, collider, mass);}
+
+void UpdatePhysics() { Physics::UpdatePhysics(); }
+
 }  // namespace neith

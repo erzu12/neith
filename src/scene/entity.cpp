@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "components/transformComp.h"
+#include "log.h"
 
 namespace neith {
 
@@ -11,14 +12,24 @@ std::vector<std::unordered_set<std::string>> Entity::mComponents;
 std::vector<unsigned int> Entity::mParentIDs;
 std::vector<std::vector<unsigned int>> Entity::mChildren;
 
-unsigned int Entity::AddEntity() { return AddEntity(0); }
-unsigned int Entity::AddEntity(std::string &name)
+void Entity::InitEntites() {
+    mComponents.push_back(std::unordered_set<std::string>());
+    mParentIDs.push_back(0);
+    mChildren.push_back(std::vector<unsigned int>());
+    mEntityNames.insert({ "Scene", 0 });
+
+    glm::mat4 parentMat = glm::mat4(1.0f);
+    TransformComp::AddTransform(0, parentMat);
+}
+
+unsigned int Entity::AddEntity(unsigned int parentID, glm::mat4 &transform, std::string &name)
 {
-    unsigned int id = AddEntity();
+    unsigned int id = AddEntity(parentID, transform);
     mEntityNames.insert({ name, id });
     return id;
 }
-unsigned int Entity::AddEntity(unsigned int parentID)
+
+unsigned int Entity::AddEntity(unsigned int parentID, glm::mat4 &transform)
 {
     unsigned int id = mParentIDs.size();
 
@@ -26,7 +37,8 @@ unsigned int Entity::AddEntity(unsigned int parentID)
     mParentIDs.push_back(parentID);
     mChildren.push_back(std::vector<unsigned int>());
 
-    TransformComp::AddTransform(id);
+    glm::mat4 parentMat = TransformComp::GetGlobalTransform(parentID);
+    TransformComp::AddTransform(id, parentMat, transform);
     return id;
 }
 
@@ -45,36 +57,4 @@ int Entity::GetChildCount(unsigned int entityID) { return mChildren.at(entityID)
 
 unsigned int Entity::GetChild(unsigned int entityID, int index) { return mChildren.at(entityID).at(index); }
 
-void Entity::Save(std::ofstream &file)
-{
-    // long componentStart = file.tellp();
-    // file.seekp(componentStart + sizeof(int));
-    // for (auto component : mComponents) {
-    // int nameSize = component.size();
-    // file.write(reinterpret_cast<const char *>(&nameSize), sizeof(nameSize));
-    // file.write(component.data(), nameSize);
-    //}
-    // long componentEnd = file.tellp();
-    // file.seekp(componentStart);
-    // int componentSize = componentEnd - componentStart + sizeof(int);
-    // file.write(reinterpret_cast<const char *>(&componentSize), sizeof(int));
-    // file.seekp(componentEnd);
-
-    // file.write(reinterpret_cast<const char *>(&mID), sizeof(mID));
-    // file.write(reinterpret_cast<const char *>(&mParentID), sizeof(mParentID));
-
-    // long entityNameStart = file.tellp();
-    // file.seekp(entityNameStart + sizeof(int));
-    // for (auto entityName : mEntityNames) {
-    // int nameSize = entityName.first.size();
-    // file.write(reinterpret_cast<const char *>(&nameSize), sizeof(nameSize));
-    // file.write(entityName.first.data(), nameSize);
-    // file.write(reinterpret_cast<const char *>(&entityName.second), sizeof(unsigned int));
-    //}
-    // long entityNameEnd = file.tellp();
-    // file.seekp(entityNameStart);
-    // int entityNameSize = entityNameEnd - entityNameStart + sizeof(int);
-    // file.write(reinterpret_cast<const char *>(&entityNameSize), sizeof(int));
-    // file.seekp(entityNameEnd);
-}
 }  // namespace neith

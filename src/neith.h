@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "physics/physics.h"
 #include "log.h"
 #include "debug.h"
 #include "render/render.h"
@@ -26,8 +27,9 @@ void InitScene();
 int LoadModel(std::string path, int &outMeshCount);
 
 unsigned int AddEntity(std::string name);
+unsigned int AddEntity(std::string name, glm::mat4 transform);
 
-void AddMeshToEntity(unsigned int entityID, unsigned int meshID, glm::mat4 modelMat);
+void AddMeshToEntity(unsigned int entityID, unsigned int meshID);
 
 void AttachCamera(unsigned int entityID);
 
@@ -63,4 +65,8 @@ void TransformEntity(unsigned int entityID, glm::mat4 &transform);
 
 bool GetKey(Key key);
 glm::vec2 GetDeltaMouse();
+
+void AddRigidBody(unsigned int entityID, Collider *collider, float mass);
+
+void UpdatePhysics();
 }  // namespace neith

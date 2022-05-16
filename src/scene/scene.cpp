@@ -7,6 +7,7 @@
 #include "log.h"
 #include "material.h"
 #include "window/window.h"
+#include "scene/components/transformComp.h"
 
 // void DeleteStaticRender(struct RenderContext *rc) {
 //     free(rc->VAOs);
@@ -30,6 +31,7 @@ Scene::Scene()
 {
     // sp = new StaticPrimitives(maxPrimitives);
     Materials::AddMaterial();
+    Entity::InitEntites();
 }
 
 glm::vec3 Scene::GetLightDir() { return lightDir; }
