@@ -4,9 +4,9 @@ out vec4 FragColor;
 in vec3 pos;
 
 void main() {
-    float stripeX = floor(mod(pos.x, 2)); 
-    float stripeY = floor(mod(pos.y, 2)); 
-    float stripeZ = floor(mod(pos.z, 2)); 
+    float stripeX = floor(mod(pos.x + 0.0001, 2));
+    float stripeY = floor(mod(pos.y + 0.0001, 2));
+    float stripeZ = floor(mod(pos.z + 0.0001, 2));
     float checker = 0.3;
     if(stripeY == stripeX) {
         checker = 0.7;

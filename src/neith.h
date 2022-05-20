@@ -10,9 +10,9 @@
 
 #include <string>
 
-#include "physics/physics.h"
-#include "log.h"
 #include "debug.h"
+#include "log.h"
+#include "physics/physics.h"
 #include "render/render.h"
 #include "scene/scene.h"
 #include "timer.h"
@@ -66,7 +66,9 @@ void TransformEntity(unsigned int entityID, glm::mat4 &transform);
 bool GetKey(Key key);
 glm::vec2 GetDeltaMouse();
 
-void AddRigidBody(unsigned int entityID, Collider *collider, float mass);
+int AddRigidBody(unsigned int entityID, Collider *collider, float mass);
 
 void UpdatePhysics();
+
+int GetContacPoints(unsigned int colliderID, ContactPoint *contactPoints, int capacity);
 }  // namespace neith

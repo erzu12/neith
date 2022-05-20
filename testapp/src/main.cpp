@@ -1,7 +1,8 @@
-#include <neith.h>
+
 #include <spdlog/spdlog.h>
 #include <stdio.h>
 
+#include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 
@@ -20,6 +21,8 @@ int main()
     neith::InitScene();
     int cube = neith::AddEntity("cube", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, 0.0f)));
     neith::AddMeshToEntity(cube, cubeMesh);
+    int cube1 = neith::AddEntity("cube1", glm::translate(glm::mat4(1.0f), glm::vec3(1.2f, 2.0f, 0.0f)));
+    neith::AddMeshToEntity(cube1, cubeMesh);
 
     int plane = neith::AddEntity("plane");
     neith::AddMeshToEntity(plane, planeMesh);
@@ -29,10 +32,10 @@ int main()
     unsigned int shaderProgram = neith::nth_LoadAndCompileShaders(ASSET_DIR "shader.vert", ASSET_DIR "shader.frag");
     // neith::nth_SetShaderByName(sc->mat, "Material", shaderProgram);
 
-    NT_INFO(shaderProgram);
-
-    neith::AddRigidBody(cube, new neith::BoxCollider(2.f, 2.f, 2.f), 1.f);
-    neith::AddRigidBody(plane, new neith::BoxCollider(20.f, 3.f, 20.f), 0.f);
+    neith::BoxCollider *boxCollider = new neith::BoxCollider(2.f, 2.f, 2.f);
+    unsigned int boxRigidBody = neith::AddRigidBody(cube, boxCollider, 1.f);
+    neith::AddRigidBody(cube1, boxCollider, 1.f);
+    neith::AddRigidBody(plane, new neith::BoxCollider(20.f, 0.0001f, 20.f), 0.f);
 
     // neith::SetShader(meshes, 0, shaderProgram);
     // neith::SetShader(meshes, 1, shaderProgram);
@@ -67,9 +70,16 @@ int main()
     // 0.01f); neith::nth_SetValueByNameF(sc->mat, "Material.001",
     // "material.metallic", 0.0f);
 
+    neith::ContactPoint *contactPoints = new neith::ContactPoint[4];
+
     while (!glfwWindowShouldClose(win->GetGLFWwindow())) {
         camera.UpdateCamera();
         neith::Update();
+        int contactPointCount = neith::GetContacPoints(boxRigidBody, contactPoints, 4);
+        for (int i = 0; i < contactPointCount; i++) {
+            NT_INFO(glm::to_string(contactPoints[i].worldNormal));
+        }
+        NT_INFO(contactPointCount);
         // neith::Debug::DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f));
         // neith::Debug::DrawLine(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f),
         // neith::Color::magenta, 4.0f); neith::Debug::DrawRay(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f),
