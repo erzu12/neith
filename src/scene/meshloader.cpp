@@ -20,9 +20,8 @@
 #include "systems/sysMesh.h"
 
 namespace neith {
-int ModelLoader::LoadModel(std::string path, int &outMeshCount)
+unsigned int *ModelLoader::LoadModel(std::string path, int &outMeshCount)
 {
-    unsigned int mesh = -1;
     outMeshCount = 0;
     // StaticPrimitives *sp = sc->sp;
 
@@ -53,6 +52,10 @@ int ModelLoader::LoadModel(std::string path, int &outMeshCount)
     int materials[gltfData->materials_count];
     int materialsCount = 0;
 
+    int meshesLength = gltfData->meshes_count;
+    NT_INTER_INFO("allocated {}", meshesLength);
+    unsigned int *meshes = new unsigned int[meshesLength];
+
     for (int j = 0; j < nodeCount; j++) {
         if (gltfData->nodes[j].mesh == NULL)
             continue;
@@ -61,12 +64,8 @@ int ModelLoader::LoadModel(std::string path, int &outMeshCount)
 
         int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
 
-        if (mesh == -1) {
-            mesh = system::AddMesh(primitivesCount);
-        }
-        else {
-            system::AddMesh(primitivesCount);
-        }
+        NT_INTER_INFO(outMeshCount);
+        meshes[outMeshCount] = system::AddMesh(primitivesCount);
 
         outMeshCount++;
 
@@ -95,7 +94,7 @@ int ModelLoader::LoadModel(std::string path, int &outMeshCount)
         }
     }
     //}
-    return mesh;
+    return meshes;
 }
 
 void ModelLoader::PathToBinPath(const char *path, char *binPath, char *uri)
@@ -172,6 +171,7 @@ int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials,
     // mat->mMaterialCount++;
 
     int newMat = Materials::AddMaterial();
+    gltfMaterials[materialsCount] = gltfMaterial;
     materials[materialsCount] = newMat;
     materialsCount++;
 

@@ -12,8 +12,8 @@ Camera::Camera()
     mYaw = -PI * 0.5f;
 
     mCameraPos = glm::vec3(0.0f);
-    mCameraPos.z = 10.0f;
-    mCameraPos.y = 5.0f;
+    mCameraPos.z = 4.0f;
+    mCameraPos.y = 2.0f;
 
     camera = neith::AddEntity("camera");
     neith::AttachCamera(camera);

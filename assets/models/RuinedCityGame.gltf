@@ -1,0 +1,458 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.8.19",
+        "version" : "2.0"
+    },
+    "extensionsUsed" : [
+        "KHR_texture_transform"
+    ],
+    "extensionsRequired" : [
+        "KHR_texture_transform"
+    ],
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "name" : "Block1.001",
+            "translation" : [
+                14.862653732299805,
+                0,
+                -21.52444076538086
+            ]
+        },
+        {
+            "name" : "SkyRise_01",
+            "translation" : [
+                -19.52709197998047,
+                0,
+                1.3703393936157227
+            ]
+        },
+        {
+            "name" : "SkyRise_02",
+            "translation" : [
+                19.43011474609375,
+                0,
+                -7.041666030883789
+            ]
+        },
+        {
+            "name" : "HighWay",
+            "rotation" : [
+                0,
+                0.44650998711586,
+                0,
+                0.8947786688804626
+            ],
+            "translation" : [
+                28.673551559448242,
+                0,
+                16.720979690551758
+            ]
+        },
+        {
+            "name" : "Block1.000",
+            "rotation" : [
+                0,
+                -0.7071068286895752,
+                0,
+                0.7071068286895752
+            ],
+            "translation" : [
+                -10.039233207702637,
+                0,
+                -39.509803771972656
+            ]
+        },
+        {
+            "name" : "SkyRise_01.001",
+            "rotation" : [
+                0,
+                0.9705021381378174,
+                0,
+                0.2410929650068283
+            ],
+            "translation" : [
+                26.193153381347656,
+                -0.30645880103111267,
+                -88.62931060791016
+            ]
+        },
+        {
+            "name" : "SkyRise_02.001",
+            "rotation" : [
+                0,
+                0.8649613857269287,
+                0,
+                -0.5018384456634521
+            ],
+            "translation" : [
+                -25.94968605041504,
+                0.39465364813804626,
+                -45.9979362487793
+            ]
+        },
+        {
+            "mesh" : 0,
+            "name" : "Plane.013",
+            "scale" : [
+                27.29433822631836,
+                27.29433822631836,
+                27.29433822631836
+            ],
+            "translation" : [
+                0,
+                0,
+                -40.20820236206055
+            ]
+        },
+        {
+            "name" : "Block1.002",
+            "rotation" : [
+                0,
+                -1,
+                0,
+                4.371139183945161e-08
+            ],
+            "translation" : [
+                14.862653732299805,
+                0,
+                -45.065895080566406
+            ]
+        },
+        {
+            "name" : "Block1.003",
+            "rotation" : [
+                0,
+                -0.7071068286895752,
+                0,
+                -0.7071067094802856
+            ],
+            "translation" : [
+                11.968917846679688,
+                0,
+                -64.86537170410156
+            ]
+        },
+        {
+            "name" : "SkyRise_01.002",
+            "rotation" : [
+                0,
+                -0.7071068286895752,
+                0,
+                0.7071068286895752
+            ],
+            "scale" : [
+                1.6811963319778442,
+                1.1695674657821655,
+                1.6811963319778442
+            ],
+            "translation" : [
+                -20.62531280517578,
+                -14.825984954833984,
+                -78.89131927490234
+            ]
+        },
+        {
+            "name" : "Block1.004",
+            "rotation" : [
+                0,
+                0.7071069478988647,
+                0,
+                0.7071065902709961
+            ],
+            "translation" : [
+                -61.17757034301758,
+                0,
+                -96.71456909179688
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "Road.001",
+            "pbrMetallicRoughness" : {
+                "metallicFactor" : 0
+            }
+        },
+        {
+            "doubleSided" : true,
+            "name" : "Material.005",
+            "normalTexture" : {
+                "extensions" : {
+                    "KHR_texture_transform" : {
+                        "offset" : [
+                            0,
+                            -293.9999694824219
+                        ],
+                        "scale" : [
+                            294.9999694824219,
+                            294.9999694824219
+                        ]
+                    }
+                },
+                "index" : 0,
+                "scale" : 0.20000004768371582
+            },
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "extensions" : {
+                        "KHR_texture_transform" : {
+                            "offset" : [
+                                0,
+                                -293.9999694824219
+                            ],
+                            "scale" : [
+                                294.9999694824219,
+                                294.9999694824219
+                            ]
+                        }
+                    },
+                    "index" : 1
+                },
+                "metallicFactor" : 0,
+                "metallicRoughnessTexture" : {
+                    "extensions" : {
+                        "KHR_texture_transform" : {
+                            "offset" : [
+                                0,
+                                -293.9999694824219
+                            ],
+                            "scale" : [
+                                294.9999694824219,
+                                294.9999694824219
+                            ]
+                        }
+                    },
+                    "index" : 2
+                },
+                "roughnessFactor" : 1.100000023841858
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Plane.013",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2,
+                        "COLOR_0" : 3
+                    },
+                    "indices" : 4,
+                    "material" : 0
+                },
+                {
+                    "attributes" : {
+                        "POSITION" : 5,
+                        "NORMAL" : 6,
+                        "TEXCOORD_0" : 7,
+                        "COLOR_0" : 8
+                    },
+                    "indices" : 9,
+                    "material" : 1
+                }
+            ]
+        }
+    ],
+    "textures" : [
+        {
+            "sampler" : 0,
+            "source" : 0
+        },
+        {
+            "sampler" : 0,
+            "source" : 1
+        },
+        {
+            "sampler" : 0,
+            "source" : 2
+        }
+    ],
+    "images" : [
+        {
+            "mimeType" : "image/png",
+            "name" : "TexturesCom_Concrete2_2x2_1K_normal",
+            "uri" : "TexturesCom_Concrete2_2x2_1K_normal.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "TexturesCom_Concrete2_2x2_1K_albedo",
+            "uri" : "TexturesCom_Concrete2_2x2_1K_albedo.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "TexturesCom_Concrete2_2x2_1K_roughness",
+            "uri" : "TexturesCom_Concrete2_2x2_1K_roughness.png"
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 70,
+            "max" : [
+                0.1482456624507904,
+                -0.00366342905908823,
+                2.542684555053711
+            ],
+            "min" : [
+                -0.08060978353023529,
+                -0.00366342905908823,
+                -35.36262512207031
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 70,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 70,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 70,
+            "normalized" : true,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 4,
+            "componentType" : 5123,
+            "count" : 324,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 5,
+            "componentType" : 5126,
+            "count" : 56,
+            "max" : [
+                29.4923038482666,
+                2.3283064365386963e-10,
+                2.5426807403564453
+            ],
+            "min" : [
+                -29.424667358398438,
+                -0.00366342905908823,
+                -35.36260986328125
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 6,
+            "componentType" : 5126,
+            "count" : 56,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 7,
+            "componentType" : 5126,
+            "count" : 56,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 8,
+            "componentType" : 5123,
+            "count" : 56,
+            "normalized" : true,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 9,
+            "componentType" : 5123,
+            "count" : 144,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 840,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 840,
+            "byteOffset" : 840
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 560,
+            "byteOffset" : 1680
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 560,
+            "byteOffset" : 2240
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 648,
+            "byteOffset" : 2800
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 672,
+            "byteOffset" : 3448
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 672,
+            "byteOffset" : 4120
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 448,
+            "byteOffset" : 4792
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 448,
+            "byteOffset" : 5240
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 288,
+            "byteOffset" : 5688
+        }
+    ],
+    "samplers" : [
+        {
+            "magFilter" : 9729,
+            "minFilter" : 9987
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 5976,
+            "uri" : "RuinedCityGame.bin"
+        }
+    ]
+}

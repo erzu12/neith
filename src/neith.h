@@ -10,9 +10,9 @@
 
 #include <string>
 
-#include "physics/physics.h"
-#include "log.h"
 #include "debug.h"
+#include "log.h"
+#include "physics/physics.h"
 #include "render/render.h"
 #include "scene/scene.h"
 #include "timer.h"
@@ -24,7 +24,7 @@ Window *nth_CreateWindow();
 
 void InitScene();
 
-int LoadModel(std::string path, int &outMeshCount);
+unsigned int *LoadModel(std::string path, int &outMeshCount);
 
 unsigned int AddEntity(std::string name);
 unsigned int AddEntity(std::string name, glm::mat4 transform);
@@ -44,6 +44,8 @@ unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragm
 void SetShader(unsigned int meshID, int material, int shader);
 
 // int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
+
+unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace);
 
 void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
 
@@ -66,7 +68,9 @@ void TransformEntity(unsigned int entityID, glm::mat4 &transform);
 bool GetKey(Key key);
 glm::vec2 GetDeltaMouse();
 
-void AddRigidBody(unsigned int entityID, Collider *collider, float mass);
+int AddRigidBody(unsigned int entityID, Collider *collider, float mass);
 
 void UpdatePhysics();
+
+int GetContacPoints(unsigned int colliderID, ContactPoint *contactPoints, int capacity);
 }  // namespace neith

@@ -27,7 +27,6 @@ subject to the following restrictions:
 
 #include "../CommonInterfaces/CommonRigidBodyBase.h"
 
-
 void kinematicPreTickCallback(btDynamicsWorld* world, btScalar deltaTime)
 {
 	btRigidBody* groundBody = (btRigidBody*)world->getWorldUserInfo();
@@ -94,8 +93,6 @@ void KinematicRigidBodyExample::initPhysics()
 	groundTransform.setOrigin(btVector3(0, -halfExtentsY, 0));
 	m_collisionShapes.push_back(groundShape);
 
-
-
 	{
 		btScalar mass(0.);
 		//rigidbody is dynamic if and only if mass is non zero, otherwise static
@@ -113,11 +110,10 @@ void KinematicRigidBodyExample::initPhysics()
 #endif  //
 
 		m_groundBody->setUserIndex(-1);
-		
+
 		m_groundBody->forceActivationState(DISABLE_DEACTIVATION);
 		m_groundBody->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT | btCollisionObject::CF_STATIC_OBJECT);
 		m_dynamicsWorld->addRigidBody(m_groundBody);
-		
 	}
 	m_dynamicsWorld->setInternalTickCallback(kinematicPreTickCallback, m_groundBody, true);
 	{
@@ -175,7 +171,6 @@ void KinematicRigidBodyExample::initPhysics()
 		int graphicsInstanceId = m_guiHelper->getRenderInterface()->registerGraphicsInstance(shapeId, groundTransform.getOrigin(), orn, color, scaling);
 		groundShape->setUserIndex(shapeId);
 		m_groundBody->setUserIndex(graphicsInstanceId);
-	
 	}
 
 	if (1)

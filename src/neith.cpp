@@ -1,16 +1,17 @@
 #include "neith.h"
 
+#include "physics/colliders.h"
 #include "render/shaders.h"
+#include "render/textures.h"
 #include "scene/material.h"
 #include "scene/meshloader.h"
 #include "scene/scene.h"
 #include "scene/systems/sysCamera.h"
 #include "scene/systems/sysMaterial.h"
 #include "scene/systems/sysMesh.h"
-#include "scene/systems/sysTransform.h"
 #include "scene/systems/sysPhysics.h"
+#include "scene/systems/sysTransform.h"
 #include "window/window.h"
-#include "physics/colliders.h"
 
 namespace neith {
 Window *nth_CreateWindow() { return new Window(); }
@@ -22,19 +23,16 @@ void InitScene()
     new Physics();
 }
 
-int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
+unsigned int *LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
-unsigned int AddEntity(std::string name) { 
-
+unsigned int AddEntity(std::string name)
+{
     glm::mat4 transform = glm::mat4(1.0f);
     return Entity::AddEntity(0, transform, name);
 }
 unsigned int AddEntity(std::string name, glm::mat4 transform) { return Entity::AddEntity(0, transform, name); }
 
-void AddMeshToEntity(unsigned int entityID, unsigned int meshID)
-{
-    system::AddMeshToEntity(entityID, meshID);
-}
+void AddMeshToEntity(unsigned int entityID, unsigned int meshID) { system::AddMeshToEntity(entityID, meshID); }
 
 void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
 
@@ -61,6 +59,11 @@ void SetShader(unsigned int meshID, int material, int shader) { system::SetShade
 // int nth_SetShaderByName(struct Materials *mat, char *materialName, int shader) {
 // return mat->SetShaderByName(materialName, shader);
 //}
+
+unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace)
+{
+    return texture::LoadTexture(path, colorSpace, internalColorSpace);
+}
 
 void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName)
 {
@@ -104,8 +107,16 @@ bool GetKey(Key key) { return Input::GetKeyDown(key); }
 
 glm::vec2 GetDeltaMouse() { return Input::GetDeltaMouse(); }
 
-void AddRigidBody(unsigned int entityID, Collider *collider, float mass) { system::AddRigidBody(entityID, collider, mass);}
+int AddRigidBody(unsigned int entityID, Collider *collider, float mass)
+{
+    return system::AddRigidBody(entityID, collider, mass);
+}
 
 void UpdatePhysics() { Physics::UpdatePhysics(); }
+
+int GetContacPoints(unsigned int colliderID, ContactPoint *contactPoints, int capacity)
+{
+    return Physics::GetContacPoints(colliderID, contactPoints, capacity);
+}
 
 }  // namespace neith

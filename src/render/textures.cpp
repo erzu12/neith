@@ -7,6 +7,7 @@
 #include "log.h"
 
 namespace neith {
+namespace texture {
 unsigned int CreatValueTextureF(float value)
 {
     unsigned int texture;
@@ -78,4 +79,5 @@ unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColor
 
     return texture;
 }
+}  // namespace texture
 }  // namespace neith

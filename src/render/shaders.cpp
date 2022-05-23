@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <glm/vec3.hpp>
-#include <glm/gtx/string_cast.hpp>
-
 #include <fstream>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/vec3.hpp>
 
-#include "render/render.h"
 #include "log.h"
+#include "render/render.h"
 
 namespace neith {
 unsigned int LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
@@ -73,8 +72,8 @@ unsigned int LoadAndCompileShaders(const char *vertexPath, const char *fragmentP
         return 0;
     }
 
-    delete vertCode;
-    delete fragCode;
+    delete[] vertCode;
+    delete[] fragCode;
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
