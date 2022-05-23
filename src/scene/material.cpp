@@ -17,7 +17,7 @@ std::vector<unsigned int> Materials::mShaders;
 std::vector<unsigned int> Materials::mTextureCounts;
 std::vector<unsigned int *> Materials::mTextures;
 unsigned int Materials::mDepthMap;
-std::unordered_map<int, std::unordered_map<std::string , int>> Materials::mBindingMap;
+std::unordered_map<int, std::unordered_map<std::string, int>> Materials::mBindingMap;
 
 // Materials::Materials(int materialCount) {
 // materialCount++;
@@ -48,13 +48,9 @@ unsigned int Materials::AddMaterial()
     return mMaterialCount - 1;
 }
 
-void Materials::AddDepthMap(unsigned int depthMap) {
-    mDepthMap = depthMap;
-}
+void Materials::AddDepthMap(unsigned int depthMap) { mDepthMap = depthMap; }
 
-unsigned int Materials::GetDepthMap() {
-    return mDepthMap;
-}
+unsigned int Materials::GetDepthMap() { return mDepthMap; }
 
 void Materials::SetShader(unsigned int material, unsigned int shader)
 {
@@ -81,14 +77,14 @@ void Materials::SetTexture(unsigned int material, unsigned int texture, const ch
 {
     glUseProgram(mShaders[material]);
     int location = glGetUniformLocation(mShaders[material], bindingName);
-    if(location != -1) {
+    if (location != -1) {
         auto searchShader = mBindingMap.find(mShaders[material]);
-        if(searchShader == mBindingMap.end()) {
-            searchShader = mBindingMap.insert({mShaders[material], std::unordered_map<std::string, int>()}).first;
+        if (searchShader == mBindingMap.end()) {
+            searchShader = mBindingMap.insert({ mShaders[material], std::unordered_map<std::string, int>() }).first;
         }
         auto searchBinding = searchShader->second.find(bindingName);
-        if(searchBinding == searchShader->second.end()) {
-            searchBinding = searchShader->second.insert({bindingName, mTextureCounts.at(material)}).first;
+        if (searchBinding == searchShader->second.end()) {
+            searchBinding = searchShader->second.insert({ bindingName, mTextureCounts.at(material) }).first;
             glUniform1i(location, mTextureCounts[material]);
             mTextures.at(material)[mTextureCounts.at(material)] = texture;
         }
@@ -115,19 +111,19 @@ void Materials::SetTexture(unsigned int material, unsigned int texture, const ch
 
 void Materials::SetValue(unsigned int material, const char *bindingName, float value)
 {
-    unsigned int texture = CreatValueTextureF(value);
+    unsigned int texture = texture::CreatValueTextureF(value);
     SetTexture(material, texture, bindingName);
 }
 
 void Materials::SetValue(unsigned int material, const char *bindingName, float *value)
 {
-    unsigned int texture = CreatValueTextureV3(value);
+    unsigned int texture = texture::CreatValueTextureV3(value);
     SetTexture(material, texture, bindingName);
 }
 
 void Materials::SetValue(unsigned int material, const char *bindingName, float x, float y, float z)
 {
-    unsigned int texture = CreatValueTextureV3v(x, y, z);
+    unsigned int texture = texture::CreatValueTextureV3v(x, y, z);
     SetTexture(material, texture, bindingName);
 }
 

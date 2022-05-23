@@ -2,6 +2,7 @@
 
 #include "physics/colliders.h"
 #include "render/shaders.h"
+#include "render/textures.h"
 #include "scene/material.h"
 #include "scene/meshloader.h"
 #include "scene/scene.h"
@@ -22,7 +23,7 @@ void InitScene()
     new Physics();
 }
 
-int LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
+unsigned int *LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
 unsigned int AddEntity(std::string name)
 {
@@ -58,6 +59,11 @@ void SetShader(unsigned int meshID, int material, int shader) { system::SetShade
 // int nth_SetShaderByName(struct Materials *mat, char *materialName, int shader) {
 // return mat->SetShaderByName(materialName, shader);
 //}
+
+unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace)
+{
+    return texture::LoadTexture(path, colorSpace, internalColorSpace);
+}
 
 void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName)
 {

@@ -24,7 +24,7 @@ Window *nth_CreateWindow();
 
 void InitScene();
 
-int LoadModel(std::string path, int &outMeshCount);
+unsigned int *LoadModel(std::string path, int &outMeshCount);
 
 unsigned int AddEntity(std::string name);
 unsigned int AddEntity(std::string name, glm::mat4 transform);
@@ -44,6 +44,8 @@ unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragm
 void SetShader(unsigned int meshID, int material, int shader);
 
 // int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
+
+unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace);
 
 void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
 
