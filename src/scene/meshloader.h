@@ -5,12 +5,13 @@
 #include <glm/mat4x4.hpp>
 
 #include "scene.h"
+#include "scene/model.h"
 
 namespace neith {
 class ModelLoader {
 public:
     // static void LoadModels(const char* paths[], int modelCount);
-    static unsigned int *LoadModel(std::string path, int &outMeshCount);
+    static Model *LoadModel(std::string path, int &outMeshCount);
 
 private:
     static void PathToBinPath(const char *path, char *binPath, char *uri);

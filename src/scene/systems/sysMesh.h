@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/mat4x4.hpp>
+#include "scene/model.h"
 
 namespace neith {
 namespace system {

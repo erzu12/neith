@@ -20,7 +20,7 @@
 #include "systems/sysMesh.h"
 
 namespace neith {
-unsigned int *ModelLoader::LoadModel(std::string path, int &outMeshCount)
+Model *ModelLoader::LoadModel(std::string path, int &outMeshCount)
 {
     outMeshCount = 0;
     // StaticPrimitives *sp = sc->sp;
@@ -54,47 +54,57 @@ unsigned int *ModelLoader::LoadModel(std::string path, int &outMeshCount)
 
     int meshesLength = gltfData->meshes_count;
     NT_INTER_INFO("allocated {}", meshesLength);
-    unsigned int *meshes = new unsigned int[meshesLength];
+    //unsigned int *meshes = new unsigned int[meshesLength];
+    std::unordered_map<cgltf_mesh* , unsigned int> meshes;
+
+    Model *model = new Model();
+
+    for(int j = 0; j < meshesLength; j++) {
+        int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
+
+        NT_INTER_INFO(outMeshCount);
+        unsigned int mesh = system::AddMesh(primitivesCount);
+
+        meshes.insert({&gltfData->meshes[j], mesh});
+
+        for (int k = 0; k < primitivesCount; k++) {
+            if (!CheckAtributeFormat(&gltfData->meshes[j].primitives[k])) {
+                NT_INTER_WARN("WARNING: Vertex Attribute missing on mesh {}", gltfData->meshes[j].name);
+                continue;
+            }
+            bool hasTangents = HasTangents(&gltfData->meshes[j].primitives[k]);
+
+            int vertCount = gltfData->meshes[j].primitives[k].attributes[0].data->count;
+            int indCount = gltfData->meshes[j].primitives[k].indices->count;
+
+            float *vertices = LoadVertices(sceneData, gltfData->meshes[j].primitives[k], vertCount, hasTangents);
+            int *indices = LoadIndices(sceneData, gltfData->meshes[j].primitives[k], indCount);
+            if (!hasTangents)
+                CalcTangents(vertices, vertCount, indices, indCount);
+
+            int material =
+                ReadMaterial(gltfMaterials, materialsCount, gltfData->meshes[j].primitives[k].material, materials);
+
+            system::AddStaticPrimitive(vertices, vertCount, indices, indCount, material);
+        }
+    }
 
     for (int j = 0; j < nodeCount; j++) {
         if (gltfData->nodes[j].mesh == NULL)
             continue;
-
-        // unsigned int entity = Scene::AddEntity();
-
-        int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
-
-        NT_INTER_INFO(outMeshCount);
-        meshes[outMeshCount] = system::AddMesh(primitivesCount);
+            
+        unsigned int mesh = meshes.at(gltfData->nodes[j].mesh);
 
         outMeshCount++;
 
         glm::mat4 modelMat(1.0f);
         ReadTransform(&gltfData->nodes[j], modelMat);
 
-        for (int k = 0; k < primitivesCount; k++) {
-            if (!CheckAtributeFormat(&gltfData->nodes[j].mesh->primitives[k])) {
-                NT_INTER_WARN("WARNING: Vertex Attribute missing on mesh {}", gltfData->nodes[j].mesh->name);
-                continue;
-            }
-            bool hasTangents = HasTangents(&gltfData->nodes[j].mesh->primitives[k]);
+        model->AddInstance(mesh, modelMat);
 
-            int vertCount = gltfData->nodes[j].mesh->primitives[k].attributes[0].data->count;
-            int indCount = gltfData->nodes[j].mesh->primitives[k].indices->count;
-
-            float *vertices = LoadVertices(sceneData, gltfData->nodes[j].mesh->primitives[k], vertCount, hasTangents);
-            int *indices = LoadIndices(sceneData, gltfData->nodes[j].mesh->primitives[k], indCount);
-            if (!hasTangents)
-                CalcTangents(vertices, vertCount, indices, indCount);
-
-            int material =
-                ReadMaterial(gltfMaterials, materialsCount, gltfData->nodes[j].mesh->primitives[k].material, materials);
-
-            system::AddStaticPrimitive(vertices, vertCount, indices, indCount, material);
-        }
     }
     //}
-    return meshes;
+    return model;
 }
 
 void ModelLoader::PathToBinPath(const char *path, char *binPath, char *uri)

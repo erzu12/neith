@@ -16,8 +16,8 @@ int main()
 
     int meshCount;
     // int cubeMesh = neith::LoadModel(ASSET_DIR "models/cube.gltf", meshCount);
-    unsigned int *planeMesh = neith::LoadModel(ASSET_DIR "models/plane.gltf", meshCount);
-    unsigned int *skyScraper = neith::LoadModel(ASSET_DIR "models/RuinedCitySkyRise04.gltf", meshCount);
+    neith::Model *planeMesh = neith::LoadModel(ASSET_DIR "models/plane.gltf", meshCount);
+    neith::Model *skyScraper = neith::LoadModel(ASSET_DIR "models/RuinedCitySkyRise04.gltf", meshCount);
 
     neith::InitScene();
     // int cube = neith::AddEntity("cube", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, 0.0f)));

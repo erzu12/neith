@@ -15,6 +15,7 @@
 #include "physics/physics.h"
 #include "render/render.h"
 #include "scene/scene.h"
+#include "scene/model.h"
 #include "timer.h"
 #include "window/input.h"
 #include "window/window.h"
@@ -24,7 +25,7 @@ Window *nth_CreateWindow();
 
 void InitScene();
 
-unsigned int *LoadModel(std::string path, int &outMeshCount);
+Model *LoadModel(std::string path, int &outMeshCount);
 
 unsigned int AddEntity(std::string name);
 unsigned int AddEntity(std::string name, glm::mat4 transform);

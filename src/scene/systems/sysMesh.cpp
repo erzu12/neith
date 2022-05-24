@@ -21,5 +21,18 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID)
     glm::mat4 modelMat = TransformComp::GetGlobalTransform(entityID);
     MeshComp::AddInstance(meshID, entityID, modelMat);
 }
+
+void AddModelToEntity(unsigned int entityID, Model *model) {
+    std::vector<unsigned int> *instaceMeshes = model->GetInstanceMeshes();
+    std::vector<glm::mat4> *instanceTransform = model->GetInstanceTransform();
+    glm::mat4 modelMat = TransformComp::GetGlobalTransform(entityID);
+
+    for(int i = 0; i < instaceMeshes->size(); i++) {
+        glm::mat4 instanceModelMat = modelMat * instanceTransform->at(i);
+        unsigned int entity = Entity::AddEntity(entityID, instanceModelMat);
+        MeshComp::AddInstance(instaceMeshes->at(i), entity, instanceModelMat);
+
+    }
+}
 }  // namespace system
 }  // namespace neith

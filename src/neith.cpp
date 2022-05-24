@@ -23,7 +23,7 @@ void InitScene()
     new Physics();
 }
 
-unsigned int *LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
+Model *LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
 
 unsigned int AddEntity(std::string name)
 {
@@ -33,6 +33,8 @@ unsigned int AddEntity(std::string name)
 unsigned int AddEntity(std::string name, glm::mat4 transform) { return Entity::AddEntity(0, transform, name); }
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID) { system::AddMeshToEntity(entityID, meshID); }
+
+void AddModelToEntity(unsigned int entityID, Model *model) { system::AddMeshToEntity(entityID, meshID); }
 
 void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
 
