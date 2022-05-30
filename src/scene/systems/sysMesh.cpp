@@ -1,5 +1,6 @@
 #include "sysMesh.h"
 
+#include "log.h"
 #include "scene/components/meshComp.h"
 #include "scene/components/transformComp.h"
 #include "scene/scene.h"
@@ -22,16 +23,17 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID)
     MeshComp::AddInstance(meshID, entityID, modelMat);
 }
 
-void AddModelToEntity(unsigned int entityID, Model *model) {
+void AddModelToEntity(unsigned int entityID, Model *model)
+{
     std::vector<unsigned int> *instaceMeshes = model->GetInstanceMeshes();
     std::vector<glm::mat4> *instanceTransform = model->GetInstanceTransform();
     glm::mat4 modelMat = TransformComp::GetGlobalTransform(entityID);
 
-    for(int i = 0; i < instaceMeshes->size(); i++) {
+    for (int i = 0; i < instaceMeshes->size(); i++) {
         glm::mat4 instanceModelMat = modelMat * instanceTransform->at(i);
+        // NT_INTER_INFO(glm::to_string(instanceModelMat));
         unsigned int entity = Entity::AddEntity(entityID, instanceModelMat);
         MeshComp::AddInstance(instaceMeshes->at(i), entity, instanceModelMat);
-
     }
 }
 }  // namespace system

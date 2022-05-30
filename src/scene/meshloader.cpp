@@ -20,9 +20,8 @@
 #include "systems/sysMesh.h"
 
 namespace neith {
-Model *ModelLoader::LoadModel(std::string path, int &outMeshCount)
+Model *ModelLoader::LoadModel(std::string path)
 {
-    outMeshCount = 0;
     // StaticPrimitives *sp = sc->sp;
 
     // for(int i = 0; i < modelCount; i++) {
@@ -53,19 +52,16 @@ Model *ModelLoader::LoadModel(std::string path, int &outMeshCount)
     int materialsCount = 0;
 
     int meshesLength = gltfData->meshes_count;
-    NT_INTER_INFO("allocated {}", meshesLength);
-    //unsigned int *meshes = new unsigned int[meshesLength];
-    std::unordered_map<cgltf_mesh* , unsigned int> meshes;
+    std::unordered_map<cgltf_mesh *, unsigned int> meshes;
 
     Model *model = new Model();
 
-    for(int j = 0; j < meshesLength; j++) {
+    for (int j = 0; j < meshesLength; j++) {
         int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
 
-        NT_INTER_INFO(outMeshCount);
         unsigned int mesh = system::AddMesh(primitivesCount);
 
-        meshes.insert({&gltfData->meshes[j], mesh});
+        meshes.insert({ &gltfData->meshes[j], mesh });
 
         for (int k = 0; k < primitivesCount; k++) {
             if (!CheckAtributeFormat(&gltfData->meshes[j].primitives[k])) {
@@ -82,8 +78,7 @@ Model *ModelLoader::LoadModel(std::string path, int &outMeshCount)
             if (!hasTangents)
                 CalcTangents(vertices, vertCount, indices, indCount);
 
-            int material =
-                ReadMaterial(gltfMaterials, materialsCount, gltfData->meshes[j].primitives[k].material, materials);
+            int material = ReadMaterial(gltfMaterials, gltfData->meshes[j].primitives[k].material, model);
 
             system::AddStaticPrimitive(vertices, vertCount, indices, indCount, material);
         }
@@ -92,16 +87,13 @@ Model *ModelLoader::LoadModel(std::string path, int &outMeshCount)
     for (int j = 0; j < nodeCount; j++) {
         if (gltfData->nodes[j].mesh == NULL)
             continue;
-            
-        unsigned int mesh = meshes.at(gltfData->nodes[j].mesh);
 
-        outMeshCount++;
+        unsigned int mesh = meshes.at(gltfData->nodes[j].mesh);
 
         glm::mat4 modelMat(1.0f);
         ReadTransform(&gltfData->nodes[j], modelMat);
 
         model->AddInstance(mesh, modelMat);
-
     }
     //}
     return model;
@@ -119,15 +111,15 @@ void ModelLoader::PathToBinPath(const char *path, char *binPath, char *uri)
 void ModelLoader::ReadTransform(cgltf_node *node, glm::mat4 &modelMat)
 {
     if (node->has_translation) {
-        glm::translate(modelMat, glm::make_vec3(node->translation));
+        glm::vec3 glmVec = glm::make_vec3(node->translation);
+        modelMat = glm::translate(modelMat, glmVec);
     }
-
     if (node->has_rotation) {
-        glm::quat rotation = glm::make_quat(node->rotation);
+        glm::quat rotation = glm::quat(node->rotation[3], node->rotation[0], node->rotation[1], node->rotation[2]);
         modelMat = modelMat * glm::toMat4(rotation);
     }
     if (node->has_scale) {
-        glm::scale(modelMat, glm::make_vec3(node->scale));
+        modelMat = glm::scale(modelMat, glm::make_vec3(node->scale));
     }
 }
 
@@ -157,34 +149,22 @@ bool ModelLoader::HasTangents(cgltf_primitive *primitive)
     return true;
 }
 
-int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials,
-                              int &materialsCount,
-                              cgltf_material *gltfMaterial,
-                              int *materials)
+int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, cgltf_material *gltfMaterial, Model *model)
 {
     if (gltfMaterial == NULL)
         return 0;
 
-    for (int i = 0; i < materialsCount; i++) {
+    std::vector<unsigned int> *materials = model->GetMaterials();
+    for (int i = 0; i < materials->size(); i++) {
         if (gltfMaterial == gltfMaterials[i]) {
-            return materials[i];
+            return materials->at(i);
         }
     }
+    unsigned int newMat = Materials::AddMaterial();
+    gltfMaterials[materials->size()] = gltfMaterial;
+    materials->push_back(newMat);
 
-    // int matInd = mat->mMaterialCount;
-    // for(int i = 0; i < matInd; i++) {
-    // if(strcmp(material->name, mat->names[i]) == 0) {
-    // return i;
-    //}
-    //}
-    // strncpy(mat->names[matInd], material->name, 128);
-    // mat->mMaterialCount++;
-
-    int newMat = Materials::AddMaterial();
-    gltfMaterials[materialsCount] = gltfMaterial;
-    materials[materialsCount] = newMat;
-    materialsCount++;
-
+    // NT_INTER_INFO(newMat);
     return newMat;
 }
 

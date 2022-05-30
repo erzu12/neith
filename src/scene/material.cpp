@@ -16,7 +16,7 @@ unsigned int Materials::mMaterialCount = 0;
 std::vector<unsigned int> Materials::mShaders;
 std::vector<unsigned int> Materials::mTextureCounts;
 std::vector<unsigned int *> Materials::mTextures;
-unsigned int Materials::mDepthMap;
+unsigned int Materials::mDepthMapMaterial;
 std::unordered_map<int, std::unordered_map<std::string, int>> Materials::mBindingMap;
 
 // Materials::Materials(int materialCount) {
@@ -48,9 +48,13 @@ unsigned int Materials::AddMaterial()
     return mMaterialCount - 1;
 }
 
-void Materials::AddDepthMap(unsigned int depthMap) { mDepthMap = depthMap; }
+void Materials::AddDepthMap(unsigned int depthMap)
+{
+    mDepthMapMaterial = AddMaterial();
+    SetShader(mDepthMapMaterial, depthMap);
+}
 
-unsigned int Materials::GetDepthMap() { return mDepthMap; }
+unsigned int Materials::GetDepthMap() { return mShaders.at(mDepthMapMaterial); }
 
 void Materials::SetShader(unsigned int material, unsigned int shader)
 {

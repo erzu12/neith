@@ -14,25 +14,31 @@
 #include "log.h"
 #include "physics/physics.h"
 #include "render/render.h"
-#include "scene/scene.h"
 #include "scene/model.h"
+#include "scene/scene.h"
 #include "timer.h"
 #include "window/input.h"
 #include "window/window.h"
 
 namespace neith {
-Window *nth_CreateWindow();
+void Init();
 
-void InitScene();
+// Window *nth_CreateWindow();
 
-Model *LoadModel(std::string path, int &outMeshCount);
+void InitRenderer();
+
+Model *LoadModel(std::string path);
 
 unsigned int AddEntity(std::string name);
 unsigned int AddEntity(std::string name, glm::mat4 transform);
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID);
 
+void AddModelToEntity(unsigned int entityID, Model *model);
+
 void AttachCamera(unsigned int entityID);
+
+bool ShouldClose();
 
 void Update();
 
@@ -43,18 +49,21 @@ void UpdateRender();
 unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath);
 
 void SetShader(unsigned int meshID, int material, int shader);
+void SetShader(Model *model, int material, int shader);
+
+void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
+void SetTexture(Model *model, int material, int texture, const char *bindingName);
+
+void SetValue(unsigned int meshID, int material, const char *bindingName, float value);
+void SetValue(Model *model, int material, const char *bindingName, float value);
+void SetValue(unsigned int meshID, int material, const char *bindingName, float *value);
+void SetValue(Model *model, int material, const char *bindingName, float *value);
+void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z);
+void SetValue(Model *model, int material, const char *bindingName, float x, float y, float z);
 
 // int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
 
 unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace);
-
-void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
-
-void SetValue(unsigned int meshID, int material, const char *bindingName, float value);
-
-void SetValue(unsigned int meshID, int material, const char *bindingName, float *value);
-
-void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z);
 
 // int nth_SetTextureByName(Materials *mat, char *materialName, int texture, char *bindingName);
 

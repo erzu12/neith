@@ -14,16 +14,18 @@
 #include "window/window.h"
 
 namespace neith {
-Window *nth_CreateWindow() { return new Window(); }
-
-void InitScene()
+void Init()
 {
+    new Window();
     new Scene();
-    new Renderer();
     new Physics();
 }
 
-Model *LoadModel(std::string path, int &outMeshCount) { return ModelLoader::LoadModel(path, outMeshCount); }
+// Window *nth_CreateWindow() {}
+
+void InitRenderer() { new Renderer(); }
+
+Model *LoadModel(std::string path) { return ModelLoader::LoadModel(path); }
 
 unsigned int AddEntity(std::string name)
 {
@@ -34,11 +36,13 @@ unsigned int AddEntity(std::string name, glm::mat4 transform) { return Entity::A
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID) { system::AddMeshToEntity(entityID, meshID); }
 
-void AddModelToEntity(unsigned int entityID, Model *model) { system::AddMeshToEntity(entityID, meshID); }
+void AddModelToEntity(unsigned int entityID, Model *model) { system::AddModelToEntity(entityID, model); }
 
 void AttachCamera(unsigned int entityID) { system::AddCamera(entityID); }
 
 // Renderer *nth_InitRender(Scene *sc, Window *win) { return new Renderer(sc, win); }
+
+bool ShouldClose() { return Window::ShouldClose(); }
 
 void Update()
 {
@@ -57,6 +61,47 @@ unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragm
 }
 
 void SetShader(unsigned int meshID, int material, int shader) { system::SetShader(meshID, material, shader); }
+void SetShader(Model *model, int material, int shader) { system::SetShader(model, material, shader); }
+
+void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName)
+{
+    system::SetTexture(meshID, material, texture, bindingName);
+}
+
+void SetTexture(Model *model, int material, int texture, const char *bindingName)
+{
+    system::SetTexture(model, material, texture, bindingName);
+}
+
+void SetValue(unsigned int meshID, int material, const char *bindingName, float value)
+{
+    system::SetValue(meshID, material, bindingName, value);
+}
+
+void SetValue(Model *model, int material, const char *bindingName, float value)
+{
+    system::SetValue(model, material, bindingName, value);
+}
+
+void SetValue(unsigned int meshID, int material, const char *bindingName, float *value)
+{
+    system::SetValue(meshID, material, bindingName, value);
+}
+
+void SetValue(Model *model, int material, const char *bindingName, float *value)
+{
+    system::SetValue(model, material, bindingName, value);
+}
+
+void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z)
+{
+    system::SetValue(meshID, material, bindingName, x, y, z);
+}
+
+void SetValue(Model *model, int material, const char *bindingName, float x, float y, float z)
+{
+    system::SetValue(model, material, bindingName, x, y, z);
+}
 
 // int nth_SetShaderByName(struct Materials *mat, char *materialName, int shader) {
 // return mat->SetShaderByName(materialName, shader);
@@ -65,26 +110,6 @@ void SetShader(unsigned int meshID, int material, int shader) { system::SetShade
 unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace)
 {
     return texture::LoadTexture(path, colorSpace, internalColorSpace);
-}
-
-void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName)
-{
-    system::SetTexture(meshID, material, texture, bindingName);
-}
-
-void SetValue(unsigned int meshID, int material, const char *bindingName, float value)
-{
-    system::SetValue(meshID, material, bindingName, value);
-}
-
-void SetValue(unsigned int meshID, int material, const char *bindingName, float *value)
-{
-    system::SetValue(meshID, material, bindingName, value);
-}
-
-void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z)
-{
-    system::SetValue(meshID, material, bindingName, x, y, z);
 }
 
 // int nth_SetTextureByName(struct Materials *mat, char *materialName, int texture, char *bindingName) {

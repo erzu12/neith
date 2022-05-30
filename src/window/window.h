@@ -24,6 +24,7 @@ public:
     static void SetResize(bool resize);
     static bool GetResize();
 
+    static bool ShouldClose();
     static GLFWwindow *GetGLFWwindow();
 };
 

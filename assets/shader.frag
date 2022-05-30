@@ -7,6 +7,7 @@ struct Material {
     sampler2D normal;
     sampler2D specular;
     sampler2D metallic;
+    sampler2D alpha;
 };
 
 struct Light {
@@ -93,7 +94,13 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
 
 void main()
 {
-    vec3 diffuse = texture(material.diffuse, fs_in.TexCoord).rgb;
+    vec4 diffuseAlpha = texture(material.diffuse, fs_in.TexCoord).rgba;
+    //float alpha = diffuseAlpha.a;
+    float alpha = texture(material.alpha, fs_in.TexCoord).r;
+    if(alpha < 0.7)
+        discard;
+
+    vec3 diffuse = diffuseAlpha.rgb;
     float roughness = texture(material.roughness, fs_in.TexCoord).r;
     vec3 N = texture(material.normal, fs_in.TexCoord).rgb;
     float specular = texture(material.specular, fs_in.TexCoord).r;
@@ -134,10 +141,10 @@ void main()
 
     vec3 ambient = vec3(0.2, 0.22, 0.26) * diffuse;
     vec3 color = ambient + Lo * shadow;
-    
+
     //vec3 projCoords = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
     //projCoords = projCoords * 0.5 + 0.5;
     //FragColor = vec4(texture(shadowMap, fs_in.TexCoord).r, 0.0, 0.0 , 1.0);
     //FragColor = vec4(fs_in.TexCoord, 0.0 , 1.0);
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(color * alpha, 1.0);
 }

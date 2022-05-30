@@ -19,8 +19,7 @@ namespace neith {
 bool Window::mResize = false;
 int Window::mWidth = 1800;
 int Window::mHeight = 900;
-GLFWwindow *Window::mGLTFwindow;
-
+GLFWwindow* Window::mGLTFwindow;
 
 static void error_callback(int error, const char* description) { NT_INTER_ERROR(description); }
 
@@ -90,6 +89,8 @@ bool Window::GetResize() { return mResize; }
 void Window::SetResize(bool resize) { mResize = resize; }
 
 GLFWwindow* Window::GetGLFWwindow() { return mGLTFwindow; }
+
+bool Window::ShouldClose() { return glfwWindowShouldClose(mGLTFwindow); }
 
 void Window::UpdateWindow()
 {

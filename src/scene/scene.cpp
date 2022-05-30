@@ -6,8 +6,8 @@
 
 #include "log.h"
 #include "material.h"
-#include "window/window.h"
 #include "scene/components/transformComp.h"
+#include "window/window.h"
 
 // void DeleteStaticRender(struct RenderContext *rc) {
 //     free(rc->VAOs);
@@ -29,7 +29,6 @@ namespace neith {
 
 Scene::Scene()
 {
-    // sp = new StaticPrimitives(maxPrimitives);
     Materials::AddMaterial();
     Entity::InitEntites();
 }

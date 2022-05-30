@@ -141,6 +141,10 @@ void InstanceRenderer::RenderInstanced(int width, int height)
         glBindVertexArray(VAOs[i]);
         glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
                                 MeshComp::GetInstanceCount(i));
+        for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
+            glActiveTexture(GL_TEXTURE0 + j);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
 }
 
@@ -179,6 +183,8 @@ void InstanceRenderer::RenderInstancedShadows(int shaderProgram)
         glBindVertexArray(VAOs[i]);
         glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
                                 MeshComp::GetInstanceCount(i));
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
 }  // namespace neith
