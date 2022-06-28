@@ -12,8 +12,8 @@ class InstanceRenderer {
 public:
     InstanceRenderer();
 
-    void RenderInstanced(int width, int height);
-    void RenderInstancedShadows(int shaderProgram);
+    void RenderInstanced(int width, int height, unsigned int depthMap);
+    void RenderInstancedShadows(int shaderProgram, unsigned int depthMap);
 
 private:
     unsigned int *VAOs;

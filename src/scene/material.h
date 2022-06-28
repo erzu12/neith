@@ -20,7 +20,9 @@ public:
 
     // int SetShaderByName(char *materialName, int shader);
 
-    static void SetTexture(unsigned int material, unsigned int texture, const char *bindingName);
+    static int SetTexture(unsigned int material, unsigned int texture, const char *bindingName);
+
+    static void SetTransparancyTexture(unsigned int material, unsigned int texture, const char *bindingName);
 
     // int SetTextureByName(char *materialName, int texture, char *bindingName);
 
@@ -43,6 +45,12 @@ public:
     {
         return mTextures.at(material)[texture];
     }
+    static unsigned int GetTransparancyTexture(unsigned int material)
+    {
+        return mTextures.at(material)[mTransparencyTexture.at(material)];
+    }
+
+    static void SetDepthMapShader(unsigned int depthMapShader);
 
     ~Materials();
 
@@ -52,8 +60,9 @@ private:
     // char **names;
     static std::vector<unsigned int> mTextureCounts;
     static std::vector<unsigned int *> mTextures;
+    static std::vector<unsigned int> mTransparencyTexture;
     static std::unordered_map<int, std::unordered_map<std::string, int>> mBindingMap;
-    static unsigned int mDepthMap;
-    static unsigned int mDepthMapMaterial;
+    static std::unordered_map<unsigned int, int> mBindingCounts;
+    static unsigned int mDepthMapShader;
 };
 }  // namespace neith

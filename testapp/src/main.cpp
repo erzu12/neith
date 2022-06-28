@@ -42,11 +42,12 @@ int main()
     unsigned int normal = neith::LoadTexture(ASSET_DIR "textures/Concrete_Dirty/Normal.jpg", GL_RGB, GL_RGB);
     unsigned int roughness = neith::LoadTexture(ASSET_DIR "textures/Concrete_Dirty/Roughness.jpg", GL_RGB, GL_RGB);
 
-    unsigned int ivy = neith::LoadTexture(ASSET_DIR "textures/ivy-png-6.png", GL_RGBA, GL_RGBA);
-    // neith::BoxCollider *boxCollider = new neith::BoxCollider(2.f, 2.f, 2.f);
-    // unsigned int boxRigidBody = neith::AddRigidBody(cube, boxCollider, 1.f);
-    // neith::AddRigidBody(cube1, boxCollider, 1.f);
-    // neith::AddRigidBody(plane, new neith::BoxCollider(20.f, 0.0001f, 20.f), 0.f);
+    unsigned int ivy = neith::LoadTexture(ASSET_DIR "textures/ivy-png.png", GL_RGBA, GL_RGBA);
+    unsigned int ivyAlpha = neith::LoadTexture(ASSET_DIR "textures/ivy-png-alpha.png", GL_RGBA, GL_RGBA);
+    //  neith::BoxCollider *boxCollider = new neith::BoxCollider(2.f, 2.f, 2.f);
+    //  unsigned int boxRigidBody = neith::AddRigidBody(cube, boxCollider, 1.f);
+    //  neith::AddRigidBody(cube1, boxCollider, 1.f);
+    //  neith::AddRigidBody(plane, new neith::BoxCollider(20.f, 0.0001f, 20.f), 0.f);
 
     neith::SetShader(skyScraper, 0, shaderProgram);
     //  neith::SetShader(meshes, 1, shaderProgram);
@@ -61,12 +62,17 @@ int main()
     neith::SetShader(skyScraper, 3, shaderProgram);
 
     neith::SetTexture(skyScraper, 3, ivy, "material.diffuse");
-    neith::SetValue(skyScraper, 3, "material.alpha", 1.0f);
-    // neith::SetValue(meshes, 1, "material.diffuse", 1.0f, 0.0f, 0.0f);
-    // neith::SetValue(meshes, 1, "material.roughness", 0.2f);
-    // neith::SetValue(meshes, 1, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(meshes, 1, "material.specular", 0.9f);
-    // neith::SetValue(meshes, 1, "material.metallic", 0.0f);
+    neith::SetValue(skyScraper, 3, "material.roughness", 0.5f);
+    neith::SetValue(skyScraper, 3, "material.normal", 0.5f, 0.5f, 1.0f);
+    //  neith::SetValue(skyScraper, 0, "material.normal", 0.5f, 0.5f, 1.0f);
+    neith::SetValue(skyScraper, 3, "material.specular", 0.2f);
+    neith::SetValue(skyScraper, 3, "material.metallic", 0.2f);
+    neith::SetTransparancyTexture(skyScraper, 3, ivyAlpha);
+    //  neith::SetValue(meshes, 1, "material.diffuse", 1.0f, 0.0f, 0.0f);
+    //  neith::SetValue(meshes, 1, "material.roughness", 0.2f);
+    //  neith::SetValue(meshes, 1, "material.normal", 0.5f, 0.5f, 1.0f);
+    //  neith::SetValue(meshes, 1, "material.specular", 0.9f);
+    //  neith::SetValue(meshes, 1, "material.metallic", 0.0f);
 
     // neith::nth_SetValueByNameV3v(sc->mat, "Material", "material.normal",
     // 0.5f, 0.5f, 1.0f); neith::nth_SetValueByNameV3v(sc->mat, "Material",

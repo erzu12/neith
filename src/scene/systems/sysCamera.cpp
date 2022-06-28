@@ -12,7 +12,7 @@ namespace system {
 
 void AddCamera(unsigned int entityID)
 {
-    Entity::AddComponent(entityID, "Camera");
+    Entity::AddComponent(entityID, CameraComp::GetIndices());
     CameraComp::AttachCamera(entityID);
 }
 }  // namespace system

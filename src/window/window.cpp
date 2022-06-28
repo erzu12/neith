@@ -23,13 +23,6 @@ GLFWwindow* Window::mGLTFwindow;
 
 static void error_callback(int error, const char* description) { NT_INTER_ERROR(description); }
 
-void window_focus_callback(GLFWwindow* window, int focused)
-{
-    if (focused) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-}
-
 Window::Window()
 {
     glfwSetErrorCallback(error_callback);
@@ -42,6 +35,7 @@ Window::Window()
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -55,7 +49,7 @@ Window::Window()
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetWindowFocusCallback(window, Input::window_focus_callback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported())
@@ -74,6 +68,8 @@ Window::Window()
     glfwSetWindowUserPointer(window, cbc);
 
     glfwSetCursorPosCallback(window, Input::mouse_callback);
+
+    Input::ActivateMouse();
 }
 
 int Window::GetWidth() { return mWidth; }

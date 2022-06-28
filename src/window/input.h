@@ -136,8 +136,12 @@ public:
     static glm::vec2 GetDeltaMouse();
     static void processInput(GLFWwindow *window);
     static void mouse_callback(GLFWwindow *window, double posX, double posY);
+    static void ActivateMouse();
+    static void window_focus_callback(GLFWwindow *window, int focused);
 
 private:
+    static void DeactivateMouse();
     static glm::vec2 mLastMousePos;
+    static bool mMouseActive;
 };
 }  // namespace neith

@@ -102,4 +102,26 @@ int MeshComp::GetMaterial(unsigned int meshID, int material)
 //     mModelMats[i] += transform;
 // }
 
+DebugInfo *MeshComp::GetDebugInfo(unsigned int entityID)
+{
+    unsigned int meshID = mIndexMap.at(entityID);
+
+    DebugInfo *nameInfo = new DebugInfo("Mesh Component");
+    DebugInfo *debugInfo = new DebugInfo("primitives:");
+
+    for (int i = 0; i < mMeshes[meshID * 2 + 1]; i++) {
+        int primitive = mMeshes[meshID * 2] + i;
+        unsigned int instanceID = mInstanceMap.at(primitive).at(entityID);
+        DebugInfo *primitiveInfo = new DebugInfo("primitive" + std::to_string(i) + ":");
+        debugInfo->child.push_back(primitiveInfo);
+        primitiveInfo->child.push_back(new DebugInfo("vertices: " + std::to_string(mVertCounts.at(primitive))));
+        primitiveInfo->child.push_back(new DebugInfo("indices: " + std::to_string(mIndCounts.at(primitive))));
+        primitiveInfo->child.push_back(new DebugInfo("material: " + std::to_string(mMaterials.at(primitive))));
+        primitiveInfo->child.push_back(
+            new DebugInfo("Model Matrix: " + glm::to_string(mModelMats.at(primitive).at(instanceID))));
+    }
+    nameInfo->child.push_back(debugInfo);
+    return nameInfo;
+}
+
 }  // namespace neith

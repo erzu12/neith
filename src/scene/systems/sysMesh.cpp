@@ -18,7 +18,8 @@ int AddMesh(int primitivesCount) { return MeshComp::AddStaticMesh(primitivesCoun
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID)
 {
-    Entity::AddComponent(entityID, "Mesh");
+    NT_INTER_INFO("test");
+    Entity::AddComponent(entityID, MeshComp::GetInstance());
     glm::mat4 modelMat = TransformComp::GetGlobalTransform(entityID);
     MeshComp::AddInstance(meshID, entityID, modelMat);
 }
@@ -27,12 +28,14 @@ void AddModelToEntity(unsigned int entityID, Model *model)
 {
     std::vector<unsigned int> *instaceMeshes = model->GetInstanceMeshes();
     std::vector<glm::mat4> *instanceTransform = model->GetInstanceTransform();
+    std::vector<std::string> *instanceNames = model->GetInstanceNames();
     glm::mat4 modelMat = TransformComp::GetGlobalTransform(entityID);
 
     for (int i = 0; i < instaceMeshes->size(); i++) {
         glm::mat4 instanceModelMat = modelMat * instanceTransform->at(i);
         // NT_INTER_INFO(glm::to_string(instanceModelMat));
-        unsigned int entity = Entity::AddEntity(entityID, instanceModelMat);
+        unsigned int entity = Entity::AddEntity(entityID, instanceModelMat, instanceNames->at(i));
+        Entity::AddComponent(entity, MeshComp::GetInstance());
         MeshComp::AddInstance(instaceMeshes->at(i), entity, instanceModelMat);
     }
 }

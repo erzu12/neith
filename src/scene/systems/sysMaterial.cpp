@@ -25,6 +25,16 @@ void SetTexture(Model *model, int material, int texture, const char *bindingName
     Materials::SetTexture(model->GetMaterials()->at(material), texture, bindingName);
 }
 
+void SetTransparancyTexture(unsigned int meshID, int material, int texture, const char *bindingName)
+{
+    Materials::SetTransparancyTexture(MeshComp::GetMaterial(meshID, material), texture, bindingName);
+}
+
+void SetTransparancyTexture(Model *model, int material, int texture, const char *bindingName)
+{
+    Materials::SetTransparancyTexture(model->GetMaterials()->at(material), texture, bindingName);
+}
+
 void SetValue(unsigned int meshID, int material, const char *bindingName, float value)
 {
     Materials::SetValue(MeshComp::GetMaterial(meshID, material), bindingName, value);

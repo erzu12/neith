@@ -73,6 +73,15 @@ void SetTexture(Model *model, int material, int texture, const char *bindingName
     system::SetTexture(model, material, texture, bindingName);
 }
 
+void SetTransparancyTexture(unsigned int meshID, int material, int texture, const char *bindingName)
+{
+    system::SetTransparancyTexture(meshID, material, texture, bindingName);
+}
+void SetTransparancyTexture(Model *model, int material, int texture, const char *bindingName)
+{
+    system::SetTransparancyTexture(model, material, texture, bindingName);
+}
+
 void SetValue(unsigned int meshID, int material, const char *bindingName, float value)
 {
     system::SetValue(meshID, material, bindingName, value);

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "component.h"
+#include "debugInfo.h"
 
 typedef unsigned int mesh;
 
@@ -14,8 +15,12 @@ namespace neith {
 
 class MeshComp : public Component {
 public:
+    static MeshComp *GetInstance()
+    {
+        static MeshComp instance;
+        return &instance;
+    }
     static int AddStaticPrimitive(float *vertices, int vertCount, int *indices, int indCount, int material);
-    static void Transform(unsigned int entityID, glm::mat4 &transform);
     static bool ShouldUpdate(mesh meshID);
     static void ScheduleUpdate(mesh meshID, unsigned int instanceID);
     static void UpdateDone(mesh meshID, unsigned int instanceID);
@@ -32,7 +37,11 @@ public:
     static int GetMaterial(unsigned int entity, int material);
     static glm::mat4 *GetModelMats(unsigned int primitveID) { return mModelMats.at(primitveID).data(); }
 
+    void Transform(unsigned int entityID, glm::mat4 &transform) override;
+    DebugInfo *GetDebugInfo(unsigned int entityID) override;
+
 private:
+    MeshComp(){};
     static int id;
     static int mPrimitivesCount;
     static int mMeshCount;
@@ -50,5 +59,8 @@ private:
     // void static UpdateTransform(unsigned int entity, glm::mat4 transform);
 
     //~StaticPrimitives();
+public:
+    MeshComp(MeshComp &other) = delete;
+    void operator=(const MeshComp &) = delete;
 };
 }  // namespace neith

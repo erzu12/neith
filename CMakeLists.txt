@@ -12,6 +12,7 @@ add_subdirectory(external/stb)
 add_subdirectory(external/glm)
 add_subdirectory(external/spdlog)
 add_subdirectory(external/bullet3)
+add_subdirectory(external/imgui)
 
 #set(Bullet_DIR "external/bullet3/")
 

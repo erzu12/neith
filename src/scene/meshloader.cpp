@@ -93,7 +93,7 @@ Model *ModelLoader::LoadModel(std::string path)
         glm::mat4 modelMat(1.0f);
         ReadTransform(&gltfData->nodes[j], modelMat);
 
-        model->AddInstance(mesh, modelMat);
+        model->AddInstance(mesh, modelMat, gltfData->nodes[j].name);
     }
     //}
     return model;

@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "defaults.h"
 #include "framebuffer.h"
+#include "gui/gui.h"
 #include "log.h"
 #include "scene/components/cameraComp.h"
 #include "scene/material.h"
@@ -24,7 +25,7 @@ namespace neith {
 InstanceRenderer *Renderer::mInstancedRenderer;
 unsigned int Renderer::mCubeMapShader;
 unsigned int Renderer::mScreenShader;
-unsigned int Renderer::mShadowMapShader;
+unsigned int Renderer::mDepthMapShader;
 unsigned int Renderer::mScreenVAO;
 unsigned int Renderer::mCubeMapVAO;
 unsigned int Renderer::mFBO;
@@ -42,7 +43,8 @@ Renderer::Renderer()
 
     mCubeMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
     mScreenShader = LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
-    mShadowMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", NTH_ASSET_DIR "shadowMap.frag");
+    mDepthMapShader = LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", NTH_ASSET_DIR "shadowMap.frag");
+    Materials::SetDepthMapShader(mDepthMapShader);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -94,10 +96,10 @@ Renderer::Renderer()
 
     mDepthMapFBO = CreatDepthMapFrameBuffer(&mDepthMap);
 
-    Materials::AddDepthMap(mDepthMap);
-
     glUseProgram(mCubeMapShader);
     glUniform1i(glGetUniformLocation(mCubeMapShader, "skybox"), 0);
+
+    Gui::Init();
 
     // SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
     // neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
@@ -126,7 +128,7 @@ void Renderer::UpdateRender()
     glfwGetWindowSize(Window::GetGLFWwindow(), &width, &height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, mDepthMapFBO);
-    mInstancedRenderer->RenderInstancedShadows(mShadowMapShader);
+    mInstancedRenderer->RenderInstancedShadows(mDepthMapShader, mDepthMap);
 
     // Scene
     glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
@@ -134,7 +136,7 @@ void Renderer::UpdateRender()
 
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
-    mInstancedRenderer->RenderInstanced(Window::GetWidth(), Window::GetHeight());
+    mInstancedRenderer->RenderInstanced(Window::GetWidth(), Window::GetHeight(), mDepthMap);
     LineRenderer::RenderLines();
 
     // Cube Map
@@ -173,6 +175,8 @@ void Renderer::UpdateRender()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mScreenTexture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    Gui::Update();
 
     glfwSwapBuffers(Window::GetGLFWwindow());
 }

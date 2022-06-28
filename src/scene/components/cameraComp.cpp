@@ -13,7 +13,13 @@ namespace neith {
 glm::mat4 CameraComp::mTransform = glm::mat4(1.0f);
 unsigned int CameraComp::mEntityID = 0;
 
-CameraComp::CameraComp() {}
-
 void CameraComp::AttachCamera(unsigned int entityID) { mEntityID = entityID; }
+DebugInfo *CameraComp::GetDebugInfo(unsigned int entityID)
+{
+    DebugInfo *nameInfo = new DebugInfo("Camera Component");
+    DebugInfo *debugInfo = new DebugInfo("Camera Data:");
+    debugInfo->child.push_back(new DebugInfo("Transform: " + glm::to_string(mTransform)));
+    nameInfo->child.push_back(debugInfo);
+    return nameInfo;
+}
 }  // namespace neith

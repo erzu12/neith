@@ -87,7 +87,7 @@ InstanceRenderer::InstanceRenderer()
     // sc->rc = rc;
 }
 
-void InstanceRenderer::RenderInstanced(int width, int height)
+void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depthMap)
 {
     // Scene
     glViewport(0, 0, width, height);
@@ -113,8 +113,9 @@ void InstanceRenderer::RenderInstanced(int width, int height)
         UniformMat4v(Materials::GetShader(material), "projection", projection);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, Materials::GetDepthMap());
-        for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        // for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
+        for (unsigned int j = 1; j < 16; j++) {
             glActiveTexture(GL_TEXTURE0 + j);
             // NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
             glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
@@ -148,7 +149,7 @@ void InstanceRenderer::RenderInstanced(int width, int height)
     }
 }
 
-void InstanceRenderer::RenderInstancedShadows(int shaderProgram)
+void InstanceRenderer::RenderInstancedShadows(int shaderProgram, unsigned int depthMap)
 {
     glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
 
@@ -166,7 +167,10 @@ void InstanceRenderer::RenderInstancedShadows(int shaderProgram)
         glUseProgram(shaderProgram);
         UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, Materials::GetDepthMap());
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glActiveTexture(GL_TEXTURE1);
+        int material = MeshComp::GetMaterial(i);
+        glBindTexture(GL_TEXTURE_2D, Materials::GetTransparancyTexture(material));
         // for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
         // glActiveTexture(GL_TEXTURE0 + j);
         // glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));

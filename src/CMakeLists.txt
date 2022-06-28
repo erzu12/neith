@@ -7,6 +7,8 @@ add_library("${PROJECT_NAME}"
     "log.cpp"
     "debug.h"
     "debug.cpp"
+    "debugInfo.h"
+    "debugInfo.cpp"
     "transform.h"
     "transform.cpp"
     "defaults.h"
@@ -58,6 +60,8 @@ add_library("${PROJECT_NAME}"
     "physics/physics.cpp"
     "physics/colliders.h"
     "physics/colliders.cpp"
+    "gui/gui.h"
+    "gui/gui.cpp"
     "window/input.h"
     "window/input.cpp"
     "window/window.h"
@@ -75,6 +79,7 @@ target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
     PUBLIC ${CMAKE_SOURCE_DIR}/external/spdlog/include
+    PUBLIC ${CMAKE_SOURCE_DIR}/external/imgui
     PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src
     PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Dynamics
     PUBLIC ${CMAKE_SOURCE_DIR}/external/bullet3/src/Bullet3Collision
@@ -96,6 +101,7 @@ target_link_libraries("${PROJECT_NAME}"
     cgltf
     stb
     glm
+    imgui
     Bullet3Dynamics
     Bullet3Collision
     Bullet3Common

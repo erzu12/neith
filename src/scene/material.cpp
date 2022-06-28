@@ -16,8 +16,10 @@ unsigned int Materials::mMaterialCount = 0;
 std::vector<unsigned int> Materials::mShaders;
 std::vector<unsigned int> Materials::mTextureCounts;
 std::vector<unsigned int *> Materials::mTextures;
-unsigned int Materials::mDepthMapMaterial;
+std::vector<unsigned int> Materials::mTransparencyTexture;
+unsigned int Materials::mDepthMapShader;
 std::unordered_map<int, std::unordered_map<std::string, int>> Materials::mBindingMap;
+std::unordered_map<unsigned int, int> Materials::mBindingCounts;
 
 // Materials::Materials(int materialCount) {
 // materialCount++;
@@ -38,26 +40,26 @@ unsigned int Materials::AddMaterial()
 {
     static unsigned int defaultShader =
         LoadAndCompileShaders(NTH_ASSET_DIR "default.vert", NTH_ASSET_DIR "default.frag");
+    static unsigned int defaultTexture = texture::CreatValueTextureV3v(1.0f, 0.0f, 1.0f);
 
     mMaterialCount++;
 
     mShaders.push_back(defaultShader);
+    mBindingCounts.insert({ defaultShader, 1 });
     mTextureCounts.push_back(1);
-    mTextures.push_back(new unsigned int[16]);
+    unsigned int *textures = new unsigned int[16];
+    for (int i = 0; i < 16; i++) {
+        textures[i] = defaultTexture;
+    }
+    mTextures.push_back(textures);
+    mTransparencyTexture.push_back(0);
 
     return mMaterialCount - 1;
 }
 
-void Materials::AddDepthMap(unsigned int depthMap)
-{
-    mDepthMapMaterial = AddMaterial();
-    SetShader(mDepthMapMaterial, depthMap);
-}
-
-unsigned int Materials::GetDepthMap() { return mShaders.at(mDepthMapMaterial); }
-
 void Materials::SetShader(unsigned int material, unsigned int shader)
 {
+    mBindingCounts.insert({ shader, 1 });
     if (mShaders.size() < material) {
         NT_INTER_ERROR("no material with index: {}", material);
     }
@@ -77,9 +79,10 @@ void Materials::SetShader(unsigned int material, unsigned int shader)
 // return 0;
 //}
 
-void Materials::SetTexture(unsigned int material, unsigned int texture, const char *bindingName)
+int Materials::SetTexture(unsigned int material, unsigned int texture, const char *bindingName)
 {
     glUseProgram(mShaders[material]);
+    int binding;
     int location = glGetUniformLocation(mShaders[material], bindingName);
     if (location != -1) {
         auto searchShader = mBindingMap.find(mShaders[material]);
@@ -88,18 +91,37 @@ void Materials::SetTexture(unsigned int material, unsigned int texture, const ch
         }
         auto searchBinding = searchShader->second.find(bindingName);
         if (searchBinding == searchShader->second.end()) {
-            searchBinding = searchShader->second.insert({ bindingName, mTextureCounts.at(material) }).first;
-            glUniform1i(location, mTextureCounts[material]);
-            mTextures.at(material)[mTextureCounts.at(material)] = texture;
+            binding = mBindingCounts.at(mShaders.at(material));
+            searchBinding = searchShader->second.insert({ bindingName, binding }).first;
+            glUniform1i(location, binding);
+            mTextures.at(material)[binding] = texture;
+
+            mBindingCounts.at(mShaders.at(material))++;
+            mTextureCounts.at(material) = binding + 1;
         }
         else {
-            mTextures.at(material)[searchBinding->second] = texture;
+            binding = searchBinding->second;
+            mTextures.at(material)[binding] = texture;
         }
     }
     else {
-        NT_INTER_WARN("No such binding: {} in shader: {}", bindingName, mShaders[material]);
     }
-    mTextureCounts[material]++;
+    return binding;
+}
+
+void Materials::SetTransparancyTexture(unsigned int material, unsigned int texture, const char *bindingName)
+{
+    int binding = SetTexture(material, texture, bindingName);
+    mTransparencyTexture.at(material) = binding;
+}
+
+void Materials::SetDepthMapShader(unsigned int depthMapShader)
+{
+    mDepthMapShader = depthMapShader;
+
+    glUseProgram(mDepthMapShader);
+    int location = glGetUniformLocation(mDepthMapShader, "alpha");
+    glUniform1i(location, 1);
 }
 
 // int Materials::SetTextureByName(char *materialName, int texture, char *bindingName) {
