@@ -21,7 +21,7 @@ Camera::Camera()
 
 void Camera::UpdateCamera()
 {
-    const float speed = 10.0f * neith::Time::DeltaTime();
+    const float speed = 50.0f * neith::Time::DeltaTime();
     const float sens = 0.0005f;
 
     glm::vec2 deltaMouse = neith::GetDeltaMouse();

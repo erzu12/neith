@@ -15,5 +15,5 @@ void main() {
         checker = checker * -1.0 + 1;
     }
     checker *= 0.3;
-	FragColor = vec4(checker, checker, checker, 1.0);
+	FragColor = vec4(pos.y*0.1, pos.y*0.1, pos.y*0.1, 1.0);
 }

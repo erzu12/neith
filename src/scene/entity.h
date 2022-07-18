@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "components/component.h"
+#include "log.h"
 
 namespace neith {
 class Entity {

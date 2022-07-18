@@ -64,5 +64,6 @@ void SetValue(Model *model, int material, const char *bindingName, float x, floa
 {
     Materials::SetValue(model->GetMaterials()->at(material), bindingName, x, y, z);
 }
+void MakeBackfaced(Model *model, int material) { Materials::MakeBackfaced(model->GetMaterials()->at(material)); }
 }  // namespace system
 }  // namespace neith

@@ -18,6 +18,6 @@ public:
 private:
     unsigned int *VAOs;
     unsigned int **VBOs;
-    glm::mat4 lightSpaceMatrix;
+    glm::mat4 mLightSpaceMatrix;
 };
 }  // namespace neith

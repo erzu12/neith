@@ -6,6 +6,7 @@
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <thread>
 
 #include "debug.h"
 #include "defaults.h"
@@ -16,6 +17,7 @@
 #include "scene/material.h"
 #include "scene/scene.h"
 #include "scene/skybox.h"
+#include "scene/systems/sysMesh.h"
 #include "shaders.h"
 #include "textures.h"
 #include "window/window.h"
@@ -101,6 +103,8 @@ Renderer::Renderer()
 
     Gui::Init();
 
+    mLODThread = std::thread(system::ContinuousLODUpdate);
+
     // SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
     // neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
 }
@@ -181,5 +185,9 @@ void Renderer::UpdateRender()
     glfwSwapBuffers(Window::GetGLFWwindow());
 }
 
-Renderer::~Renderer() { delete mInstancedRenderer; }
+Renderer::~Renderer()
+{
+    mLODThread.join();
+    delete mInstancedRenderer;
+}
 }  // namespace neith

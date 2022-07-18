@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debugInfo.h"
+#include "log.h"
 
 namespace neith {
 class Gui {

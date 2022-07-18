@@ -17,5 +17,7 @@ void SetValue(unsigned int meshID, int material, const char *bindingName, float 
 void SetValue(Model *model, int material, const char *bindingName, float *value);
 void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z);
 void SetValue(Model *model, int material, const char *bindingName, float x, float y, float z);
+
+void MakeBackfaced(Model *model, int material);
 }  // namespace system
 }  // namespace neith

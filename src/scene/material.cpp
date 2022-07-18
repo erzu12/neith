@@ -17,6 +17,7 @@ std::vector<unsigned int> Materials::mShaders;
 std::vector<unsigned int> Materials::mTextureCounts;
 std::vector<unsigned int *> Materials::mTextures;
 std::vector<unsigned int> Materials::mTransparencyTexture;
+std::vector<bool> Materials::mBackfaced;
 unsigned int Materials::mDepthMapShader;
 std::unordered_map<int, std::unordered_map<std::string, int>> Materials::mBindingMap;
 std::unordered_map<unsigned int, int> Materials::mBindingCounts;
@@ -47,6 +48,7 @@ unsigned int Materials::AddMaterial()
     mShaders.push_back(defaultShader);
     mBindingCounts.insert({ defaultShader, 1 });
     mTextureCounts.push_back(1);
+    mBackfaced.push_back(false);
     unsigned int *textures = new unsigned int[16];
     for (int i = 0; i < 16; i++) {
         textures[i] = defaultTexture;

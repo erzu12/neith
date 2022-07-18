@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+
 #include "instancerenderer.h"
 #include "linerenderer.h"
 #include "scene/scene.h"
@@ -27,5 +29,6 @@ private:
     static unsigned int mTexColorBuffer;
     static unsigned int mScreenTexture;
     static unsigned int mCubeMap;
+    std::thread mLODThread;
 };
 }  // namespace neith

@@ -23,14 +23,22 @@
 namespace neith {
 void Init();
 
-// Window *nth_CreateWindow();
-
 void InitRenderer();
 
 Model *LoadModel(std::string path);
 
 unsigned int AddEntity(std::string name);
 unsigned int AddEntity(std::string name, glm::mat4 transform);
+
+unsigned int AddMesh(int primitivesCount);
+
+void CalcNormals(float *vertices, int vertCount, int *indices, int indCount);
+void CalcTangents(float *vertices, int vertCount, int *indices, int indCount);
+
+unsigned int AddPrimitive(
+    float *vertices, int vertCount, int *indices, int indCount, unsigned int mesh, int LOD, unsigned int material);
+
+void SetLODs(unsigned int meshID, int LODCount, float *LODDistances);
 
 void AddMeshToEntity(unsigned int entityID, unsigned int meshID);
 
@@ -48,8 +56,11 @@ void UpdateRender();
 
 unsigned int nth_LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath);
 
+unsigned int AddMaterial();
+
 void SetShader(unsigned int meshID, int material, int shader);
 void SetShader(Model *model, int material, int shader);
+void SetShader(unsigned int material, int shader);
 
 void SetTexture(unsigned int meshID, int material, int texture, const char *bindingName);
 void SetTexture(Model *model, int material, int texture, const char *bindingName);
@@ -64,17 +75,10 @@ void SetValue(Model *model, int material, const char *bindingName, float *value)
 void SetValue(unsigned int meshID, int material, const char *bindingName, float x, float y, float z);
 void SetValue(Model *model, int material, const char *bindingName, float x, float y, float z);
 
-// int nth_SetShaderByName(Materials *mat, char *materialName, int shader);
+void MakeBackfaced(Model *model, int material);
+void MakeBackfaced(unsigned int material);
 
 unsigned int LoadTexture(const char *path, GLint colorSpace, GLint internalColorSpace);
-
-// int nth_SetTextureByName(Materials *mat, char *materialName, int texture, char *bindingName);
-
-// void nth_SetValueByNameF(Materials *mat, char *materialName, char *bindingName, float value);
-
-// void nth_SetValueByNameV3(Materials *mat, char *materialName, char *bindingName, float *value);
-
-// void nth_SetValueByNameV3v(Materials *mat, char *materialName, char *bindingName, float x, float y, float z);
 
 void TransformEntity(unsigned int entityID, glm::mat4 &transform);
 
@@ -86,4 +90,8 @@ int AddRigidBody(unsigned int entityID, Collider *collider, float mass);
 void UpdatePhysics();
 
 int GetContacPoints(unsigned int colliderID, ContactPoint *contactPoints, int capacity);
+
+double OpenSimplex2D(double x, double y, int octaves = 1, float persistence = 0.5f, float lacunarity = 2);
+double Voronoi2D(double x, double y, float randomness = 1.0f);
+double VoronoiDistace2D(double x, double y, float randomness = 1.0f);
 }  // namespace neith

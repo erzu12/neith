@@ -42,6 +42,8 @@ InstanceRenderer::InstanceRenderer()
         glBindVertexArray(VAOs[i]);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][0]);
+        NT_INTER_INFO(MeshComp::GetVertCount(i));
+        NT_INTER_INFO(MeshComp::GetIndCount(i));
         glBufferData(GL_ARRAY_BUFFER, MeshComp::GetVertCount(i) * sizeof(float) * 12, MeshComp::GetVertices(i),
                      GL_DYNAMIC_DRAW);
 
@@ -99,96 +101,146 @@ void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depth
 
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
 
-    for (int i = 0; i < MeshComp::GetPrimitivesCount(); i++) {
-        int material = MeshComp::GetMaterial(i);
-        glUseProgram(Materials::GetShader(material));
-        UniformVec3v(Materials::GetShader(material), "viewPos", CameraComp::GetCameraPos());
-        UniformVec3(Materials::GetShader(material), "light.direction", 0.4, -1.0, -0.4);
-        UniformVec3(Materials::GetShader(material), "light.color", 3.0f, 3.0f, 3.0f);
+    for (int mesh = 0; mesh < MeshComp::GetMeshCount(); mesh++) {
+        for (int LOD = 0; LOD < MeshComp::GetLODCount(mesh); LOD++) {
+            for (int primitive = 0; primitive < MeshComp::GetPrimitivesCount(mesh, LOD); primitive++) {
+                unsigned int primitiveID = MeshComp::GetPrimitivesID(mesh, LOD, primitive);
 
-        // CubeMVPuniforms
-        UniformMat4v(Materials::GetShader(material), "lightSpaceMatrix", lightSpaceMatrix);
-        // UniformMat4v(sc->mat->shaders[materia);
-        UniformMat4v(Materials::GetShader(material), "view", view);
-        UniformMat4v(Materials::GetShader(material), "projection", projection);
+                int material = MeshComp::GetMaterial(primitiveID);
+                glUseProgram(Materials::GetShader(material));
+                UniformVec3v(Materials::GetShader(material), "viewPos", CameraComp::GetCameraPos());
+                UniformVec3(Materials::GetShader(material), "light.direction", 0.4, -1.0, -0.4);
+                UniformVec3(Materials::GetShader(material), "light.color", 3.0f, 3.0f, 3.0f);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        // for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
-        for (unsigned int j = 1; j < 16; j++) {
-            glActiveTexture(GL_TEXTURE0 + j);
-            // NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
-            glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
-        }
+                // CubeMVPuniforms
+                UniformMat4v(Materials::GetShader(material), "lightSpaceMatrix", mLightSpaceMatrix);
+                // UniformMat4v(sc->mat->shaders[materia);
+                UniformMat4v(Materials::GetShader(material), "view", view);
+                UniformMat4v(Materials::GetShader(material), "projection", projection);
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-        if (MeshComp::ShouldUpdate(i)) {
-            // glm::mat4 test = MeshComp::GetModelMats(i)[0];
-            // NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
-                         GL_DYNAMIC_DRAW);
-            // for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
-            // if(MeshComp::mUpdate.at(i).at(j + 1)) {
-            ////UniformMat4v(sc->mat->shaders[material], "model",
-            /// MeshComp::mModelMats.at(i).at(j + 1));
-            // MeshComp::UpdateDone(i, j);
-            // }
-            // }
-        }
-        // glm::mat4 positions[] = {glm::translate(glm::mat4(1.0f), {0.0f, 0.0f,
-        // 0.0f}), glm::translate(glm::mat4(1.0f), {0.0f, 1.0f, 3.0f}),
-        // glm::translate(glm::mat4(1.0f), {0.0f, 2.0f, 6.0f})};
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, depthMap);
+                // for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
+                for (unsigned int j = 1; j < 16; j++) {
+                    glActiveTexture(GL_TEXTURE0 + j);
+                    // NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
+                    glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
+                }
 
-        glBindVertexArray(VAOs[i]);
-        glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
-                                MeshComp::GetInstanceCount(i));
-        for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
-            glActiveTexture(GL_TEXTURE0 + j);
-            glBindTexture(GL_TEXTURE_2D, 0);
+                glBindBuffer(GL_ARRAY_BUFFER, VBOs[primitiveID][1]);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(mesh, LOD),
+                             MeshComp::GetModelMats(mesh, LOD), GL_DYNAMIC_DRAW);
+
+                if (Materials::IsBackfaced(material)) {
+                    glDisable(GL_CULL_FACE);
+                }
+
+                glBindVertexArray(VAOs[primitiveID]);
+                glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(primitiveID), GL_UNSIGNED_INT, 0,
+                                        MeshComp::GetInstanceCount(mesh, LOD));
+                for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
+                    glActiveTexture(GL_TEXTURE0 + j);
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                }
+                glEnable(GL_CULL_FACE);
+            }
         }
     }
+
+    // for (int i = 0; i < MeshComp::GetPrimitivesCount(); i++) {
+    // int material = MeshComp::GetMaterial(i);
+    // glUseProgram(Materials::GetShader(material));
+    // UniformVec3v(Materials::GetShader(material), "viewPos", CameraComp::GetCameraPos());
+    // UniformVec3(Materials::GetShader(material), "light.direction", 0.4, -1.0, -0.4);
+    // UniformVec3(Materials::GetShader(material), "light.color", 3.0f, 3.0f, 3.0f);
+
+    //// CubeMVPuniforms
+    // UniformMat4v(Materials::GetShader(material), "lightSpaceMatrix", mLightSpaceMatrix);
+    //// UniformMat4v(sc->mat->shaders[materia);
+    // UniformMat4v(Materials::GetShader(material), "view", view);
+    // UniformMat4v(Materials::GetShader(material), "projection", projection);
+
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, depthMap);
+    //// for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
+    // for (unsigned int j = 1; j < 16; j++) {
+    // glActiveTexture(GL_TEXTURE0 + j);
+    //// NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
+    // glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(material, j));
+    //}
+
+    // glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
+    // if (MeshComp::ShouldUpdate(i)) {
+    //// glm::mat4 test = MeshComp::GetModelMats(i)[0];
+    //// NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
+    // GL_DYNAMIC_DRAW);
+    //// for(int j = 0; j < MeshComp::mInstanceCount.at(i); j++) {
+    //// if(MeshComp::mUpdate.at(i).at(j + 1)) {
+    //////UniformMat4v(sc->mat->shaders[material], "model",
+    ///// MeshComp::mModelMats.at(i).at(j + 1));
+    //// MeshComp::UpdateDone(i, j);
+    //// }
+    //// }
+    //}
+    //// glm::mat4 positions[] = {glm::translate(glm::mat4(1.0f), {0.0f, 0.0f,
+    //// 0.0f}), glm::translate(glm::mat4(1.0f), {0.0f, 1.0f, 3.0f}),
+    //// glm::translate(glm::mat4(1.0f), {0.0f, 2.0f, 6.0f})};
+
+    // if (Materials::IsBackfaced(material)) {
+    // glDisable(GL_CULL_FACE);
+    //}
+
+    // glBindVertexArray(VAOs[i]);
+    // glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
+    // MeshComp::GetInstanceCount(i));
+    // for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
+    // glActiveTexture(GL_TEXTURE0 + j);
+    // glBindTexture(GL_TEXTURE_2D, 0);
+    //}
+    // glEnable(GL_CULL_FACE);
 }
 
 void InstanceRenderer::RenderInstancedShadows(int shaderProgram, unsigned int depthMap)
 {
-    glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
+    // glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
 
-    glm::vec3 pos = { -1.6f, 4.0f, 1.6f };
-    glm::vec3 target = { 0.0f, 0.0f, 0.0f };
-    glm::vec3 up = { 0.0f, 1.0f, 0.0f };
-    glm::mat4 lightView = glm::lookAt(pos, target, up);
+    // glm::vec3 pos = { -1.6f, 4.0f, 1.6f };
+    // glm::vec3 target = { 0.0f, 0.0f, 0.0f };
+    // glm::vec3 up = { 0.0f, 1.0f, 0.0f };
+    // glm::mat4 lightView = glm::lookAt(pos, target, up);
 
-    lightSpaceMatrix = lightProjection * lightView;
+    // mLightSpaceMatrix = lightProjection * lightView;
 
-    glViewport(0, 0, 4096, 4096);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    // glViewport(0, 0, 4096, 4096);
+    // glClear(GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 1; i < MeshComp::GetPrimitivesCount(); i++) {
-        glUseProgram(shaderProgram);
-        UniformMat4v(shaderProgram, "lightSpaceMatrix", lightSpaceMatrix);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        glActiveTexture(GL_TEXTURE1);
-        int material = MeshComp::GetMaterial(i);
-        glBindTexture(GL_TEXTURE_2D, Materials::GetTransparancyTexture(material));
-        // for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
-        // glActiveTexture(GL_TEXTURE0 + j);
-        // glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
-        //}
+    // for (int i = 1; i < MeshComp::GetPrimitivesCount(); i++) {
+    // glUseProgram(shaderProgram);
+    // UniformMat4v(shaderProgram, "lightSpaceMatrix", mLightSpaceMatrix);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, depthMap);
+    // glActiveTexture(GL_TEXTURE1);
+    // int material = MeshComp::GetMaterial(i);
+    // glBindTexture(GL_TEXTURE_2D, Materials::GetTransparancyTexture(material));
+    //// for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
+    //// glActiveTexture(GL_TEXTURE0 + j);
+    //// glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
+    ////}
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-        if (MeshComp::ShouldUpdate(i)) {
-            // glm::mat4 test = MeshComp::GetModelMats(i)[0];
-            // NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
-                         GL_DYNAMIC_DRAW);
-        }
-        //  UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
-        glBindVertexArray(VAOs[i]);
-        glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
-                                MeshComp::GetInstanceCount(i));
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
+    // glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
+    // if (MeshComp::ShouldUpdate(i)) {
+    //// glm::mat4 test = MeshComp::GetModelMats(i)[0];
+    //// NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
+    // GL_DYNAMIC_DRAW);
+    //}
+    ////  UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
+    // glBindVertexArray(VAOs[i]);
+    // glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
+    // MeshComp::GetInstanceCount(i));
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, 0);
+    //}
 }
 }  // namespace neith

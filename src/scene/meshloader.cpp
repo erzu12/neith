@@ -60,6 +60,9 @@ Model *ModelLoader::LoadModel(std::string path)
         int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
 
         unsigned int mesh = system::AddMesh(primitivesCount);
+        float *dist = new float[1];
+        dist[0] = 10000.0f;
+        system::SetLODs(mesh, 1, dist);
 
         meshes.insert({ &gltfData->meshes[j], mesh });
 
@@ -80,7 +83,7 @@ Model *ModelLoader::LoadModel(std::string path)
 
             int material = ReadMaterial(gltfMaterials, gltfData->meshes[j].primitives[k].material, model);
 
-            system::AddStaticPrimitive(vertices, vertCount, indices, indCount, material);
+            system::AddStaticPrimitive(vertices, vertCount, indices, indCount, mesh, 0, material);
         }
     }
 
@@ -283,13 +286,13 @@ void ModelLoader::CalcTangents(float *vertices, int vertCount, int *indices, int
         long i2 = indices[i * 3 + 1];
         long i3 = indices[i * 3 + 2];
 
-        glm::vec3 pos0 = { vertices[i1], vertices[i1 + 1], vertices[i1 + 2] };
-        glm::vec3 pos1 = { vertices[i2], vertices[i2 + 1], vertices[i2 + 2] };
-        glm::vec3 pos2 = { vertices[i3], vertices[i3 + 1], vertices[i3 + 2] };
+        glm::vec3 pos0 = { vertices[i1 * 12], vertices[i1 * 12 + 1], vertices[i1 * 12 + 2] };
+        glm::vec3 pos1 = { vertices[i2 * 12], vertices[i2 * 12 + 1], vertices[i2 * 12 + 2] };
+        glm::vec3 pos2 = { vertices[i3 * 12], vertices[i3 * 12 + 1], vertices[i3 * 12 + 2] };
 
-        glm::vec2 tex0 = { vertices[i1 + 10], vertices[i1 + 11] };
-        glm::vec2 tex1 = { vertices[i2 + 10], vertices[i2 + 11] };
-        glm::vec2 tex2 = { vertices[i3 + 10], vertices[i3 + 11] };
+        glm::vec2 tex0 = { vertices[i1 * 12 + 10], vertices[i1 * 12 + 11] };
+        glm::vec2 tex1 = { vertices[i2 * 12 + 10], vertices[i2 * 12 + 11] };
+        glm::vec2 tex2 = { vertices[i3 * 12 + 10], vertices[i3 * 12 + 11] };
 
         float edge1x = pos1[0] - pos0[0];
         float edge1y = pos1[1] - pos0[1];
@@ -338,5 +341,39 @@ void ModelLoader::CalcTangents(float *vertices, int vertCount, int *indices, int
         vertices[i * 12 + 9] = (glm::dot(c, tan2[i]) < 0.0F) ? -1.0F : 1.0F;
     }
     free(tan1);
+}
+
+void ModelLoader::CalcNormals(float *vertices, int vertCount, int *indices, int indCount)
+{
+    for (int i = 0; i < vertCount * 12; i += 12) {
+        vertices[i + 3] = 0.0f;
+        vertices[i + 4] = 0.0f;
+        vertices[i + 5] = 0.0f;
+    }
+
+    for (int i = 0; i < indCount / 3; i++) {
+        long i1 = indices[i * 3] * 12;
+        long i2 = indices[i * 3 + 1] * 12;
+        long i3 = indices[i * 3 + 2] * 12;
+
+        float Ux = vertices[i2] - vertices[i1];
+        float Uy = vertices[i2 + 1] - vertices[i1 + 1];
+        float Uz = vertices[i2 + 2] - vertices[i1 + 2];
+
+        float Vx = vertices[i3] - vertices[i1];
+        float Vy = vertices[i3 + 1] - vertices[i1 + 1];
+        float Vz = vertices[i3 + 2] - vertices[i1 + 2];
+
+        vertices[i1 + 3] += Uy * Vz - Uz * Vy;
+        vertices[i1 + 4] += Uz * Vx - Ux * Vz;
+        vertices[i1 + 5] += Ux * Vy - Uy * Vx;
+    }
+    for (int i = 0; i < vertCount * 12; i += 12) {
+        float len = sqrt(vertices[i + 3] * vertices[i + 3] + vertices[i + 4] * vertices[i + 4] +
+                         vertices[i + 5] * vertices[i + 5]);
+        vertices[i + 3] /= len;
+        vertices[i + 4] /= len;
+        vertices[i + 5] /= len;
+    }
 }
 }  // namespace neith

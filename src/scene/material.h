@@ -50,6 +50,9 @@ public:
         return mTextures.at(material)[mTransparencyTexture.at(material)];
     }
 
+    static bool IsBackfaced(unsigned int material) { return mBackfaced.at(material); }
+    static void MakeBackfaced(unsigned int material) { mBackfaced.at(material) = true; }
+
     static void SetDepthMapShader(unsigned int depthMapShader);
 
     ~Materials();
@@ -57,10 +60,10 @@ public:
 private:
     static unsigned int mMaterialCount;
     static std::vector<unsigned int> mShaders;
-    // char **names;
     static std::vector<unsigned int> mTextureCounts;
     static std::vector<unsigned int *> mTextures;
     static std::vector<unsigned int> mTransparencyTexture;
+    static std::vector<bool> mBackfaced;
     static std::unordered_map<int, std::unordered_map<std::string, int>> mBindingMap;
     static std::unordered_map<unsigned int, int> mBindingCounts;
     static unsigned int mDepthMapShader;
