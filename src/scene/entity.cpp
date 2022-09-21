@@ -5,6 +5,8 @@
 #include <string>
 
 #include "components/transformComp.h"
+// remove after debug
+#include "components/meshComp.h"
 #include "log.h"
 
 namespace neith {

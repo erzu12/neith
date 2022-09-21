@@ -1,4 +1,4 @@
-
+#include <neith.h>
 #include <spdlog/spdlog.h>
 #include <stdio.h>
 
@@ -66,11 +66,15 @@ int main()
 
     neith::InitRenderer();
 
+    // std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
     auto start = std::chrono::steady_clock::now();
     std::chrono::duration<double> total = start - start;
     std::mt19937 gen;  // Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<> distr(-500, 500);
+    NT_INTER_INFO("rand gen done");
     for (int i = 0; i < 1000000; i++) {
+        neith::MeshComp::GetLODModelMatsMutex()->lock();
         float x = (float)distr(gen);
         float y = (float)distr(gen);
         float rotate = (float)distr(gen);
@@ -78,7 +82,7 @@ int main()
         glm::mat4 transform =
             glm::translate(glm::mat4(1.0f),
                            glm::vec3(x, 20 * neith::OpenSimplex2D((double)x * 0.001f, (double)y * 0.001f, 4, 0.6), y));
-        transform *= glm::rotate(rotate, glm::vec3(0.0f, 1.0f, 0.0f));
+        // transform *= glm::rotate(rotate, glm::vec3(0.0f, 1.0f, 0.0f));
 
         int treeEntity = neith::AddEntity("tree" + std::to_string(i), transform);
         start = std::chrono::steady_clock::now();
@@ -86,6 +90,7 @@ int main()
 
         auto end = std::chrono::steady_clock::now();
         total += end - start;
+        neith::MeshComp::GetLODModelMatsMutex()->unlock();
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
@@ -161,15 +166,15 @@ int main()
     // neith::SetValue(treeMesh, 1, "material.specular", 0.2f);
     // neith::SetValue(treeMesh, 1, "material.metallic", 0.0f);
 
-    neith::SetShader(grassMesh, 0, shaderProgram);
-    neith::MakeBackfaced(grassMesh, 0);
+    // neith::SetShader(grassMesh, 0, shaderProgram);
+    // neith::MakeBackfaced(grassMesh, 0);
 
-    neith::SetValue(grassMesh, 0, "material.diffuse", 0.1f, 0.6f, 0.1f);
-    neith::SetValue(grassMesh, 0, "material.roughness", 0.8f);
-    neith::SetValue(grassMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    neith::SetValue(grassMesh, 0, "material.specular", 0.2f);
-    neith::SetValue(grassMesh, 0, "material.metallic", 0.0f);
-    // neith::SetTransparancyTexture(grassMesh, 0, grassAlpha);
+    // neith::SetValue(grassMesh, 0, "material.diffuse", 0.1f, 0.6f, 0.1f);
+    // neith::SetValue(grassMesh, 0, "material.roughness", 0.8f);
+    // neith::SetValue(grassMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
+    // neith::SetValue(grassMesh, 0, "material.specular", 0.2f);
+    // neith::SetValue(grassMesh, 0, "material.metallic", 0.0f);
+    //  neith::SetTransparancyTexture(grassMesh, 0, grassAlpha);
 
     // neith::SetTexture(skyScraper, 0, albedo, "material.diffuse");
     // neith::SetTexture(skyScraper, 0, roughness, "material.roughness");

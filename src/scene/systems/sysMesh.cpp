@@ -36,12 +36,18 @@ void AddMeshToEntity(unsigned int entityID, unsigned int meshID)
 
 void ContinuousLODUpdate()
 {
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double>> current =
         std::chrono::steady_clock::now();
     using interval = std::chrono::duration<double, std::ratio<1, 60>>;
+    NT_INTER_INFO("LOD Update Start");
     while (!Window::ShouldClose()) {
+        MeshComp::GetLODModelMatsMutex()->lock();
+        // auto start = std::chrono::steady_clock::now();
         UpdateLODs();
+        // NT_INTER_INFO("{}", (std::chrono::steady_clock::now() - start).count());
         current += interval(1);
+        MeshComp::GetLODModelMatsMutex()->unlock();
         std::this_thread::sleep_until(current);
     }
 }
@@ -54,7 +60,9 @@ void AddModelToEntity(unsigned int entityID, Model *model)
     std::vector<glm::mat4> *instanceTransform = model->GetInstanceTransform();
     std::vector<std::string> *instanceNames = model->GetInstanceNames();
     std::string entityName = Entity::GetName(entityID);
-    glm::mat4 modelMat = TransformComp::GetGlobalTransform(entityID);
+
+    // std::lock_guard<std::mutex> guard(*MeshComp::GetLODModelMatsMutex());
+    glm::mat4 modelMat(TransformComp::GetGlobalTransform(entityID));
 
     for (int i = 0; i < instaceMeshes->size(); i++) {
         glm::mat4 instanceModelMat = modelMat * instanceTransform->at(i);

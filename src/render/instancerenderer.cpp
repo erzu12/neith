@@ -65,6 +65,7 @@ InstanceRenderer::InstanceRenderer()
 
         // glGenBuffers(1, &VBOs[i][1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
+        NT_INTER_INFO("vbos: {}", VBOs[i][1]);
         // std::cout << "test1" << std::endl;
         // glEnableVertexAttribArray(4);
         // glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
@@ -128,8 +129,12 @@ void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depth
                 }
 
                 glBindBuffer(GL_ARRAY_BUFFER, VBOs[primitiveID][1]);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(mesh, LOD),
-                             MeshComp::GetModelMats(mesh, LOD), GL_DYNAMIC_DRAW);
+
+                MeshComp::GetLODModelMatsMutex()->lock();
+                int instanceCount = MeshComp::GetInstanceCount(mesh, LOD);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * instanceCount, MeshComp::GetModelMats(mesh, LOD),
+                             GL_DYNAMIC_DRAW);
+                MeshComp::GetLODModelMatsMutex()->unlock();
 
                 if (Materials::IsBackfaced(material)) {
                     glDisable(GL_CULL_FACE);
@@ -137,7 +142,7 @@ void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depth
 
                 glBindVertexArray(VAOs[primitiveID]);
                 glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(primitiveID), GL_UNSIGNED_INT, 0,
-                                        MeshComp::GetInstanceCount(mesh, LOD));
+                                        instanceCount);
                 for (unsigned int j = 0; j < Materials::GetTextureCount(material); j++) {
                     glActiveTexture(GL_TEXTURE0 + j);
                     glBindTexture(GL_TEXTURE_2D, 0);

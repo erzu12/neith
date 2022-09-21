@@ -1,5 +1,7 @@
 #include "meshComp.h"
 
+#include <math.h>
+
 #include <glm/gtx/string_cast.hpp>
 
 #include "log.h"
@@ -29,6 +31,7 @@ std::vector<int> MeshComp::mMaterials;
 int MeshComp::AddStaticPrimitive(
     float *vertices, int vertCount, int *indices, int indCount, unsigned int mesh, unsigned int LOD, int material)
 {
+    NT_INTER_INFO("write mMeshes");
     mMeshes.at(mesh).at(LOD).push_back(mPrimitivesCount);
     mVertices.push_back(vertices);
     mIndices.push_back(indices);
@@ -45,13 +48,16 @@ int MeshComp::AddStaticPrimitive(
 
 int MeshComp::AddStaticMesh(int primitivesCount)
 {
+    NT_INTER_INFO("static Mesh");
     mInstanceMap.push_back(std::unordered_map<unsigned int, unsigned int>());
     mLODModelMats.push_back(std::vector<std::vector<glm::mat4>>());
     mInstanceCount.push_back(0);
+    NT_INTER_INFO("write mLODDistances");
     mLODDistances.push_back(nullptr);
     int mesh = mMeshCount;
     mMeshCount++;
 
+    NT_INTER_INFO("write mMeshes");
     mMeshes.push_back(std::vector<std::vector<unsigned int>>());
 
     return mesh;
@@ -59,14 +65,19 @@ int MeshComp::AddStaticMesh(int primitivesCount)
 
 void MeshComp::SetLODs(unsigned int meshID, int LODCount, float *LODDistances)
 {
+    NT_INTER_INFO("Set LODs");
+    NT_INTER_INFO("write mLODDistances");
     mLODDistances.at(meshID) = LODDistances;
+    NT_INTER_INFO("write mMeshes");
     mMeshes.at(meshID).insert(mMeshes.at(meshID).begin(), LODCount + 1, std::vector<unsigned int>());
     mLODModelMats.at(meshID).insert(mLODModelMats.at(meshID).begin(), LODCount + 1, std::vector<glm::mat4>());
 }
 
 // yea dis needs some work
+
 void MeshComp::UpdateLODs(glm::vec3 camPos)
 {
+    // std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
     for (int mesh = 0; mesh < mMeshes.size(); mesh++) {
         for (int LOD = mMeshes.at(mesh).size() - 1; LOD >= 0; LOD--) {
             for (int instance = 0; instance < mLODModelMats.at(mesh).at(LOD).size(); instance++) {
@@ -75,55 +86,64 @@ void MeshComp::UpdateLODs(glm::vec3 camPos)
                 float y = modelMat[3][1] - camPos.y;
                 float z = modelMat[3][2] - camPos.z;
                 float dist = x * x + y * y + z * z;
-                // the stupid way
-                if (LOD == mMeshes.at(mesh).size() - 1) {
-                    if (dist < mLODDistances.at(mesh)[LOD - 1]) {
-                        mLODModelMatsMutex.lock();
-                        mLODModelMats.at(mesh).at(LOD - 1).push_back(mLODModelMats.at(mesh).at(LOD).at(instance));
-                        glm::mat4 *mats = mLODModelMats.at(mesh).at(LOD).data();
-                        glm::mat4 lastMat = mats[mLODModelMats.at(mesh).at(LOD).size()];
-                        mats[instance] = lastMat;
-                        mLODModelMats.at(mesh).at(LOD).pop_back();
-                        mLODModelMatsMutex.unlock();
-                        instance--;
-                    }
-                }
-                else if (LOD == 0) {
+
+                // if (LOD == 0) {
+                // if (abs(modelMat[3][0] + modelMat[3][1] + modelMat[3][2]) < 0.0001f) {
+                // for (int x = 0; x < 4; x++) {
+                // if (modelMat[x][x] > 0.0001) {
+                //// NT_INTER_INFO("not 1 but {}, at instance {} and meshID {}", modelMat[x][x],
+                //// instance, mesh);
+                //// NT_INTER_INFO(glm::to_string(modelMat));
+                //}
+                //}
+                //// for (int y = 0; y < 4; y++) {
+                //// if (modelMat[x][y] != modelMat[x][y]) {
+                //// NT_INTER_INFO("nan at {}, in LOD {}", instance, LOD);
+                ////}
+                ////}
+                //}
+                //}
+
+                // if (LOD == mMeshes.at(mesh).size() - 1) {
+                // if (dist < mLODDistances.at(mesh)[LOD - 1]) {
+                // ChangeLOD(-1, mesh, LOD, instance);
+                // instance--;
+                //}
+                //}
+                if (LOD == 0) {
                     if (dist > mLODDistances.at(mesh)[LOD]) {
-                        mLODModelMatsMutex.lock();
-                        mLODModelMats.at(mesh).at(LOD + 1).push_back(mLODModelMats.at(mesh).at(LOD).at(instance));
-                        glm::mat4 *mats = mLODModelMats.at(mesh).at(LOD).data();
-                        glm::mat4 lastMat = mats[mLODModelMats.at(mesh).at(LOD).size()];
-                        mats[instance] = lastMat;
-                        mLODModelMats.at(mesh).at(LOD).pop_back();
-                        mLODModelMatsMutex.unlock();
+                        ChangeLOD(1, mesh, LOD, instance);
                         instance--;
                     }
                 }
 
-                else if (dist > mLODDistances.at(mesh)[LOD]) {
-                    mLODModelMatsMutex.lock();
-                    mLODModelMats.at(mesh).at(LOD + 1).push_back(mLODModelMats.at(mesh).at(LOD).at(instance));
-                    glm::mat4 *mats = mLODModelMats.at(mesh).at(LOD).data();
-                    glm::mat4 lastMat = mats[mLODModelMats.at(mesh).at(LOD).size()];
-                    mats[instance] = lastMat;
-                    mLODModelMats.at(mesh).at(LOD).pop_back();
-                    mLODModelMatsMutex.unlock();
-                    instance--;
-                }
-                else if (dist < mLODDistances.at(mesh)[LOD - 1]) {
-                    mLODModelMatsMutex.lock();
-                    mLODModelMats.at(mesh).at(LOD - 1).push_back(mLODModelMats.at(mesh).at(LOD).at(instance));
-                    glm::mat4 *mats = mLODModelMats.at(mesh).at(LOD).data();
-                    glm::mat4 lastMat = mats[mLODModelMats.at(mesh).at(LOD).size()];
-                    mats[instance] = lastMat;
-                    mLODModelMats.at(mesh).at(LOD).pop_back();
-                    mLODModelMatsMutex.unlock();
-                    instance--;
-                }
+                // else if (dist > mLODDistances.at(mesh)[LOD]) {
+                // ChangeLOD(1, mesh, LOD, instance);
+                // instance--;
+                //}
+                // else if (dist < mLODDistances.at(mesh)[LOD - 1]) {
+                // ChangeLOD(-1, mesh, LOD, instance);
+                // instance--;
+                //}
             }
         }
     }
+}
+
+void MeshComp::ChangeLOD(int change, int mesh, int LOD, int instance)
+{
+    // std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
+    //   mLODModelMatsMutex.lock();
+
+    mLODModelMats.at(mesh).at(LOD + change).push_back(mLODModelMats.at(mesh).at(LOD).at(instance));
+
+    glm::mat4 *mats = mLODModelMats.at(mesh).at(LOD).data();
+    glm::mat4 lastMat = mats[mLODModelMats.at(mesh).at(LOD).size()];
+    mats[instance] = lastMat;
+
+    mLODModelMats.at(mesh).at(LOD).pop_back();
+
+    // mLODModelMatsMutex.unlock();
 }
 
 void MeshComp::Transform(unsigned int entityID, glm::mat4 &transform)
@@ -153,10 +173,16 @@ bool MeshComp::ShouldUpdate(mesh meshID) { return mUpdate.at(meshID).at(0); }
 
 void MeshComp::AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4 modelMat)
 {
+    // for (int x = 0; x < 4; x++) {
+    // if (modelMat[x][x] != 1) {
+    // NT_INTER_INFO("not 1 but {}", modelMat[x][x]);
+    // NT_INTER_INFO(glm::to_string(modelMat));
+    //}
+    //}
+
     mIndexMap.insert({ entityID, meshID });
     mInstanceMap.at(meshID).insert({ entityID, mInstanceCount.at(meshID) });
     mInstanceCount.at(meshID)++;
-    mLODModelMats.at(meshID).at(0).push_back(modelMat);
 
     for (std::vector<unsigned int> LOD : mMeshes.at(meshID)) {
         for (unsigned int primitive : LOD) {
@@ -165,6 +191,32 @@ void MeshComp::AddInstance(unsigned int meshID, unsigned int entityID, glm::mat4
             mUpdate.at(primitive).at(0) = true;
         }
     }
+
+    // NT_INTER_INFO(glm::to_string(modelMat));
+
+    static int callCount = 0;
+    static int printCount = 0;
+
+    callCount++;
+
+    // std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
+    mLODModelMats.at(meshID).at(0).push_back(modelMat);
+
+    // if (printCount < 1000) {
+    // int size = mLODModelMats.at(meshID).at(0).size();
+    // for (int i = 0; i < size; i++) {
+    //// for (glm::mat4 LODmodelMat : mLODModelMats.at(meshID).at(0)) {
+    // glm::mat4 LODmodelMat = mLODModelMats.at(meshID).at(0).at(i);
+    // for (int x = 0; x < 4; x++) {
+    // if (LODmodelMat[x][x] != 1) {
+    // NT_INTER_INFO("not 1 but {} addinstance {}, mesh {}, instance {}, size {}", LODmodelMat[x][x],
+    // callCount, meshID, i, size);
+    // NT_INTER_INFO(glm::to_string(LODmodelMat));
+    // printCount++;
+    //}
+    //}
+    //}
+    //}
 }
 
 int MeshComp::GetMaterial(unsigned int meshID, int material)

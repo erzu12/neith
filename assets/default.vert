@@ -5,7 +5,7 @@ layout (location = 4) in mat4 aModel;
 
 out vec3 pos;
 
-uniform mat4 model;
+//uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 

@@ -14,6 +14,8 @@
 #include "log.h"
 #include "physics/physics.h"
 #include "render/render.h"
+// remove
+#include "scene/components/meshComp.h"
 #include "scene/model.h"
 #include "scene/scene.h"
 #include "timer.h"

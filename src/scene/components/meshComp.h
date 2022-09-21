@@ -39,9 +39,9 @@ public:
     {
         return mMeshes.at(mesh).at(LOD).at(primitve);
     }
-    static int GetInstanceCount(mesh meshID, int LOD)
+    static int GetInstanceCount(unsigned int meshID, int LOD)
     {
-        std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
+        // std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
         return mLODModelMats.at(meshID).at(LOD).size();
     }
     static int GetVertCount(unsigned int primitveID) { return mVertCounts.at(primitveID); }
@@ -50,14 +50,15 @@ public:
     static int *GetIndices(unsigned int primitveID) { return mIndices.at(primitveID); }
     static int GetMaterial(unsigned int primitveID) { return mMaterials.at(primitveID); }
     static int GetMaterial(unsigned int entity, int material);
-    static glm::mat4 *GetModelMats(unsigned int mesh, int LOD)
+    static glm::mat4 *GetModelMats(unsigned int meshID, int LOD)
     {
-        std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
-        return mLODModelMats.at(mesh).at(LOD).data();
+        // std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
+        return mLODModelMats.at(meshID).at(LOD).data();
     }
 
     void Transform(unsigned int entityID, glm::mat4 &transform) override;
     DebugInfo *GetDebugInfo(unsigned int entityID) override;
+    static std::mutex *GetLODModelMatsMutex() { return &mLODModelMatsMutex; }
 
 private:
     MeshComp(){};
@@ -78,6 +79,8 @@ private:
     static std::vector<int> mVertCounts;
     static std::vector<int> mIndCounts;
     static std::vector<int> mMaterials;
+
+    static void ChangeLOD(int change, int mesh, int LOD, int instance);
 
     // void static UpdateTransform(unsigned int entity, glm::mat4 transform);
 

@@ -1,6 +1,6 @@
 {
     "asset" : {
-        "generator" : "Khronos glTF Blender I/O v3.2.40",
+        "generator" : "Khronos glTF Blender I/O v3.3.27",
         "version" : "2.0"
     },
     "scene" : 0,
@@ -8,20 +8,19 @@
         {
             "name" : "Scene",
             "nodes" : [
-                0
+                0,
+                1
             ]
         }
     ],
     "nodes" : [
         {
             "mesh" : 0,
-            "name" : "Plane.004",
-            "rotation" : [
-                0.024979792535305023,
-                0,
-                -0.0649474635720253,
-                0.9975759983062744
-            ]
+            "name" : "Grass_LOD0"
+        },
+        {
+            "mesh" : 1,
+            "name" : "Grass_LOD1"
         }
     ],
     "materials" : [
@@ -55,6 +54,20 @@
                     "material" : 0
                 }
             ]
+        },
+        {
+            "name" : "Plane.005",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 5,
+                        "NORMAL" : 6,
+                        "TANGENT" : 7,
+                        "TEXCOORD_0" : 8
+                    },
+                    "indices" : 9
+                }
+            ]
         }
     ],
     "accessors" : [
@@ -63,14 +76,14 @@
             "componentType" : 5126,
             "count" : 840,
             "max" : [
-                0.9435919523239136,
-                0.8522478938102722,
-                1.1071051359176636
+                1.0161328315734863,
+                0.7983872294425964,
+                1.1256017684936523
             ],
             "min" : [
-                -0.9738031625747681,
-                -0.1734064519405365,
-                -1.216860055923462
+                -0.9417969584465027,
+                -0.11671783030033112,
+                -1.1914256811141968
             ],
             "type" : "VEC3"
         },
@@ -97,38 +110,113 @@
             "componentType" : 5123,
             "count" : 2016,
             "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 5,
+            "componentType" : 5126,
+            "count" : 8,
+            "max" : [
+                1,
+                0.7322392463684082,
+                1
+            ],
+            "min" : [
+                -1,
+                1.6886408602396737e-15,
+                -1
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 6,
+            "componentType" : 5126,
+            "count" : 8,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 7,
+            "componentType" : 5126,
+            "count" : 8,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 8,
+            "componentType" : 5126,
+            "count" : 8,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 9,
+            "componentType" : 5123,
+            "count" : 12,
+            "type" : "SCALAR"
         }
     ],
     "bufferViews" : [
         {
             "buffer" : 0,
             "byteLength" : 10080,
-            "byteOffset" : 0
+            "byteOffset" : 0,
+            "target" : 34962
         },
         {
             "buffer" : 0,
             "byteLength" : 10080,
-            "byteOffset" : 10080
+            "byteOffset" : 10080,
+            "target" : 34962
         },
         {
             "buffer" : 0,
             "byteLength" : 13440,
-            "byteOffset" : 20160
+            "byteOffset" : 20160,
+            "target" : 34962
         },
         {
             "buffer" : 0,
             "byteLength" : 6720,
-            "byteOffset" : 33600
+            "byteOffset" : 33600,
+            "target" : 34962
         },
         {
             "buffer" : 0,
             "byteLength" : 4032,
-            "byteOffset" : 40320
+            "byteOffset" : 40320,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 96,
+            "byteOffset" : 44352,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 96,
+            "byteOffset" : 44448,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 128,
+            "byteOffset" : 44544,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 64,
+            "byteOffset" : 44672,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 24,
+            "byteOffset" : 44736,
+            "target" : 34963
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 44352,
+            "byteLength" : 44760,
             "uri" : "Grass.bin"
         }
     ]
