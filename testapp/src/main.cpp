@@ -7,6 +7,7 @@
 #include <iostream>
 #include <random>
 
+#include "perf.h"
 #include "camera.h"
 
 #define ASSET_DIR "assets/"
@@ -16,12 +17,14 @@ int main()
     // neith::Window *win = neith::nth_CreateWindow();
     neith::Init();
 
+    NT_INFO("hash collision chance: {}", std::numeric_limits<std::size_t>::max());
+
     // neith::Model *planeMesh = neith::LoadModel(ASSET_DIR "models/plane.gltf");
     // neith::Model *skyScraper = neith::LoadModel(ASSET_DIR "models/RuinedCitySkyRise04.gltf");
 
-    unsigned int mesh = neith::AddMesh(1);
+    unsigned int ground = neith::AddMesh(1);
     float dists[1] = { 1000000.0f };
-    neith::SetLODs(mesh, 1, dists);
+    neith::SetLODs(ground, 1, dists);
 
     int size = 1000;
 
@@ -58,7 +61,7 @@ int main()
     neith::CalcTangents(vertices, vertCount, indices, indCount);
 
     unsigned int groundMat = neith::AddMaterial();
-    neith::AddPrimitive(vertices, vertCount, indices, indCount, mesh, 0, groundMat);
+    neith::AddPrimitive(vertices, vertCount, indices, indCount, ground, 0, groundMat);
 
     neith::Model *cubeMesh = neith::LoadModel(ASSET_DIR "models/cube.gltf");
     // neith::Model *treeMesh = neith::LoadModel(ASSET_DIR "models/Tree1.gltf");
@@ -74,7 +77,6 @@ int main()
     std::uniform_int_distribution<> distr(-500, 500);
     NT_INTER_INFO("rand gen done");
     for (int i = 0; i < 1000000; i++) {
-        neith::MeshComp::GetLODModelMatsMutex()->lock();
         float x = (float)distr(gen);
         float y = (float)distr(gen);
         float rotate = (float)distr(gen);
@@ -90,17 +92,16 @@ int main()
 
         auto end = std::chrono::steady_clock::now();
         total += end - start;
-        neith::MeshComp::GetLODModelMatsMutex()->unlock();
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
     NT_INFO("Ran in {}s", total.count());
 
-    int meshEntity = neith::AddEntity("mesh");
-    neith::AddMeshToEntity(meshEntity, mesh);
+    int groundMeshEntity = neith::AddEntity("ground");
+    neith::AddMeshToEntity(groundMeshEntity, ground);
 
-    int cubeEntity = neith::AddEntity("cube", glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 2.0f, 5.0f)));
-    neith::AddModelToEntity(cubeEntity, cubeMesh);
+    // int cubeEntity = neith::AddEntity("cube", glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 2.0f, 5.0f)));
+    // neith::AddModelToEntity(cubeEntity, cubeMesh);
 
     // int cube = neith::AddEntity("cube", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, 0.0f)));
     // neith::AddMeshToEntity(cube, cubeMesh);
@@ -136,11 +137,11 @@ int main()
     // neith::SetShader(meshes, 1, shaderProgram);
     neith::SetShader(groundMat, shaderProgram);
 
-    neith::SetValue(mesh, 0, "material.diffuse", 0.1f, 0.6f, 0.1f);
-    neith::SetValue(mesh, 0, "material.roughness", 0.8f);
-    neith::SetValue(mesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    neith::SetValue(mesh, 0, "material.specular", 0.2f);
-    neith::SetValue(mesh, 0, "material.metallic", 0.0f);
+    neith::SetValue(ground, 0, "material.diffuse", 0.1f, 0.6f, 0.1f);
+    neith::SetValue(ground, 0, "material.roughness", 0.8f);
+    neith::SetValue(ground, 0, "material.normal", 0.5f, 0.5f, 1.0f);
+    neith::SetValue(ground, 0, "material.specular", 0.2f);
+    neith::SetValue(ground, 0, "material.metallic", 0.0f);
 
     neith::SetShader(cubeMesh, 0, shaderProgram);
 
@@ -204,7 +205,10 @@ int main()
 
     while (!neith::ShouldClose()) {
         camera.UpdateCamera();
+        double time = glfwGetTime();
         neith::Update();
+        NT_INFO("FPS: {}", 1.0 / (glfwGetTime() - time));
+        
         // int contactPointCount = neith::GetContacPoints(boxRigidBody, contactPoints, 4);
         // for (int i = 0; i < contactPointCount; i++) {
         // NT_INFO(glm::to_string(contactPoints[i].worldNormal));

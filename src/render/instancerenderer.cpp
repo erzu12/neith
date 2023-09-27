@@ -102,6 +102,7 @@ void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depth
 
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
 
+
     for (int mesh = 0; mesh < MeshComp::GetMeshCount(); mesh++) {
         for (int LOD = 0; LOD < MeshComp::GetLODCount(mesh); LOD++) {
             for (int primitive = 0; primitive < MeshComp::GetPrimitivesCount(mesh, LOD); primitive++) {
@@ -130,11 +131,11 @@ void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depth
 
                 glBindBuffer(GL_ARRAY_BUFFER, VBOs[primitiveID][1]);
 
-                MeshComp::GetLODModelMatsMutex()->lock();
+                //MeshComp::GetLODModelMatsMutex()->lock();
                 int instanceCount = MeshComp::GetInstanceCount(mesh, LOD);
                 glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * instanceCount, MeshComp::GetModelMats(mesh, LOD),
                              GL_DYNAMIC_DRAW);
-                MeshComp::GetLODModelMatsMutex()->unlock();
+                //MeshComp::GetLODModelMatsMutex()->unlock();
 
                 if (Materials::IsBackfaced(material)) {
                     glDisable(GL_CULL_FACE);

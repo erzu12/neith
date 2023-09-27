@@ -43,10 +43,12 @@ void ContinuousLODUpdate()
     NT_INTER_INFO("LOD Update Start");
     while (!Window::ShouldClose()) {
         MeshComp::GetLODModelMatsMutex()->lock();
+        NT_INTER_INFO("thread 1 locked");
         // auto start = std::chrono::steady_clock::now();
         UpdateLODs();
         // NT_INTER_INFO("{}", (std::chrono::steady_clock::now() - start).count());
         current += interval(1);
+        NT_INTER_INFO("thread 1 unlock");
         MeshComp::GetLODModelMatsMutex()->unlock();
         std::this_thread::sleep_until(current);
     }

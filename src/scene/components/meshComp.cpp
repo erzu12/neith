@@ -87,8 +87,13 @@ void MeshComp::UpdateLODs(glm::vec3 camPos)
                 float z = modelMat[3][2] - camPos.z;
                 float dist = x * x + y * y + z * z;
 
-                // if (LOD == 0) {
-                // if (abs(modelMat[3][0] + modelMat[3][1] + modelMat[3][2]) < 0.0001f) {
+                if (LOD == 0) {
+                    if (abs(modelMat[3][0] + modelMat[3][1] + modelMat[3][2]) < 0.0001f) {
+                        if (abs(modelMat[0][0] + modelMat[1][1] + modelMat[2][2]) == 3.0f) {
+                            NT_INTER_INFO(glm::to_string(modelMat));
+                        }
+                    }
+                }
                 // for (int x = 0; x < 4; x++) {
                 // if (modelMat[x][x] > 0.0001) {
                 //// NT_INTER_INFO("not 1 but {}, at instance {} and meshID {}", modelMat[x][x],

@@ -54,6 +54,8 @@ dkms.conf
 build/
 external/bullet3/html/
 assets/test/
+.cache/
+.ccls-cache/
 
 CMakeLists.txt.user
 CMakeCache.txt

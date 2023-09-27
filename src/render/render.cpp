@@ -103,7 +103,7 @@ Renderer::Renderer()
 
     Gui::Init();
 
-    mLODThread = std::thread(system::ContinuousLODUpdate);
+    //mLODThread = std::thread(system::ContinuousLODUpdate);
 
     // SetTextureByName(sc->rc->mat, "Material", depthMap, "shadowMap");
     // neith::SetValue(meshes, 0, "material.normal", 0.0f, 0.5f, 0.5f);
@@ -179,6 +179,8 @@ void Renderer::UpdateRender()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mScreenTexture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // system::UpdateLODs();
 
     Gui::Update();
 

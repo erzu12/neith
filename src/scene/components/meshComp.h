@@ -41,7 +41,6 @@ public:
     }
     static int GetInstanceCount(unsigned int meshID, int LOD)
     {
-        // std::lock_guard<std::mutex> guard(mLODModelMatsMutex);
         return mLODModelMats.at(meshID).at(LOD).size();
     }
     static int GetVertCount(unsigned int primitveID) { return mVertCounts.at(primitveID); }
