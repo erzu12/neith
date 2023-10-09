@@ -12,7 +12,7 @@
 #include "render/render.h"
 
 namespace neith {
-unsigned int LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
+unsigned int Shader::LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
 {
     const char *vertCode = LoadShader(vertexPath);
     const char *fragCode = LoadShader(fragmentPath);
@@ -83,7 +83,20 @@ unsigned int LoadAndCompileShaders(const char *vertexPath, const char *fragmentP
     return shaderProgram;
 }
 
-char *LoadShader(const char *path)
+unsigned int Shader::bindTextureSlot(std::string bindingName)
+{
+    for (int i = 0; i < mBindings.size(); i++) {
+        if (mBindings[i] == bindingName) {
+            return i;
+        }
+    }
+    glUseProgram(mShaderProgram);
+    glUniform1i(glGetUniformLocation(mShaderProgram, bindingName.c_str()), mBindings.size() - 1);
+    mBindings.push_back(bindingName);
+    return mBindings.size() - 1;
+}
+
+char *Shader::LoadShader(const char *path)
 {
     std::ifstream ifs;
 
@@ -112,16 +125,16 @@ char *LoadShader(const char *path)
     return buffer;
 }
 
-void UniformVec3(unsigned int shader, const char *name, float x, float y, float z)
+void Shader::UniformVec3(const char *name, float x, float y, float z)
 {
-    glUniform3f(glGetUniformLocation(shader, name), x, y, z);
+    glUniform3f(glGetUniformLocation(mShaderProgram, name), x, y, z);
 }
-void UniformVec3v(unsigned int shader, const char *name, const glm::vec3 &val)
+void Shader::UniformVec3v(const char *name, const glm::vec3 &val)
 {
-    glUniform3fv(glGetUniformLocation(shader, name), 1, &val[0]);
+    glUniform3fv(glGetUniformLocation(mShaderProgram, name), 1, &val[0]);
 }
-void UniformMat4v(unsigned int shader, const char *name, const glm::mat4 &val)
+void Shader::UniformMat4v(const char *name, const glm::mat4 &val)
 {
-    glUniformMatrix4fv(glGetUniformLocation(shader, name), 1, GL_FALSE, &val[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(mShaderProgram, name), 1, GL_FALSE, &val[0][0]);
 }
 }  // namespace neith

@@ -8,7 +8,7 @@ add_executable("${PROJECT_NAME}"
     "camera.cpp"
 )
 
-set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 11)
+set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 23)
 
 target_include_directories("${PROJECT_NAME}"
 	PUBLIC ${CMAKE_SOURCE_DIR}/src

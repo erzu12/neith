@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ecs.h>
+
 #include <glm/gtx/string_cast.hpp>
 #include <glm/mat4x4.hpp>
 #include <iostream>
@@ -7,12 +9,20 @@
 #include <unordered_map>
 #include <vector>
 
-#include "component.h"
 #include "debugInfo.h"
 
 typedef unsigned int mesh;
 
 namespace neith {
+
+struct PrimitiveRenderContext : Component {
+    unsigned int index;
+    int indCount;
+    int textureCount;
+    int instanceCount;
+};
+
+
 
 class MeshComp : public Component {
 public:

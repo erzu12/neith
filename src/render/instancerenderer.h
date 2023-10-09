@@ -12,6 +12,8 @@ class InstanceRenderer {
 public:
     InstanceRenderer();
 
+    void renderSystem(int width, int height, unsigned int depthMap);
+
     void RenderInstanced(int width, int height, unsigned int depthMap);
     void RenderInstancedShadows(int shaderProgram, unsigned int depthMap);
 

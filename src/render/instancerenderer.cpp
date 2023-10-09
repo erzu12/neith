@@ -1,3 +1,4 @@
+#include "scene/ecsmanager.h"
 #include "instancerenderer.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
@@ -10,6 +11,7 @@
 #include "scene/components/cameraComp.h"
 #include "scene/components/meshComp.h"
 #include "scene/material.h"
+#include "scene/materialnew.h"
 #include "scene/mesh.h"
 #include "scene/scene.h"
 #include "shaders.h"
@@ -18,6 +20,7 @@
 #define GLM_FORCE_RADIANS
 
 #include <glad/glad.h>
+
 
 #include "log.h"
 
@@ -89,6 +92,65 @@ InstanceRenderer::InstanceRenderer()
     // rc->materials = sp->materials;
     // sc->rc = rc;
 }
+
+void InstanceRenderer::renderSystem(int width, int height, unsigned int depthMap) {
+    glViewport(0, 0, width, height);
+
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm::mat4 view = CameraComp::GetViewMat();
+
+    glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
+
+    ECSManager::ecs.filter<PrimitiveRenderContext>()->each([&](PrimitiveRenderContext& prc) {
+        //unsigned int primitiveID = MeshComp::GetPrimitivesID(mesh, LOD, primitive);
+        unsigned int primitiveID = prc.index;
+
+        //int material = MeshComp::GetMaterial(primitiveID);
+        Shader *shader = prc.material->getShader();
+        glUseProgram(shader->mShaderProgram);
+        shader->UniformVec3v("viewPos", CameraComp::GetCameraPos());
+        shader->UniformVec3("light.direction", 0.4, -1.0, -0.4);
+        shader->UniformVec3("light.color", 3.0f, 3.0f, 3.0f);
+
+        // CubeMVPuniforms
+        shader->UniformMat4v("lightSpaceMatrix", mLightSpaceMatrix);
+        shader->UniformMat4v("view", view);
+        shader->UniformMat4v("projection", projection);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        // for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
+        for (unsigned int j = 1; j < 16; j++) {
+            glActiveTexture(GL_TEXTURE0 + j);
+            // NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
+            glBindTexture(GL_TEXTURE_2D, prc.material->getTexture(j));
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBOs[primitiveID][1]);
+
+        //MeshComp::GetLODModelMatsMutex()->lock();
+        //int instanceCount = MeshComp::GetInstanceCount(mesh, LOD);
+        //glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * instanceCount, MeshComp::GetModelMats(mesh, LOD),
+                //GL_DYNAMIC_DRAW);
+        //MeshComp::GetLODModelMatsMutex()->unlock();
+
+        //if (Materials::IsBackfaced(material)) {
+            //glDisable(GL_CULL_FACE);
+        //}
+
+        glBindVertexArray(VAOs[primitiveID]);
+        glDrawElementsInstanced(GL_TRIANGLES, prc.indCount, GL_UNSIGNED_INT, 0,
+                prc.instanceCount);
+        for (unsigned int j = 0; j < 16; j++) {
+            glActiveTexture(GL_TEXTURE0 + j);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        glEnable(GL_CULL_FACE);
+    });
+}
+
 
 void InstanceRenderer::RenderInstanced(int width, int height, unsigned int depthMap)
 {

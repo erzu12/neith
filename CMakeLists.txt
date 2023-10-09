@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16.2)
 
 project(neith)
 
+set(CMAKE_CXX_STANDARD 23)
+
 add_subdirectory(src)
 add_subdirectory(testapp/src)
 
@@ -44,10 +46,10 @@ add_subdirectory(external/imgui)
 #MESSAGE("BULLET_INCLUDE_DIR:")
 #MESSAGE(${BULLET_INCLUDE_DIR})
 
-message("test out")
 
-set_target_properties(neith PROPERTIES CXX_STANDARD 11 LINKER_LANGUAGE CXX)
-set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 11)
+
+set_target_properties(neith PROPERTIES CXX_STANDARD 23 LINKER_LANGUAGE CXX)
+set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 23)
 
 target_include_directories("${PROJECT_NAME}"
 	PUBLIC include
