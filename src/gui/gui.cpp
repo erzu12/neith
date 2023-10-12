@@ -7,8 +7,6 @@
 #include <math.h>
 
 #include "log.h"
-#include "scene/components/meshComp.h"
-#include "scene/entity.h"
 #include "window/window.h"
 
 namespace neith {
@@ -162,34 +160,34 @@ void Gui::Update()
 
 unsigned int Gui::CreateTree(unsigned int entityID, unsigned int selectEntityID)
 {
-    for (int i = 0; i < Entity::GetChildCount(entityID); i++) {
-        unsigned int childEntityID = Entity::GetChild(entityID, i);
+    //for (int i = 0; i < Entity::GetChildCount(entityID); i++) {
+        //unsigned int childEntityID = Entity::GetChild(entityID, i);
 
-        if (Entity::GetChildCount(childEntityID) == 0) {
-            bool isSelected = (selectEntityID == childEntityID);
-            if (ImGui::Selectable(("   " + Entity::GetName(childEntityID)).data(), isSelected)) {
-                selectEntityID = childEntityID;
-            }
-        }
-        else {
-            if (ImGui::TreeNode(Entity::GetName(childEntityID).data())) {
-                selectEntityID = CreateTree(childEntityID, selectEntityID);
-                ImGui::TreePop();
-            }
-        }
-    }
-    return selectEntityID;
+        //if (Entity::GetChildCount(childEntityID) == 0) {
+            //bool isSelected = (selectEntityID == childEntityID);
+            //if (ImGui::Selectable(("   " + Entity::GetName(childEntityID)).data(), isSelected)) {
+                //selectEntityID = childEntityID;
+            //}
+        //}
+        //else {
+            //if (ImGui::TreeNode(Entity::GetName(childEntityID).data())) {
+                //selectEntityID = CreateTree(childEntityID, selectEntityID);
+                //ImGui::TreePop();
+            //}
+        //}
+    //}
+    //return selectEntityID;
 }
 
 void Gui::DisplayEntityDetails(unsigned int entityID)
 {
-    for (Component* comp : Entity::GetComponents(entityID)) {
-        DebugInfo* debugInfo = comp->GetDebugInfo(entityID);
-        if (ImGui::CollapsingHeader(debugInfo->message.data())) {
-            DisplayDebugInfo(debugInfo->child.at(0));
-        }
-        delete debugInfo;
-    }
+    //for (Component* comp : Entity::GetComponents(entityID)) {
+        //DebugInfo* debugInfo = comp->GetDebugInfo(entityID);
+        //if (ImGui::CollapsingHeader(debugInfo->message.data())) {
+            //DisplayDebugInfo(debugInfo->child.at(0));
+        //}
+        //delete debugInfo;
+    //}
 }
 void Gui::DisplayDebugInfo(DebugInfo* debugInfo)
 {

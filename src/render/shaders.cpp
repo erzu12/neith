@@ -12,13 +12,13 @@
 #include "render/render.h"
 
 namespace neith {
-unsigned int Shader::LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
+Shader Shader::LoadAndCompileShaders(const char *vertexPath, const char *fragmentPath)
 {
     const char *vertCode = LoadShader(vertexPath);
     const char *fragCode = LoadShader(fragmentPath);
 
     if (!vertCode || !fragCode) {
-        return 0;
+        return Shader(0);
     }
 
     const char *vertCodeArr[1] = { vertCode };
@@ -39,7 +39,7 @@ unsigned int Shader::LoadAndCompileShaders(const char *vertexPath, const char *f
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         NT_INTER_CRITICAL("VertexShader: {} faild to compile:\n{}", vertexPath, infoLog);
-        return 0;
+        return Shader(0);
     }
 
     // Fragment Shader
@@ -54,7 +54,7 @@ unsigned int Shader::LoadAndCompileShaders(const char *vertexPath, const char *f
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         NT_INTER_CRITICAL("FragmentShader: {} faild to compile:\n{}", fragmentPath, infoLog);
-        return 0;
+        return Shader(0);
     }
 
     // Shader Program
@@ -80,7 +80,7 @@ unsigned int Shader::LoadAndCompileShaders(const char *vertexPath, const char *f
 
     Renderer::AddShadow(shaderProgram);
 
-    return shaderProgram;
+    return Shader(shaderProgram);
 }
 
 unsigned int Shader::bindTextureSlot(std::string bindingName)

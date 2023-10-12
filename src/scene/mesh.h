@@ -4,38 +4,24 @@
 #include <vector>
 
 #include "scene/ecsmanager.h"
-#include "scene/materialnew.h"
+#include "scene/material.h"
 
 namespace neith {
-
-struct PrimitiveRenderContext : Component {
-    unsigned int index;
-    size_t indCount;
-    size_t textureCount;
-    size_t instanceCount;
-    MaterialNew *material;
-
-    PrimitiveRenderContext(size_t indCount, size_t textureCount, MaterialNew *material)
-        : indCount(indCount), textureCount(textureCount), material(material) {
-        index = mPrimitiveCount++;
-        instanceCount = 0;
-    }
-private:
-    static unsigned int mPrimitiveCount;
-};
 
 class Primitive {
 public:
     std::vector<float> vertices;
     std::vector<int> indices;
-    MaterialNew *material;
+    Material *material;
+    EntityHandle renderContextID;
 };
 
 class LOD {
-    std::vector<Primitive> primitives;;
 public:
+    std::vector<Primitive> primitives;;
     LOD();
     void AddPrimitive(Primitive primitive);
+    void AddPrimitive(std::vector<float> vertices, std::vector<int> indices, Material *material);
 };
 
 class Mesh {
@@ -44,6 +30,7 @@ public:
     Mesh();
     void setLODs(std::vector<float> LODDistances);
     LOD *getLOD(int LODindex);
+    void setInstances(std::vector<glm::mat4> modelMatrices);
 };
 
 }  // namespace neith

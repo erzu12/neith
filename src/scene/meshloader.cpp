@@ -17,7 +17,6 @@
 #include "material.h"
 #include "mesh.h"
 #include "scene.h"
-#include "systems/sysMesh.h"
 
 namespace neith {
 Model *ModelLoader::LoadModel(std::string path)
@@ -52,17 +51,19 @@ Model *ModelLoader::LoadModel(std::string path)
     int materialsCount = 0;
 
     int meshesLength = gltfData->meshes_count;
-    std::unordered_map<cgltf_mesh *, unsigned int> meshes;
+    std::unordered_map<cgltf_mesh *, Mesh> meshes;
 
     Model *model = new Model();
 
     for (int j = 0; j < meshesLength; j++) {
         int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
 
-        unsigned int mesh = system::AddMesh(primitivesCount);
+        //unsigned int meshOld = system::AddMesh(primitivesCount);
+        Mesh mesh;
         float *dist = new float[1];
         dist[0] = 10000.0f;
-        system::SetLODs(mesh, 1, dist);
+        mesh.setLODs({dist[0]});
+        //system::SetLODs(mesh, 1, dist);
 
         meshes.insert({ &gltfData->meshes[j], mesh });
 
@@ -83,22 +84,32 @@ Model *ModelLoader::LoadModel(std::string path)
 
             int material = ReadMaterial(gltfMaterials, gltfData->meshes[j].primitives[k].material, model);
 
-            system::AddStaticPrimitive(vertices, vertCount, indices, indCount, mesh, 0, material);
+            std::vector verts(vertices, vertices + vertCount * 12);
+            std::vector inds(indices, indices + indCount);
+            //system::AddStaticPrimitive(vertices, vertCount, indices, indCount, mesh, 0, material);
+            Material mat;
+            mesh.getLOD(0)->AddPrimitive(verts, inds, &mat);
         }
     }
+
+    std::unordered_map<cgltf_mesh *, std::vector<glm::mat4>> modelMats;
 
     for (int j = 0; j < nodeCount; j++) {
         if (gltfData->nodes[j].mesh == NULL)
             continue;
 
-        unsigned int mesh = meshes.at(gltfData->nodes[j].mesh);
+        Mesh mesh = meshes.at(gltfData->nodes[j].mesh);
 
         glm::mat4 modelMat(1.0f);
         ReadTransform(&gltfData->nodes[j], modelMat);
-
-        model->AddInstance(mesh, modelMat, gltfData->nodes[j].name);
+        modelMats[gltfData->nodes[j].mesh].push_back(modelMat);
     }
-    //}
+
+    for (auto &cgltf_mesh : modelMats) {
+        Mesh mesh = meshes.at(cgltf_mesh.first);
+        mesh.setInstances(cgltf_mesh.second);
+    }
+
     return model;
 }
 
@@ -163,7 +174,8 @@ int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, cgltf_material *gl
             return materials->at(i);
         }
     }
-    unsigned int newMat = Materials::AddMaterial();
+    //unsigned int newMat = Material();
+    Material newMat;
     gltfMaterials[materials->size()] = gltfMaterial;
     materials->push_back(newMat);
 

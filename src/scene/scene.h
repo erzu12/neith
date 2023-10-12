@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "entity.h"
 #include "material.h"
 #include "mesh.h"
 
@@ -37,13 +36,11 @@
 namespace neith {
 class Scene {
 private:
-    static Materials *mMaterial;
+    static Material *mMaterial;
     glm::vec3 lightDir;
 
 public:
     Scene();
-
-    static Entity *GetEntity(unsigned int entityID);
 
     glm::vec3 GetLightDir();
 

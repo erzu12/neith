@@ -17,9 +17,9 @@ public:
 
 private:
     static InstanceRenderer *mInstancedRenderer;
-    static unsigned int mCubeMapShader;
-    static unsigned int mScreenShader;
-    static unsigned int mDepthMapShader;
+    static Shader mCubeMapShader;
+    static Shader mScreenShader;
+    static Shader mDepthMapShader;
     static unsigned int mScreenVAO;
     static unsigned int mCubeMapVAO;
     static unsigned int mFBO;

@@ -14,12 +14,10 @@ public:
 
     void renderSystem(int width, int height, unsigned int depthMap);
 
-    void RenderInstanced(int width, int height, unsigned int depthMap);
-    void RenderInstancedShadows(int shaderProgram, unsigned int depthMap);
+    //void RenderInstanced(int width, int height, unsigned int depthMap);
+    //void RenderInstancedShadows(int shaderProgram, unsigned int depthMap);
 
 private:
-    unsigned int *VAOs;
-    unsigned int **VBOs;
     glm::mat4 mLightSpaceMatrix;
 };
 }  // namespace neith

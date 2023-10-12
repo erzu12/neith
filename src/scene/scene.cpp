@@ -6,7 +6,7 @@
 
 #include "log.h"
 #include "material.h"
-#include "scene/components/transformComp.h"
+//#include "scene/components/transformComp.h"
 #include "window/window.h"
 
 // void DeleteStaticRender(struct RenderContext *rc) {
@@ -30,7 +30,6 @@ namespace neith {
 Scene::Scene()
 {
     Materials::AddMaterial();
-    Entity::InitEntites();
 }
 
 glm::vec3 Scene::GetLightDir() { return lightDir; }

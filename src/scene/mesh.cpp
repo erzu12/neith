@@ -5,8 +5,10 @@
 #include <stdlib.h>
 
 #include "material.h"
+#include "rendercontext.h"
 
 namespace neith {
+
 
 LOD::LOD() {
     primitives = std::vector<Primitive>();
@@ -14,10 +16,17 @@ LOD::LOD() {
 
 void LOD::AddPrimitive(Primitive primitive) {
     primitives.push_back(primitive);
-    ECSManager::ecs.createEntity(
+}
+
+void LOD::AddPrimitive(std::vector<float> vertices, std::vector<int> indices, Material *material) {
+    Primitive primitive;
+    primitive.vertices = vertices;
+    primitive.indices = indices;
+    primitive.material = material;
+    primitive.renderContextID = ECSManager::ecs.createEntity(
         PrimitiveRenderContext(
-            primitive.indices.size(), 
-            primitive.material->getMaxTextureSlot(),
+            primitive.vertices,
+            primitive.indices,
             primitive.material
         )
     );
@@ -36,6 +45,16 @@ void Mesh::setLODs(std::vector<float> LODDistances) {
 
 LOD *Mesh::getLOD(int LODindex) {
     return &LODs.at(LODindex);
+}
+
+void Mesh::setInstances(std::vector<glm::mat4> modelMatrices) {
+    for (auto LOD : LODs) {
+        for (auto primitive : LOD.primitives) {
+            ECSManager::ecs.get<PrimitiveRenderContext>(primitive.renderContextID, [&](PrimitiveRenderContext &renderContext) {
+                renderContext.setInstances(modelMatrices);
+            });
+        }
+    }
 }
 
 }  // namespace neith
