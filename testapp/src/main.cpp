@@ -16,7 +16,6 @@ int main()
 {
     // neith::Window *win = neith::nth_CreateWindow();
     neith::Init();
-    neith::InitRenderer();
 
     // neith::Model *planeMesh = neith::LoadModel(ASSET_DIR "models/plane.gltf");
     // neith::Model *skyScraper = neith::LoadModel(ASSET_DIR "models/RuinedCitySkyRise04.gltf");
@@ -81,7 +80,7 @@ int main()
     std::uniform_int_distribution<> distr(-500, 500);
     NT_INTER_INFO("rand gen done");
     std::vector<glm::mat4> transforms;
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100000; i++) {
         float x = (float)distr(gen);
         float y = (float)distr(gen);
         float rotate = (float)distr(gen);
@@ -217,7 +216,6 @@ int main()
         camera.UpdateCamera();
         double time = glfwGetTime();
         neith::Update();
-        //NT_INFO("FPS: {}", 1.0 / (glfwGetTime() - time));
         
         // int contactPointCount = neith::GetContacPoints(boxRigidBody, contactPoints, 4);
         // for (int i = 0; i < contactPointCount; i++) {

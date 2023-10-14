@@ -18,9 +18,8 @@ void Init()
     new Window();
     new Scene();
     new Physics();
+    new Renderer();
 }
-
-void InitRenderer() { new Renderer(); }
 
 Model *LoadModel(std::string path) { return ModelLoader::LoadModel(path); }
 

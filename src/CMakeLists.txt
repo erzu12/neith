@@ -96,7 +96,7 @@ add_library("${PROJECT_NAME}"
 
 
 target_include_directories("${PROJECT_NAME}"
-	PUBLIC ${CMAKE_SOURCE_DIR}/external/glfw/includes
+    #PUBLIC ${CMAKE_SOURCE_DIR}/external/glfw/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/includes
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/stb
 	PUBLIC ${CMAKE_SOURCE_DIR}/external/cgltf
@@ -119,7 +119,7 @@ target_include_directories("${PROJECT_NAME}"
 
 target_link_libraries("${PROJECT_NAME}"
     NeithECS
-	glfw
+    -lglfw
 	glad
     cgltf
     stb

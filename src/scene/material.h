@@ -19,12 +19,16 @@ public:
     unsigned int getMaxTextureSlot();
     unsigned int getTexture(unsigned int index);
 
+    void setBackfaceCulling(bool enabled);
+    bool isBackfaced();
+
     static void setDepthShader(Shader shader);
 
     void setTransparencyTexture(unsigned int texture);
     unsigned int getTransparencyTexture();
 
 private:
+    bool mBackfaced = false;
     Shader mShader;
     static Shader mDepthShader;
     unsigned int mTextures[16];

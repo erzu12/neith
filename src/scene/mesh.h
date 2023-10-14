@@ -18,7 +18,7 @@ public:
 
 class LOD {
 public:
-    std::vector<Primitive> primitives;;
+    std::vector<Primitive> primitives;
     LOD();
     void AddPrimitive(std::vector<float> vertices, std::vector<int> indices, Material *material);
     void AddPrimitive(Primitive primitive);

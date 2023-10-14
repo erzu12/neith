@@ -64,9 +64,9 @@ void InstanceRenderer::renderSystem(int width, int height, unsigned int depthMap
             glBindTexture(GL_TEXTURE_2D, prc->material->getTexture(j));
         }
 
-        //if (Materials::IsBackfaced(material)) {
-            //glDisable(GL_CULL_FACE);
-        //}
+        if (prc->material->isBackfaced()) {
+            glDisable(GL_CULL_FACE);
+        }
 
         glBindVertexArray(prc->mVAO);
         glDrawElementsInstanced(GL_TRIANGLES, prc->indCount, GL_UNSIGNED_INT, 0,

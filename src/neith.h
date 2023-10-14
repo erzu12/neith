@@ -11,7 +11,6 @@
 #include <string>
 
 #include "debug.h"
-#include "log.h"
 #include "physics/physics.h"
 #include "render/render.h"
 #include "scene/model.h"
@@ -20,6 +19,7 @@
 #include "window/input.h"
 #include "window/window.h"
 #include "scene/components/cameraComp.h"
+#include "log.h"
 
 namespace neith {
 void Init();

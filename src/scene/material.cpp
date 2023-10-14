@@ -49,6 +49,14 @@ void Material::setValue(std::string bindingName, float x, float y, float z) {
     setTexture(bindingName, texture);
 }
 
+void Material::setBackfaceCulling(bool enabled) {
+    mBackfaced = !enabled;
+}
+
+bool Material::isBackfaced() {
+    return mBackfaced;
+}
+
 Shader *Material::getShader() {
     return &mShader;
 }

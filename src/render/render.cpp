@@ -175,6 +175,7 @@ void Renderer::UpdateRender()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
     if (Window::GetResize()) {
         glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
         Window::SetResize(false);
