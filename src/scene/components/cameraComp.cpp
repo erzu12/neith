@@ -11,9 +11,7 @@
 #include "timer.h"
 namespace neith {
 glm::mat4 CameraComp::mTransform = glm::mat4(1.0f);
-unsigned int CameraComp::mEntityID = 0;
 
-void CameraComp::AttachCamera(unsigned int entityID) { mEntityID = entityID; }
 DebugInfo *CameraComp::GetDebugInfo(unsigned int entityID)
 {
     DebugInfo *nameInfo = new DebugInfo("Camera Component");

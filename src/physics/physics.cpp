@@ -5,7 +5,6 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "log.h"
-#include "scene/systems/sysTransform.h"
 #include "timer.h"
 
 namespace neith {
@@ -113,7 +112,7 @@ void Physics::UpdatePhysics()
 
             glm::mat4 transform;
             trans.getOpenGLMatrix(&transform[0][0]);
-            system::SetGlobalTransform(entityID, transform);
+            //system::SetGlobalTransform(entityID, transform);
         }
 
     // print positions of all objects

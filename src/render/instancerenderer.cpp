@@ -39,11 +39,12 @@ void InstanceRenderer::renderSystem(int width, int height, unsigned int depthMap
 
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.0f, (float)width / (float)height, 0.1f, 2000000.0f);
 
-    ECSManager::ecs.query<PrimitiveRenderContext>()->each([&](PrimitiveRenderContext& prc) {
-        //unsigned int primitiveID = MeshComp::GetPrimitivesID(mesh, LOD, primitive);
+    ECSManager::ecs.query<PrimitiveRenderContext>()->each([&](PrimitiveRenderContext *prc) {
+        //NT_INTER_INFO("indCount {}, textureCount {}, instanceCount {}, Shader {}", prc->indCount, prc->textureCount, prc->instanceCount, prc->material->getShader()->mShaderProgram);
+
         
         //int material = MeshComp::GetMaterial(primitiveID);
-        Shader *shader = prc.material->getShader();
+        Shader *shader = prc->material->getShader();
         glUseProgram(shader->mShaderProgram);
         shader->UniformVec3v("viewPos", CameraComp::GetCameraPos());
         shader->UniformVec3("light.direction", 0.4, -1.0, -0.4);
@@ -59,17 +60,17 @@ void InstanceRenderer::renderSystem(int width, int height, unsigned int depthMap
         // for (unsigned int j = 1; j < Materials::GetTextureCount(material); j++) {
         for (unsigned int j = 1; j < 16; j++) {
             glActiveTexture(GL_TEXTURE0 + j);
-            // NT_INTER_WARN("{}, {}", j, Materials::GetTexture(material, j));
-            glBindTexture(GL_TEXTURE_2D, prc.material->getTexture(j));
+            //NT_INTER_INFO("texture: {}", prc->material->getTexture(j));
+            glBindTexture(GL_TEXTURE_2D, prc->material->getTexture(j));
         }
 
         //if (Materials::IsBackfaced(material)) {
             //glDisable(GL_CULL_FACE);
         //}
 
-        glBindVertexArray(prc.mVAO);
-        glDrawElementsInstanced(GL_TRIANGLES, prc.indCount, GL_UNSIGNED_INT, 0,
-                prc.instanceCount);
+        glBindVertexArray(prc->mVAO);
+        glDrawElementsInstanced(GL_TRIANGLES, prc->indCount, GL_UNSIGNED_INT, 0,
+                prc->instanceCount);
         for (unsigned int j = 0; j < 16; j++) {
             glActiveTexture(GL_TEXTURE0 + j);
             glBindTexture(GL_TEXTURE_2D, 0);

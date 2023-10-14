@@ -21,8 +21,8 @@ bool LineRenderer::mDrawLines = false;
 
 void LineRenderer::InitLineRenderer()
 {
-    mLineShader = LoadAndCompileShaders(NTH_ASSET_DIR "line.vert", NTH_ASSET_DIR "line.frag");
-    mGridShader = LoadAndCompileShaders(NTH_ASSET_DIR "grid.vert", NTH_ASSET_DIR "grid.frag");
+    mLineShader = Shader::LoadAndCompileShaders(NTH_ASSET_DIR "line.vert", NTH_ASSET_DIR "line.frag").mShaderProgram;
+    mGridShader = Shader::LoadAndCompileShaders(NTH_ASSET_DIR "grid.vert", NTH_ASSET_DIR "grid.frag").mShaderProgram;
     InitGrid();
 }
 

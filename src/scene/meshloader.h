@@ -20,7 +20,7 @@ private:
     static void ReadTransform(cgltf_node *node, glm::mat4 &modelMat);
     static bool CheckAtributeFormat(cgltf_primitive *primitive);
     static bool HasTangents(cgltf_primitive *primitive);
-    static int ReadMaterial(cgltf_material **gltfMaterials, cgltf_material *gltfMaterial, Model *model);
+    static Material *ReadMaterial(cgltf_material **gltfMaterials, cgltf_material *gltfMaterial);
     // static int ReadMaterial(cgltf_material **gltfMaterials,
     // int &materialsCount,
     // cgltf_material *material,

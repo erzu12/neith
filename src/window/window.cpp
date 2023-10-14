@@ -22,19 +22,58 @@ int Window::mHeight = 900;
 GLFWwindow* Window::mGLTFwindow;
 
 static void error_callback(int error, const char* description) { NT_INTER_ERROR(description); }
+void APIENTRY openglMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+    if(severity == GL_DEBUG_SEVERITY_NOTIFICATION) return;
+    std::string typeStr;
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:
+            typeStr = "ERROR";
+            break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            typeStr = "DEPRECATED_BEHAVIOR";
+            break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            typeStr = "UNDEFINED_BEHAVIOR";
+            break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            typeStr = "PORTABILITY";
+            break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            typeStr = "PERFORMANCE";
+            break;
+        case GL_DEBUG_TYPE_OTHER:
+            typeStr = "OTHER";
+            break;
+    }
+    switch (severity){
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            NT_INTER_INFO("[opengl] [{}] {}", typeStr, message);
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            NT_INTER_WARN("[opengl] [{}] {}", typeStr, message);
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            NT_INTER_ERROR("[opengl] [{}] {}", typeStr, message);
+            break;
+        case GL_DEBUG_SEVERITY_HIGH:
+            NT_INTER_CRITICAL("[opengl] [{}] {}", typeStr, message);
+            break;
+    }
+}
 
 Window::Window()
 {
-    glfwSetErrorCallback(error_callback);
     Log::Init();
+    glfwSetErrorCallback(error_callback);
 
     // GLFW
     if (!glfwInit()) {
         NT_INTER_CRITICAL("faild to init GLFW");
         throw WindowCreationException("faild to init GLFW");
     }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
@@ -59,6 +98,12 @@ Window::Window()
         NT_INTER_CRITICAL("faild to load glad");
         throw WindowCreationException("faild to load glad");
     }
+    else {
+        NT_INTER_INFO("OpenGL loaded successfully with version: {}", glGetString(GL_VERSION));
+    }
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(openglMessageCallback, nullptr);
+
     mGLTFwindow = window;
     struct CallbackContext* cbc = (struct CallbackContext*)malloc(sizeof(struct CallbackContext));
     cbc->lastX = 900;

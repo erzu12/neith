@@ -1,10 +1,21 @@
 #include "model.h"
 
 namespace neith {
-void Model::AddInstance(unsigned int instaceMeshes, glm::mat4 &instanceTransform, std::string instanceName)
-{
-    mInstanceMeshes.push_back(instaceMeshes);
-    mInstanceTransform.push_back(instanceTransform);
-    mInstanceNames.push_back(instanceName);
+Mesh *Model::addMesh() {
+    Mesh *mesh = new Mesh();
+    mMeshes.push_back(mesh);
+    return mesh;
+}
+
+void Model::setInstances(std::vector<glm::mat4x4> modelMatrices) {
+    for(auto &mesh : mMeshes) {
+        mesh->setInstances(modelMatrices);
+    }
+}
+
+Model::~Model() {
+    for(auto &mesh : mMeshes) {
+        delete mesh;
+    }
 }
 }  // namespace neith

@@ -16,22 +16,25 @@ int main()
 {
     // neith::Window *win = neith::nth_CreateWindow();
     neith::Init();
-
-    NT_INFO("hash collision chance: {}", std::numeric_limits<std::size_t>::max());
+    neith::InitRenderer();
 
     // neith::Model *planeMesh = neith::LoadModel(ASSET_DIR "models/plane.gltf");
     // neith::Model *skyScraper = neith::LoadModel(ASSET_DIR "models/RuinedCitySkyRise04.gltf");
 
-    unsigned int ground = neith::AddMesh(1);
-    float dists[1] = { 1000000.0f };
-    neith::SetLODs(ground, 1, dists);
+    //unsigned int ground = neith::AddMesh(1);
+    neith::Mesh *ground = new neith::Mesh();
+    //float dists[1] = { 1000000.0f };
+    //neith::SetLODs(ground, 1, dists);
+    //ground->setLODs({1000000.0f});
 
     int size = 1000;
 
     int vertCount = size * size;
     int indCount = (size - 1) * (size - 1) * 6;
-    float *vertices = new float[vertCount * 12];
-    int *indices = new int[indCount];
+    //float *vertices = new float[vertCount * 12];
+    //int *indices = new int[indCount];
+    std::vector<float> vertices(vertCount * 12);
+    std::vector<int> indices(indCount);
 
     for (int x = 0; x < size; x++) {
         for (int z = 0; z < size; z++) {
@@ -57,17 +60,18 @@ int main()
         }
     }
 
-    neith::CalcNormals(vertices, vertCount, indices, indCount);
-    neith::CalcTangents(vertices, vertCount, indices, indCount);
+    neith::CalcNormals(vertices.data(), vertCount, indices.data(), indCount);
+    neith::CalcTangents(vertices.data(), vertCount, indices.data(), indCount);
 
-    unsigned int groundMat = neith::AddMaterial();
-    neith::AddPrimitive(vertices, vertCount, indices, indCount, ground, 0, groundMat);
+    //unsigned int groundMat = neith::AddMaterial();
+    neith::Material groundMat = neith::Material();
+    //neith::AddPrimitive(vertices, vertCount, indices, indCount, ground, 0, groundMat);
+    ground->getLOD(0)->AddPrimitive(vertices, indices, &groundMat);
 
     neith::Model *cubeMesh = neith::LoadModel(ASSET_DIR "models/cube.gltf");
     // neith::Model *treeMesh = neith::LoadModel(ASSET_DIR "models/Tree1.gltf");
     neith::Model *grassMesh = neith::LoadModel(ASSET_DIR "models/Grass.gltf");
 
-    neith::InitRenderer();
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
@@ -76,29 +80,34 @@ int main()
     std::mt19937 gen;  // Standard mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<> distr(-500, 500);
     NT_INTER_INFO("rand gen done");
-    for (int i = 0; i < 1000000; i++) {
+    std::vector<glm::mat4> transforms;
+    for (int i = 0; i < 10000; i++) {
         float x = (float)distr(gen);
         float y = (float)distr(gen);
         float rotate = (float)distr(gen);
 
-        glm::mat4 transform =
-            glm::translate(glm::mat4(1.0f),
-                           glm::vec3(x, 20 * neith::OpenSimplex2D((double)x * 0.001f, (double)y * 0.001f, 4, 0.6), y));
+        //glm::mat4 transform =
+        transforms.push_back(
+            glm::translate(glm::mat4(1.0f), 
+                glm::vec3(x, 20 * neith::OpenSimplex2D((double)x * 0.001f, (double)y * 0.001f, 4, 0.6), y)));
         // transform *= glm::rotate(rotate, glm::vec3(0.0f, 1.0f, 0.0f));
 
-        int treeEntity = neith::AddEntity("tree" + std::to_string(i), transform);
+        //int treeEntity = neith::AddEntity("tree" + std::to_string(i), transform);
         start = std::chrono::steady_clock::now();
-        neith::AddModelToEntity(treeEntity, grassMesh);
+        //neith::AddModelToEntity(treeEntity, grassMesh);
 
         auto end = std::chrono::steady_clock::now();
         total += end - start;
     }
+    grassMesh->setInstances(transforms);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
     NT_INFO("Ran in {}s", total.count());
 
-    int groundMeshEntity = neith::AddEntity("ground");
-    neith::AddMeshToEntity(groundMeshEntity, ground);
+    //int groundMeshEntity = neith::AddEntity("ground");
+    //neith::AddMeshToEntity(groundMeshEntity, ground);
+
+    ground->setInstances({glm::mat4(1.0f)});
 
     // int cubeEntity = neith::AddEntity("cube", glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 2.0f, 5.0f)));
     // neith::AddModelToEntity(cubeEntity, cubeMesh);
@@ -118,7 +127,7 @@ int main()
 
     Camera camera;
 
-    unsigned int shaderProgram = neith::nth_LoadAndCompileShaders(ASSET_DIR "shader.vert", ASSET_DIR "shader.frag");
+    neith::Shader shaderProgram = neith::nth_LoadAndCompileShaders(ASSET_DIR "shader.vert", ASSET_DIR "shader.frag");
     // neith::nth_SetShaderByName(sc->mat, "Material", shaderProgram);
 
     // unsigned int albedo = neith::LoadTexture(ASSET_DIR "textures/Concrete_Dirty/Albedo.jpg", GL_RGB, GL_RGB);
@@ -135,21 +144,22 @@ int main()
 
     // neith::SetShader(skyScraper, 0, shaderProgram);
     // neith::SetShader(meshes, 1, shaderProgram);
-    neith::SetShader(groundMat, shaderProgram);
+    //neith::SetShader(groundMat, shaderProgram);
+    groundMat.setShader(shaderProgram);
 
-    neith::SetValue(ground, 0, "material.diffuse", 0.1f, 0.6f, 0.1f);
-    neith::SetValue(ground, 0, "material.roughness", 0.8f);
-    neith::SetValue(ground, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    neith::SetValue(ground, 0, "material.specular", 0.2f);
-    neith::SetValue(ground, 0, "material.metallic", 0.0f);
+    groundMat.setValue("material.diffuse", 0.1f, 0.6f, 0.1f);
+    groundMat.setValue("material.roughness", 0.8f);
+    groundMat.setValue("material.normal", 0.5f, 0.5f, 1.0f);
+    groundMat.setValue("material.specular", 0.2f);
+    groundMat.setValue("material.metallic", 0.0f);
 
-    neith::SetShader(cubeMesh, 0, shaderProgram);
+    //neith::SetShader(cubeMesh, 0, shaderProgram);
 
-    neith::SetValue(cubeMesh, 0, "material.diffuse", 0.5f, 0.5f, 0.5f);
-    neith::SetValue(cubeMesh, 0, "material.roughness", 0.8f);
-    neith::SetValue(cubeMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    neith::SetValue(cubeMesh, 0, "material.specular", 0.2f);
-    neith::SetValue(cubeMesh, 0, "material.metallic", 0.0f);
+    //neith::SetValue(cubeMesh, 0, "material.diffuse", 0.5f, 0.5f, 0.5f);
+    //neith::SetValue(cubeMesh, 0, "material.roughness", 0.8f);
+    //neith::SetValue(cubeMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
+    //neith::SetValue(cubeMesh, 0, "material.specular", 0.2f);
+    //neith::SetValue(cubeMesh, 0, "material.metallic", 0.0f);
 
     // neith::SetShader(treeMesh, 0, shaderProgram);
 
@@ -207,7 +217,7 @@ int main()
         camera.UpdateCamera();
         double time = glfwGetTime();
         neith::Update();
-        NT_INFO("FPS: {}", 1.0 / (glfwGetTime() - time));
+        //NT_INFO("FPS: {}", 1.0 / (glfwGetTime() - time));
         
         // int contactPointCount = neith::GetContacPoints(boxRigidBody, contactPoints, 4);
         // for (int i = 0; i < contactPointCount; i++) {

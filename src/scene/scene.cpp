@@ -29,7 +29,6 @@ namespace neith {
 
 Scene::Scene()
 {
-    Materials::AddMaterial();
 }
 
 glm::vec3 Scene::GetLightDir() { return lightDir; }

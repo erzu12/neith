@@ -52,6 +52,7 @@ Mkfile.old
 dkms.conf
 
 build/
+buildDebug/
 external/bullet3/html/
 assets/test/
 .cache/

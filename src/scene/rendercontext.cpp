@@ -15,8 +15,8 @@ PrimitiveRenderContext::PrimitiveRenderContext(std::vector<float> &vertices, std
     glBindVertexArray(mVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float) * 12, vertices.data(),
-            GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(),
+            GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(),
@@ -55,7 +55,7 @@ PrimitiveRenderContext::PrimitiveRenderContext(std::vector<float> &vertices, std
 
 void PrimitiveRenderContext::setInstances(std::vector<glm::mat4> modelMatrices) {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * modelMatrices.size(), &modelMatrices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * modelMatrices.size(), modelMatrices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     instanceCount = modelMatrices.size();
 }

@@ -8,17 +8,7 @@
 namespace neith {
 class CameraComp {
 public:
-    static CameraComp *GetIndices()
-    {
-        static CameraComp instance;
-        return &instance;
-    }
-
-    static void AttachCamera(unsigned int entityID);
-
-    static unsigned int GetEntityID() { return mEntityID; }
-
-    void Transform(unsigned int entityID, glm::mat4 &transform) { mTransform = transform; }
+    static void Transform(glm::mat4 &transform) { mTransform = transform; }
 
     static glm::mat4 GetViewMat() { return glm::inverse(mTransform); }
 
@@ -31,7 +21,6 @@ public:
 
 private:
     CameraComp(){};
-    static unsigned int mEntityID;
     static glm::mat4 mTransform;
 };
 }  // namespace neith

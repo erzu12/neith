@@ -51,6 +51,17 @@ Renderer::Renderer()
     glEnable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
 
+    int maxCombinedTextureUnits;
+    int maxTextureUnits;
+    int maxTextureSize;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedTextureUnits);
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+
+    NT_INTER_INFO("max combined texture image units: {}", maxCombinedTextureUnits);
+    NT_INTER_INFO("max texture image units: {}", maxTextureUnits);
+    NT_INTER_INFO("max texture size: {}", maxTextureSize);
+
     float screenVertices[] = {
         -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f,
         -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f,  1.0f, 1.0f, 1.0f,
@@ -191,4 +202,8 @@ Renderer::~Renderer()
     mLODThread.join();
     delete mInstancedRenderer;
 }
+
+
+
+
 }  // namespace neith

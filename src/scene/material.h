@@ -10,6 +10,7 @@ class Material {
 public:
     Material();
     Material(Shader shaderProgram);
+    void setShader(Shader shaderProgram);
     unsigned int setTexture(std::string bindingName, unsigned int texture);
     void setValue(std::string bindingName, float value);
     void setValue(std::string bindingName, float *value);
@@ -18,7 +19,7 @@ public:
     unsigned int getMaxTextureSlot();
     unsigned int getTexture(unsigned int index);
 
-    static  void setDepthShader(Shader shader);
+    static void setDepthShader(Shader shader);
 
     void setTransparencyTexture(unsigned int texture);
     unsigned int getTransparencyTexture();
@@ -28,7 +29,7 @@ private:
     static Shader mDepthShader;
     unsigned int mTextures[16];
     unsigned int mTransparencyTexture;
-    unsigned int mMaxTextureSlot = 0;
+    unsigned int mMaxTextureSlot = 1;
 };
 
 }  // namespace neith

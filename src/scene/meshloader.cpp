@@ -47,23 +47,18 @@ Model *ModelLoader::LoadModel(std::string path)
     int nodeCount = gltfData->nodes_count;
 
     cgltf_material *gltfMaterials[gltfData->materials_count];
-    int materials[gltfData->materials_count];
+    //int materials[gltfData->materials_count];
     int materialsCount = 0;
 
     int meshesLength = gltfData->meshes_count;
-    std::unordered_map<cgltf_mesh *, Mesh> meshes;
+    std::unordered_map<cgltf_mesh *, Mesh*> meshes;
 
     Model *model = new Model();
 
     for (int j = 0; j < meshesLength; j++) {
         int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
 
-        //unsigned int meshOld = system::AddMesh(primitivesCount);
-        Mesh mesh;
-        float *dist = new float[1];
-        dist[0] = 10000.0f;
-        mesh.setLODs({dist[0]});
-        //system::SetLODs(mesh, 1, dist);
+        Mesh *mesh = model->addMesh();
 
         meshes.insert({ &gltfData->meshes[j], mesh });
 
@@ -82,13 +77,11 @@ Model *ModelLoader::LoadModel(std::string path)
             if (!hasTangents)
                 CalcTangents(vertices, vertCount, indices, indCount);
 
-            int material = ReadMaterial(gltfMaterials, gltfData->meshes[j].primitives[k].material, model);
+            Material *material = ReadMaterial(gltfMaterials, gltfData->meshes[j].primitives[k].material);
 
             std::vector verts(vertices, vertices + vertCount * 12);
             std::vector inds(indices, indices + indCount);
-            //system::AddStaticPrimitive(vertices, vertCount, indices, indCount, mesh, 0, material);
-            Material mat;
-            mesh.getLOD(0)->AddPrimitive(verts, inds, &mat);
+            mesh->getLOD(0)->AddPrimitive(verts, inds, material);
         }
     }
 
@@ -98,7 +91,7 @@ Model *ModelLoader::LoadModel(std::string path)
         if (gltfData->nodes[j].mesh == NULL)
             continue;
 
-        Mesh mesh = meshes.at(gltfData->nodes[j].mesh);
+        Mesh *mesh = meshes.at(gltfData->nodes[j].mesh);
 
         glm::mat4 modelMat(1.0f);
         ReadTransform(&gltfData->nodes[j], modelMat);
@@ -106,8 +99,8 @@ Model *ModelLoader::LoadModel(std::string path)
     }
 
     for (auto &cgltf_mesh : modelMats) {
-        Mesh mesh = meshes.at(cgltf_mesh.first);
-        mesh.setInstances(cgltf_mesh.second);
+        Mesh *mesh = meshes.at(cgltf_mesh.first);
+        mesh->setInstances(cgltf_mesh.second);
     }
 
     return model;
@@ -163,21 +156,22 @@ bool ModelLoader::HasTangents(cgltf_primitive *primitive)
     return true;
 }
 
-int ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, cgltf_material *gltfMaterial, Model *model)
+Material *ModelLoader::ReadMaterial(cgltf_material **gltfMaterials, cgltf_material *gltfMaterial)
 {
+    static Material* defaultMat = new Material();
     if (gltfMaterial == NULL)
-        return 0;
+        return defaultMat;
 
-    std::vector<unsigned int> *materials = model->GetMaterials();
-    for (int i = 0; i < materials->size(); i++) {
+    static std::vector<Material*> materials;
+    for (int i = 0; i < materials.size(); i++) {
         if (gltfMaterial == gltfMaterials[i]) {
-            return materials->at(i);
+            return materials.at(i);
         }
     }
     //unsigned int newMat = Material();
-    Material newMat;
-    gltfMaterials[materials->size()] = gltfMaterial;
-    materials->push_back(newMat);
+    Material *newMat = new Material();
+    gltfMaterials[materials.size()] = gltfMaterial;
+    materials.push_back(newMat);
 
     // NT_INTER_INFO(newMat);
     return newMat;

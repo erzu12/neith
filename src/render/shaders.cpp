@@ -78,7 +78,7 @@ Shader Shader::LoadAndCompileShaders(const char *vertexPath, const char *fragmen
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    Renderer::AddShadow(shaderProgram);
+    //Renderer::AddShadow(shaderProgram);
 
     return Shader(shaderProgram);
 }
@@ -91,9 +91,9 @@ unsigned int Shader::bindTextureSlot(std::string bindingName)
         }
     }
     glUseProgram(mShaderProgram);
-    glUniform1i(glGetUniformLocation(mShaderProgram, bindingName.c_str()), mBindings.size() - 1);
+    glUniform1i(glGetUniformLocation(mShaderProgram, bindingName.c_str()), mBindings.size() + 1);
     mBindings.push_back(bindingName);
-    return mBindings.size() - 1;
+    return mBindings.size();
 }
 
 char *Shader::LoadShader(const char *path)

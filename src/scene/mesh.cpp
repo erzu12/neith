@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "log.h"
 #include "material.h"
 #include "rendercontext.h"
 
@@ -30,6 +31,7 @@ void LOD::AddPrimitive(std::vector<float> vertices, std::vector<int> indices, Ma
             primitive.material
         )
     );
+    primitives.push_back(primitive);
 }
 
 Mesh::Mesh() {
@@ -50,8 +52,8 @@ LOD *Mesh::getLOD(int LODindex) {
 void Mesh::setInstances(std::vector<glm::mat4> modelMatrices) {
     for (auto LOD : LODs) {
         for (auto primitive : LOD.primitives) {
-            ECSManager::ecs.get<PrimitiveRenderContext>(primitive.renderContextID, [&](PrimitiveRenderContext &renderContext) {
-                renderContext.setInstances(modelMatrices);
+            ECSManager::ecs.get<PrimitiveRenderContext>(primitive.renderContextID, [&](PrimitiveRenderContext *renderContext) {
+                renderContext->setInstances(modelMatrices);
             });
         }
     }

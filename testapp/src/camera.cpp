@@ -14,9 +14,6 @@ Camera::Camera()
     mCameraPos = glm::vec3(0.0f);
     mCameraPos.z = 4.0f;
     mCameraPos.y = 2.0f;
-
-    camera = neith::AddEntity("camera");
-    neith::AttachCamera(camera);
 }
 
 void Camera::UpdateCamera()
@@ -64,7 +61,8 @@ void Camera::UpdateCamera()
     transform = glm::rotate(transform, -mYaw, glm::vec3(0.0f, 1.0f, 0.0f));
     transform = glm::rotate(transform, mPitch, glm::vec3(1.0f, 0.0f, 0.0f));
     // NT_INFO(glm::to_string(transform));
-    neith::TransformEntity(camera, transform);
+    neith::CameraComp::Transform(transform);
+    //neith::TransformEntity(camera, transform);
 }
 
 glm::vec3 Camera::KeyInput()
