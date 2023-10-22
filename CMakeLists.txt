@@ -48,8 +48,8 @@ add_subdirectory(external/imgui)
 
 
 
-set_target_properties(neith PROPERTIES CXX_STANDARD 23 LINKER_LANGUAGE CXX)
-set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 23)
+set_target_properties(neith PROPERTIES CXX_STANDARD 20 LINKER_LANGUAGE CXX)
+set_property(TARGET "${PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
 
 target_include_directories("${PROJECT_NAME}"
 	PUBLIC include

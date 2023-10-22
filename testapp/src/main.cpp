@@ -71,7 +71,6 @@ int main()
     // neith::Model *treeMesh = neith::LoadModel(ASSET_DIR "models/Tree1.gltf");
     neith::Model *grassMesh = neith::LoadModel(ASSET_DIR "models/Grass.gltf");
 
-
     // std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
     auto start = std::chrono::steady_clock::now();

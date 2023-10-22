@@ -19,6 +19,7 @@
 #include "window/input.h"
 #include "window/window.h"
 #include "scene/components/cameraComp.h"
+#include "scene/ecsmanager.h"
 #include "log.h"
 
 namespace neith {

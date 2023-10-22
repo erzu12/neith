@@ -54,13 +54,18 @@ Renderer::Renderer()
     int maxCombinedTextureUnits;
     int maxTextureUnits;
     int maxTextureSize;
+    int maxWorkGroupCount[3];
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedTextureUnits);
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &maxWorkGroupCount[0]);
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &maxWorkGroupCount[1]);
+    glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &maxWorkGroupCount[2]);
 
     NT_INTER_INFO("max combined texture image units: {}", maxCombinedTextureUnits);
     NT_INTER_INFO("max texture image units: {}", maxTextureUnits);
     NT_INTER_INFO("max texture size: {}", maxTextureSize);
+    NT_INTER_INFO("max work group count: {} {} {}", maxWorkGroupCount[0], maxWorkGroupCount[1], maxWorkGroupCount[2]);
 
     float screenVertices[] = {
         -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f,

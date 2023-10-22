@@ -52,7 +52,7 @@ LOD *Mesh::getLOD(int LODindex) {
 void Mesh::setInstances(std::vector<glm::mat4> modelMatrices) {
     for (auto LOD : LODs) {
         for (auto primitive : LOD.primitives) {
-            ECSManager::ecs.get<PrimitiveRenderContext>(primitive.renderContextID, [&](PrimitiveRenderContext *renderContext) {
+            ECSManager::ecs.query<PrimitiveRenderContext>()->get(primitive.renderContextID, [&](PrimitiveRenderContext *renderContext) {
                 renderContext->setInstances(modelMatrices);
             });
         }
