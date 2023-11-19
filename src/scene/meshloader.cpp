@@ -16,7 +16,6 @@
 #include "log.h"
 #include "material.h"
 #include "mesh.h"
-#include "scene.h"
 
 namespace neith {
 Model *ModelLoader::LoadModel(std::string path)

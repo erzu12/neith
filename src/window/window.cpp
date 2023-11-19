@@ -11,7 +11,6 @@
 #include "input.h"
 #include "log.h"
 #include "render/framebuffer.h"
-#include "scene/scene.h"
 #include "timer.h"
 
 namespace neith {

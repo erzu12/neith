@@ -14,7 +14,6 @@
 #include "physics/physics.h"
 #include "render/render.h"
 #include "scene/model.h"
-#include "scene/scene.h"
 #include "timer.h"
 #include "window/input.h"
 #include "window/window.h"

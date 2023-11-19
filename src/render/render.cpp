@@ -15,7 +15,6 @@
 #include "log.h"
 #include "scene/components/cameraComp.h"
 #include "scene/material.h"
-#include "scene/scene.h"
 #include "scene/skybox.h"
 #include "shaders.h"
 #include "textures.h"

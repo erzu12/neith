@@ -12,7 +12,6 @@
 #include "scene/material.h"
 #include "scene/mesh.h"
 #include "scene/rendercontext.h"
-#include "scene/scene.h"
 #include "shaders.h"
 #include "textures.h"
 #include "window/window.h"

@@ -4,7 +4,6 @@
 
 #include <glm/mat4x4.hpp>
 
-#include "scene/scene.h"
 #include "window/window.h"
 
 namespace neith {

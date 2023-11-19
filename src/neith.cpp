@@ -6,7 +6,6 @@
 #include "render/shaders.h"
 #include "render/textures.h"
 #include "scene/meshloader.h"
-#include "scene/scene.h"
 #include "window/window.h"
 #include "scene/mesh.h"
 #include "scene/ecsmanager.h"
@@ -16,7 +15,6 @@ namespace neith {
 void Init()
 {
     new Window();
-    new Scene();
     new Physics();
     new Renderer();
 }

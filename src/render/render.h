@@ -4,7 +4,7 @@
 
 #include "instancerenderer.h"
 #include "linerenderer.h"
-#include "scene/scene.h"
+#include "shaders.h"
 
 namespace neith {
 class Renderer {

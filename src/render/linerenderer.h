@@ -6,7 +6,6 @@
 #include <glm/vec3.hpp>
 #include <list>
 
-#include "scene/scene.h"
 #include "window/window.h"
 
 namespace neith {
