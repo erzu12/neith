@@ -6,16 +6,22 @@
 #include "scene/mesh.h"
 
 namespace neith {
+
+struct ModelMesh {
+    Mesh *mesh;
+    std::vector<glm::mat4x4> modelMatrices;
+};
+
 class Model {
 public:
     ~Model();
     void setInstances(std::vector<glm::mat4x4> modelMatrices);
-    Mesh *addMesh();
-    std::vector<Mesh*> *getMeshes() { return &mMeshes; }
-    //std::vector<unsigned int> *GetMaterials() { return &mMaterials; }
+    int addMesh();
+    void addMeshModelMatrices(int meshIndex, std::vector<glm::mat4x4> modelMatrices);
+    std::vector<ModelMesh> *getMeshes() { return &mMeshes; }
+    std::vector<Material *> getMaterials();
 
 private:
-    //std::vector<unsigned int> mMaterials;
-    std::vector<Mesh*> mMeshes;
+    std::vector<ModelMesh> mMeshes;
 };
 }  // namespace neith

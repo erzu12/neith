@@ -80,46 +80,37 @@ void InstanceRenderer::renderSystem(int width, int height, unsigned int depthMap
 
 
 
-//void InstanceRenderer::RenderInstancedShadows(int shaderProgram, unsigned int depthMap)
-//{
-    // glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
+void InstanceRenderer::RenderInstancedShadows(Shader &shaderProgram, unsigned int depthMap) {
+     glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.1f, 30.0f);
 
-    // glm::vec3 pos = { -1.6f, 4.0f, 1.6f };
-    // glm::vec3 target = { 0.0f, 0.0f, 0.0f };
-    // glm::vec3 up = { 0.0f, 1.0f, 0.0f };
-    // glm::mat4 lightView = glm::lookAt(pos, target, up);
+     glm::vec3 pos = { 10.0f, 30.0f, 0.0f };
+     glm::vec3 target = { 0.0f, 0.0f, 0.0f };
+     glm::vec3 up = { 0.0f, 1.0f, 0.0f };
+     glm::mat4 lightView = glm::lookAt(pos, target, up);
 
-    // mLightSpaceMatrix = lightProjection * lightView;
+     mLightSpaceMatrix = lightProjection * lightView;
 
-    // glViewport(0, 0, 4096, 4096);
-    // glClear(GL_DEPTH_BUFFER_BIT);
+     glViewport(0, 0, 4096, 4096);
+     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // for (int i = 1; i < MeshComp::GetPrimitivesCount(); i++) {
-    // glUseProgram(shaderProgram);
-    // UniformMat4v(shaderProgram, "lightSpaceMatrix", mLightSpaceMatrix);
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, depthMap);
-    // glActiveTexture(GL_TEXTURE1);
-    // int material = MeshComp::GetMaterial(i);
-    // glBindTexture(GL_TEXTURE_2D, Materials::GetTransparancyTexture(material));
-    //// for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
-    //// glActiveTexture(GL_TEXTURE0 + j);
-    //// glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
-    ////}
+     ECSManager::ecs.query<PrimitiveRenderContext>()->each([&](PrimitiveRenderContext *prc) {
+         glUseProgram(shaderProgram.mShaderProgram);
+         shaderProgram.UniformMat4v("lightSpaceMatrix", mLightSpaceMatrix);
+         glActiveTexture(GL_TEXTURE0);
+         glBindTexture(GL_TEXTURE_2D, depthMap);
+         //glActiveTexture(GL_TEXTURE1);
+         //glBindTexture(GL_TEXTURE_2D, prc->material->getTransparencyTexture());
+         // for (unsigned int j = 0; j < Materials::GetTextureCount(i); j++) {
+         // glActiveTexture(GL_TEXTURE0 + j);
+         // glBindTexture(GL_TEXTURE_2D, Materials::GetTexture(i, j));
+         //}
 
-    // glBindBuffer(GL_ARRAY_BUFFER, VBOs[i][1]);
-    // if (MeshComp::ShouldUpdate(i)) {
-    //// glm::mat4 test = MeshComp::GetModelMats(i)[0];
-    //// NT_INTER_INFO(glm::to_string(test * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * MeshComp::GetInstanceCount(i), MeshComp::GetModelMats(i),
-    // GL_DYNAMIC_DRAW);
-    //}
-    ////  UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
-    // glBindVertexArray(VAOs[i]);
-    // glDrawElementsInstanced(GL_TRIANGLES, MeshComp::GetIndCount(i), GL_UNSIGNED_INT, 0,
-    // MeshComp::GetInstanceCount(i));
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, 0);
-    //}
-//}
-}  // namespace neith
+         //  UniformMat4v(shaderProgram, "model", MeshComp::mModelMats[i]);
+         glBindVertexArray(prc->mVAO);
+         glDrawElementsInstanced(GL_TRIANGLES, prc->indCount, GL_UNSIGNED_INT, 0,
+         prc->instanceCount);
+         glActiveTexture(GL_TEXTURE0);
+         glBindTexture(GL_TEXTURE_2D, 0);
+     });
+}
+}   //namespace neith

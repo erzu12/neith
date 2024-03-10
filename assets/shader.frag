@@ -15,7 +15,6 @@ struct Light {
     vec3 color;
 };
 
-
 in VS_OUT {
     vec2 TexCoord;
     vec3 FragPos;
@@ -43,14 +42,14 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 norm, vec3 lightDir) {
     float bias = max(0.005 * (1.0 - dot(norm, lightDir)), 0.002);
     float shadow = 0.0;
     vec2 textlSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; x++) {
-        for(int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * 0.5 * textlSize).r;
             shadow += currentDepth - bias > pcfDepth ? 0.0 : 1.0;
         }
     }
     shadow /= 9.0;
-    if(projCoords.z > 1.0)
+    if (projCoords.z > 1.0)
         shadow = 1.0;
 
     return shadow;
@@ -61,10 +60,10 @@ vec3 fresnelSchlick(float cosTheta, vec3 FO) {
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
-    float a = roughness*roughness;
-    float a2 = a*a;
+    float a = roughness * roughness;
+    float a2 = a * a;
     float NdotH = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
+    float NdotH2 = NdotH * NdotH;
 
     float num = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
@@ -75,7 +74,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness) {
 
 float GeometrySchlickGGX(float NdotV, float roughness) {
     float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
+    float k = (r * r) / 8.0;
 
     float num = NdotV;
     float denom = NdotV * (1.0 - k) + k;
@@ -95,7 +94,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
 void main()
 {
     float alpha = texture(material.alpha, fs_in.TexCoord).r;
-    if(alpha < 0.7)
+    if (alpha < 0.7)
         discard;
     vec3 diffuse = texture(material.diffuse, fs_in.TexCoord).rgb;
     vec3 normal = texture(material.normal, fs_in.TexCoord).rgb;
@@ -145,5 +144,6 @@ void main()
 
     //vec3 projCoords = fs_in.FragPosLightSpace.xyz / fs_in.FragPosLightSpace.w;
     FragColor = vec4(color, 1.0);
+    //FragColor = vec4(shadow, shadow, shadow, 1.0);
     // FragColor = vec4(fs_in.Tangent , 1.0);
 }

@@ -25,8 +25,8 @@ public:
 };
 
 class Mesh {
-    std::vector<LOD> LODs;
 public:
+    std::vector<LOD> LODs;
     Mesh();
     void setLODs(std::vector<float> LODDistances);
     LOD *getLOD(int LODindex);

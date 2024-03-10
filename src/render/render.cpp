@@ -125,12 +125,13 @@ Renderer::Renderer()
 
 void Renderer::AddShadow(unsigned int shader)
 {
+    glUseProgram(shader);
     int location = glGetUniformLocation(shader, "shadowMap");
     if (location == -1) {
         NT_INTER_WARN("no binding shadowMap in shader: {}", shader);
         return;
     }
-    glUniform1i(location, mDepthMap);
+    glUniform1i(location, 0);
 }
 
 void Renderer::UpdateRender()
@@ -146,7 +147,7 @@ void Renderer::UpdateRender()
     glfwGetWindowSize(Window::GetGLFWwindow(), &width, &height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, mDepthMapFBO);
-    //mInstancedRenderer->RenderInstancedShadows(mDepthMapShader, mDepthMap);
+    mInstancedRenderer->RenderInstancedShadows(mDepthMapShader, mDepthMap);
 
     // Scene
     glBindFramebuffer(GL_FRAMEBUFFER, mFBO);

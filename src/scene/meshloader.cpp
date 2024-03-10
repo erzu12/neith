@@ -32,6 +32,7 @@ Model *ModelLoader::LoadModel(std::string path)
         NT_INTER_ERROR("faild to load model: {}", path.data());
         return 0;
     }
+    NT_INTER_INFO("loading model: {}", path.data());
 
     char binPath[1024];
     // PathToBinPath(paths[i], binPath, gltfData->buffers->uri);
@@ -50,16 +51,17 @@ Model *ModelLoader::LoadModel(std::string path)
     int materialsCount = 0;
 
     int meshesLength = gltfData->meshes_count;
-    std::unordered_map<cgltf_mesh *, Mesh*> meshes;
+    std::unordered_map<cgltf_mesh *, int> meshIndexMap;
 
     Model *model = new Model();
 
     for (int j = 0; j < meshesLength; j++) {
         int primitivesCount = gltfData->nodes[j].mesh->primitives_count;
 
-        Mesh *mesh = model->addMesh();
+        int meshIndex = model->addMesh();
+        Mesh *mesh = model->getMeshes()->at(meshIndex).mesh;
 
-        meshes.insert({ &gltfData->meshes[j], mesh });
+        meshIndexMap.insert({ &gltfData->meshes[j], meshIndex });
 
         for (int k = 0; k < primitivesCount; k++) {
             if (!CheckAtributeFormat(&gltfData->meshes[j].primitives[k])) {
@@ -90,16 +92,16 @@ Model *ModelLoader::LoadModel(std::string path)
         if (gltfData->nodes[j].mesh == NULL)
             continue;
 
-        Mesh *mesh = meshes.at(gltfData->nodes[j].mesh);
-
         glm::mat4 modelMat(1.0f);
         ReadTransform(&gltfData->nodes[j], modelMat);
         modelMats[gltfData->nodes[j].mesh].push_back(modelMat);
     }
 
     for (auto &cgltf_mesh : modelMats) {
-        Mesh *mesh = meshes.at(cgltf_mesh.first);
-        mesh->setInstances(cgltf_mesh.second);
+        int meshIndex = meshIndexMap.at(cgltf_mesh.first);
+        for (auto &modelMat : cgltf_mesh.second) {
+        }
+        model->addMeshModelMatrices(meshIndex, cgltf_mesh.second);
     }
 
     return model;

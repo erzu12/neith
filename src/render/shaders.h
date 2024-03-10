@@ -17,6 +17,7 @@ public:
     void UniformVec3(const char* name, float x, float y, float z);
     void UniformVec3v(const char* name, const glm::vec3& val);
     void UniformMat4v(const char* name, const glm::mat4& val);
+    void AddShadows();
     unsigned int bindTextureSlot(std::string bindingName);
 private:
     std::vector<std::string> mBindings;

@@ -14,8 +14,35 @@
 
 int main()
 {
+
     // neith::Window *win = neith::nth_CreateWindow();
     neith::Init();
+
+    //neith::Shader shader = neith::Shader::LoadAndCompileComputeShader(ASSET_DIR "lod.comp");
+
+    //float data[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    //for (int i = 0; i < sizeof(data) / sizeof(unsigned int); i++) {
+        //NT_INFO("{}", data[i]);
+    //}
+
+    //unsigned int dataBuffer;
+    //glGenBuffers(1, &dataBuffer);
+    //glBindBuffer(GL_ARRAY_BUFFER, dataBuffer);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+
+    //glUseProgram(shader.mShaderProgram);
+    //glUniform1f(glGetUniformLocation(shader.mShaderProgram, "multiplier"), 2.0f);
+    //glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, dataBuffer);
+
+    //glDispatchCompute(sizeof(data), 1, 1);
+
+    //glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(data), data);
+    
+    //for (int i = 0; i < sizeof(data) / sizeof(unsigned int); i++) {
+        //NT_INFO("{}", data[i]);
+    //}
+
+    //return 0;
 
     // neith::Model *planeMesh = neith::LoadModel(ASSET_DIR "models/plane.gltf");
     // neith::Model *skyScraper = neith::LoadModel(ASSET_DIR "models/RuinedCitySkyRise04.gltf");
@@ -68,8 +95,8 @@ int main()
     ground->getLOD(0)->AddPrimitive(vertices, indices, &groundMat);
 
     neith::Model *cubeMesh = neith::LoadModel(ASSET_DIR "models/cube.gltf");
-    // neith::Model *treeMesh = neith::LoadModel(ASSET_DIR "models/Tree1.gltf");
-    neith::Model *grassMesh = neith::LoadModel(ASSET_DIR "models/Grass.gltf");
+    neith::Model *treeMesh = neith::LoadModel(ASSET_DIR "models/Tree1.gltf");
+    //neith::Model *grassMesh = neith::LoadModel(ASSET_DIR "models/Grass.gltf");
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
@@ -79,7 +106,7 @@ int main()
     std::uniform_int_distribution<> distr(-500, 500);
     NT_INTER_INFO("rand gen done");
     std::vector<glm::mat4> transforms;
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 10000; i++) {
         float x = (float)distr(gen);
         float y = (float)distr(gen);
         float rotate = (float)distr(gen);
@@ -97,7 +124,7 @@ int main()
         auto end = std::chrono::steady_clock::now();
         total += end - start;
     }
-    grassMesh->setInstances(transforms);
+    treeMesh->setInstances(transforms);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
     NT_INFO("Ran in {}s", total.count());
@@ -126,6 +153,7 @@ int main()
     Camera camera;
 
     neith::Shader shaderProgram = neith::nth_LoadAndCompileShaders(ASSET_DIR "shader.vert", ASSET_DIR "shader.frag");
+    neith::Shader defaultShader = neith::nth_LoadAndCompileShaders(ASSET_DIR "default.vert", ASSET_DIR "default.frag");
     // neith::nth_SetShaderByName(sc->mat, "Material", shaderProgram);
 
     // unsigned int albedo = neith::LoadTexture(ASSET_DIR "textures/Concrete_Dirty/Albedo.jpg", GL_RGB, GL_RGB);
@@ -143,13 +171,36 @@ int main()
     // neith::SetShader(skyScraper, 0, shaderProgram);
     // neith::SetShader(meshes, 1, shaderProgram);
     //neith::SetShader(groundMat, shaderProgram);
+    shaderProgram.AddShadows();
     groundMat.setShader(shaderProgram);
 
-    groundMat.setValue("material.diffuse", 0.1f, 0.6f, 0.1f);
+    groundMat.setValue("material.diffuse", 0.1f, 0.4f, 0.1f);
     groundMat.setValue("material.roughness", 0.8f);
     groundMat.setValue("material.normal", 0.5f, 0.5f, 1.0f);
     groundMat.setValue("material.specular", 0.2f);
     groundMat.setValue("material.metallic", 0.0f);
+
+
+    neith::Material *stemMat = treeMesh->getMaterials()[0];
+    neith::Material *leafMat = treeMesh->getMaterials()[1];
+
+    stemMat->setShader(shaderProgram);
+
+    stemMat->setValue("material.diffuse", 0.1f, 0.04f, 0.0f);
+    stemMat->setValue("material.roughness", 0.8f);
+    stemMat->setValue("material.normal", 0.5f, 0.5f, 1.0f);
+    stemMat->setValue("material.specular", 0.2f);
+    stemMat->setValue("material.metallic", 0.0f);
+    stemMat->setValue("material.alpha", 1.0f);
+
+    leafMat->setShader(shaderProgram);
+
+    leafMat->setValue("material.diffuse", 0.0f, 0.3f, 0.1f);
+    leafMat->setValue("material.roughness", 0.8f);
+    leafMat->setValue("material.normal", 0.5f, 0.5f, 1.0f);
+    leafMat->setValue("material.specular", 0.2f);
+    leafMat->setValue("material.metallic", 0.0f);
+    leafMat->setValue("material.alpha", 1.0f);
 
     //neith::SetShader(cubeMesh, 0, shaderProgram);
 

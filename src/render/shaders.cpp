@@ -119,6 +119,11 @@ unsigned int Shader::bindTextureSlot(std::string bindingName)
     return mBindings.size();
 }
 
+void Shader::AddShadows()
+{
+    Renderer::AddShadow(mShaderProgram);
+}
+
 void Shader::UniformVec3(const char *name, float x, float y, float z)
 {
     glUniform3f(glGetUniformLocation(mShaderProgram, name), x, y, z);
