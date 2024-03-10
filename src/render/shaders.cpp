@@ -114,7 +114,12 @@ unsigned int Shader::bindTextureSlot(std::string bindingName)
         }
     }
     glUseProgram(mShaderProgram);
-    glUniform1i(glGetUniformLocation(mShaderProgram, bindingName.c_str()), mBindings.size() + 1);
+    unsigned int location = glGetUniformLocation(mShaderProgram, bindingName.c_str());
+    if (location == -1) {
+        NT_INTER_WARN("no binding {} in shader: {}", bindingName, mShaderProgram);
+        return 0;
+    }
+    glUniform1i(location, mBindings.size() + 1);
     mBindings.push_back(bindingName);
     return mBindings.size();
 }

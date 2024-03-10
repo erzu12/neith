@@ -23,11 +23,11 @@ private:
     static unsigned int mScreenVAO;
     static unsigned int mCubeMapVAO;
     static unsigned int mFBO;
-    static unsigned int mDepthMapFBO;
-    static unsigned int mDepthMap;
+    static unsigned int mShadowDepthMapFBO;
+    static unsigned int mShadowDepthMap;
     static unsigned int mIntermediateFBO;
-    static unsigned int mTexColorBuffer;
     static unsigned int mScreenTexture;
+    static unsigned int mScreenDepthMap;
     static unsigned int mCubeMap;
     std::thread mLODThread;
 };

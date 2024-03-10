@@ -57,6 +57,10 @@ external/bullet3/html/
 assets/test/
 .cache/
 .ccls-cache/
+b.txt
+\\
+*.cap
+.gdb_history
 
 CMakeLists.txt.user
 CMakeCache.txt

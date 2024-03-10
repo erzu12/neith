@@ -4,6 +4,7 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
+uniform sampler2D depthTexture;
 
 const float offset = 1.0 / 600.0;
 
@@ -15,6 +16,7 @@ vec3 aces(vec3 x) {
   const float e = 0.14;
   return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
+
 
 void main() {
 
@@ -45,9 +47,16 @@ void main() {
 	//	col += sampleTex[i] * kernel[i];
 
     FragColor = texture(screenTexture, TexCoords);
+    float depth = texture(depthTexture, TexCoords).r;
     FragColor.rgb =  aces(FragColor.rgb);
+
+    float fogAmount = -0.0002/(depth - 1.00001);
+    fogAmount = clamp(fogAmount, 0.0, 1.0);
+    //vec3 color = FragColor.rgb * 0.0001 + vec3(fogAmount);
+    FragColor.rgb = mix(FragColor.rgb, vec3(0.3, 0.8, 1.0), fogAmount * 0.3);
 
 	float gamma = 2.2;
 	FragColor.rgb = pow(FragColor.rgb, vec3(1.0/gamma));	
+    //FragColor = vec4(color, 1.0);
 
 }

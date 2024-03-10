@@ -91,14 +91,11 @@ int main()
 
     //unsigned int groundMat = neith::AddMaterial();
     neith::Material groundMat = neith::Material();
-    //neith::AddPrimitive(vertices, vertCount, indices, indCount, ground, 0, groundMat);
     ground->getLOD(0)->AddPrimitive(vertices, indices, &groundMat);
 
     neith::Model *cubeMesh = neith::LoadModel(ASSET_DIR "models/cube.gltf");
     neith::Model *treeMesh = neith::LoadModel(ASSET_DIR "models/Tree1.gltf");
     //neith::Model *grassMesh = neith::LoadModel(ASSET_DIR "models/Grass.gltf");
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
     auto start = std::chrono::steady_clock::now();
     std::chrono::duration<double> total = start - start;
@@ -111,15 +108,11 @@ int main()
         float y = (float)distr(gen);
         float rotate = (float)distr(gen);
 
-        //glm::mat4 transform =
         transforms.push_back(
             glm::translate(glm::mat4(1.0f), 
                 glm::vec3(x, 20 * neith::OpenSimplex2D((double)x * 0.001f, (double)y * 0.001f, 4, 0.6), y)));
-        // transform *= glm::rotate(rotate, glm::vec3(0.0f, 1.0f, 0.0f));
 
-        //int treeEntity = neith::AddEntity("tree" + std::to_string(i), transform);
         start = std::chrono::steady_clock::now();
-        //neith::AddModelToEntity(treeEntity, grassMesh);
 
         auto end = std::chrono::steady_clock::now();
         total += end - start;
@@ -202,64 +195,7 @@ int main()
     leafMat->setValue("material.metallic", 0.0f);
     leafMat->setValue("material.alpha", 1.0f);
 
-    //neith::SetShader(cubeMesh, 0, shaderProgram);
 
-    //neith::SetValue(cubeMesh, 0, "material.diffuse", 0.5f, 0.5f, 0.5f);
-    //neith::SetValue(cubeMesh, 0, "material.roughness", 0.8f);
-    //neith::SetValue(cubeMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    //neith::SetValue(cubeMesh, 0, "material.specular", 0.2f);
-    //neith::SetValue(cubeMesh, 0, "material.metallic", 0.0f);
-
-    // neith::SetShader(treeMesh, 0, shaderProgram);
-
-    // neith::SetValue(treeMesh, 0, "material.diffuse", 0.1f, 0.04f, 0.0f);
-    // neith::SetValue(treeMesh, 0, "material.roughness", 0.8f);
-    // neith::SetValue(treeMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(treeMesh, 0, "material.specular", 0.2f);
-    // neith::SetValue(treeMesh, 0, "material.metallic", 0.0f);
-
-    // neith::SetShader(treeMesh, 1, shaderProgram);
-
-    // neith::SetValue(treeMesh, 1, "material.diffuse", 0.0f, 0.3f, 0.1f);
-    // neith::SetValue(treeMesh, 1, "material.roughness", 0.8f);
-    // neith::SetValue(treeMesh, 1, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(treeMesh, 1, "material.specular", 0.2f);
-    // neith::SetValue(treeMesh, 1, "material.metallic", 0.0f);
-
-    // neith::SetShader(grassMesh, 0, shaderProgram);
-    // neith::MakeBackfaced(grassMesh, 0);
-
-    // neith::SetValue(grassMesh, 0, "material.diffuse", 0.1f, 0.6f, 0.1f);
-    // neith::SetValue(grassMesh, 0, "material.roughness", 0.8f);
-    // neith::SetValue(grassMesh, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(grassMesh, 0, "material.specular", 0.2f);
-    // neith::SetValue(grassMesh, 0, "material.metallic", 0.0f);
-    //  neith::SetTransparancyTexture(grassMesh, 0, grassAlpha);
-
-    // neith::SetTexture(skyScraper, 0, albedo, "material.diffuse");
-    // neith::SetTexture(skyScraper, 0, roughness, "material.roughness");
-    // neith::SetTexture(skyScraper, 0, normal, "material.normal");
-    // neith::SetValue(skyScraper, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(skyScraper, 0, "material.specular", 0.2f);
-    // neith::SetValue(skyScraper, 0, "material.metallic", 0.2f);
-
-    // neith::SetShader(skyScraper, 3, shaderProgram);
-
-    // neith::SetTexture(skyScraper, 3, ivy, "material.diffuse");
-    // neith::SetValue(skyScraper, 3, "material.roughness", 0.5f);
-    // neith::SetValue(skyScraper, 3, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(skyScraper, 0, "material.normal", 0.5f, 0.5f, 1.0f);
-    // neith::SetValue(skyScraper, 3, "material.specular", 0.2f);
-    // neith::SetValue(skyScraper, 3, "material.metallic", 0.2f);
-    // neith::SetTransparancyTexture(skyScraper, 3, ivyAlpha);
-    //   neith::SetValue(meshes, 1, "material.diffuse", 1.0f, 0.0f, 0.0f);
-    //   neith::SetValue(meshes, 1, "material.roughness", 0.2f);
-    //   neith::SetValue(meshes, 1, "material.normal", 0.5f, 0.5f, 1.0f);
-    //   neith::SetValue(meshes, 1, "material.specular", 0.9f);
-    //   neith::SetValue(meshes, 1, "material.metallic", 0.0f);
-
-    // delete skyScraper;
-    // delete planeMesh;
     // neith::ContactPoint *contactPoints = new neith::ContactPoint[4];
 
     while (!neith::ShouldClose()) {

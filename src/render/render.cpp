@@ -29,11 +29,11 @@ Shader Renderer::mDepthMapShader;
 unsigned int Renderer::mScreenVAO;
 unsigned int Renderer::mCubeMapVAO;
 unsigned int Renderer::mFBO;
-unsigned int Renderer::mDepthMapFBO;
-unsigned int Renderer::mDepthMap;
+unsigned int Renderer::mShadowDepthMapFBO;
+unsigned int Renderer::mShadowDepthMap;
 unsigned int Renderer::mIntermediateFBO;
-unsigned int Renderer::mTexColorBuffer;
 unsigned int Renderer::mScreenTexture;
+unsigned int Renderer::mScreenDepthMap;
 unsigned int Renderer::mCubeMap;
 
 Renderer::Renderer()
@@ -43,6 +43,8 @@ Renderer::Renderer()
 
     mCubeMapShader = Shader::LoadAndCompileShaders(NTH_ASSET_DIR "cubeMap.vert", NTH_ASSET_DIR "cubeMap.frag");
     mScreenShader = Shader::LoadAndCompileShaders(NTH_ASSET_DIR "screen.vert", NTH_ASSET_DIR "screen.frag");
+    mScreenShader.bindTextureSlot("screenTexture");
+    mScreenShader.bindTextureSlot("depthTexture");
     mDepthMapShader = Shader::LoadAndCompileShaders(NTH_ASSET_DIR "shadowMap.vert", NTH_ASSET_DIR "shadowMap.frag");
     Material::setDepthShader(mDepthMapShader);
 
@@ -106,11 +108,11 @@ Renderer::Renderer()
     };
     mCubeMap = LoadCubeMap(cubeMapPaths);
 
-    mFBO = CreatFrameBuffer(1800, 1000, &mTexColorBuffer);
+    mFBO = CreatFrameBuffer(1800, 1000);
 
-    mIntermediateFBO = CreatIntermediateFrameBuffer(1800, 1000, &mScreenTexture);
+    mIntermediateFBO = CreatIntermediateFrameBuffer(1800, 1000, &mScreenTexture, &mScreenDepthMap);
 
-    mDepthMapFBO = CreatDepthMapFrameBuffer(&mDepthMap);
+    mShadowDepthMapFBO = CreatDepthMapFrameBuffer(&mShadowDepthMap);
 
     glUseProgram(mCubeMapShader.mShaderProgram);
     glUniform1i(glGetUniformLocation(mCubeMapShader.mShaderProgram, "skybox"), 0);
@@ -138,16 +140,16 @@ void Renderer::UpdateRender()
 {
     if (Window::GetResize()) {
         glDeleteFramebuffers(1, &mFBO);
-        mFBO = CreatFrameBuffer(Window::GetWidth(), Window::GetHeight(), &mTexColorBuffer);
-        mIntermediateFBO = CreatIntermediateFrameBuffer(Window::GetWidth(), Window::GetHeight(), &mScreenTexture);
+        mFBO = CreatFrameBuffer(Window::GetWidth(), Window::GetHeight());
+        mIntermediateFBO = CreatIntermediateFrameBuffer(Window::GetWidth(), Window::GetHeight(), &mScreenTexture, &mScreenDepthMap);
     }
     glEnable(GL_DEPTH_TEST);
 
     int width, height;
     glfwGetWindowSize(Window::GetGLFWwindow(), &width, &height);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, mDepthMapFBO);
-    mInstancedRenderer->RenderInstancedShadows(mDepthMapShader, mDepthMap);
+    glBindFramebuffer(GL_FRAMEBUFFER, mShadowDepthMapFBO);
+    mInstancedRenderer->RenderInstancedShadows(mDepthMapShader, mShadowDepthMap);
 
     // Scene
     glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
@@ -155,7 +157,7 @@ void Renderer::UpdateRender()
 
     glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.5f, (float)width / (float)height, 0.1f, 1000.0f);
 
-    mInstancedRenderer->renderSystem(Window::GetWidth(), Window::GetHeight(), mDepthMap);
+    mInstancedRenderer->renderSystem(Window::GetWidth(), Window::GetHeight(), mShadowDepthMap);
     LineRenderer::RenderLines();
 
     // Cube Map
@@ -176,7 +178,7 @@ void Renderer::UpdateRender()
     glBindFramebuffer(GL_READ_FRAMEBUFFER, mFBO);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mIntermediateFBO);
     glBlitFramebuffer(0, 0, Window::GetWidth(), Window::GetHeight(), 0, 0, Window::GetWidth(), Window::GetHeight(),
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                      GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -192,8 +194,10 @@ void Renderer::UpdateRender()
     glUseProgram(mScreenShader.mShaderProgram);
     glBindVertexArray(mScreenVAO);
     glDisable(GL_DEPTH_TEST);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, mScreenTexture);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, mScreenDepthMap);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // system::UpdateLODs();

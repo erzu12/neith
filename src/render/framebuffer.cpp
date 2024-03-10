@@ -15,23 +15,18 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     cbc->win->SetHeight(height);
 }
 
-unsigned int CreatFrameBuffer(int width, int height, unsigned int *texColorBuffer)
+unsigned int CreatFrameBuffer(int width, int height)
 {
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenTextures(1, texColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, *texColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    //glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGB, width, height, GL_TRUE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    unsigned int colorRBO;
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texColorBuffer, 0);
+    glGenRenderbuffers(1, &colorRBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, colorRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRBO);
 
     unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
@@ -48,7 +43,7 @@ unsigned int CreatFrameBuffer(int width, int height, unsigned int *texColorBuffe
     return fbo;
 }
 
-unsigned int CreatIntermediateFrameBuffer(int width, int height, unsigned int *screenTexture)
+unsigned int CreatIntermediateFrameBuffer(int width, int height, unsigned int *screenTexture, unsigned int *screenDepthMap)
 {
     unsigned int intermediateFBO;
     glGenFramebuffers(1, &intermediateFBO);
@@ -60,6 +55,16 @@ unsigned int CreatIntermediateFrameBuffer(int width, int height, unsigned int *s
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *screenTexture, 0);
+
+
+    glGenTextures(1, screenDepthMap);
+    glBindTexture(GL_TEXTURE_2D, *screenDepthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *screenDepthMap, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         printf("ERROR: Framebuffer not Complete\n");
